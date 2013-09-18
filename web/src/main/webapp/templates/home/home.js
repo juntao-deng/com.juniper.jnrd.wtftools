@@ -118,6 +118,7 @@ $(function(){
 			  else
 				  pItem.append(this.template(item));
 	  	  }
+		  Jnrd.Wtf.View.navigateTo("apps/dashboard");
 //		  this.$el.toggleClass('done', this.model.get('done'));
 //		  this.input = this.$('.edit');
 		  return this;

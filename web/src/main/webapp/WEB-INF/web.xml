@@ -20,8 +20,22 @@
   	<servlet-name>resteasy</servlet-name>
 	<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>appdisptcher</servlet-name>
+  	<servlet-class>com.juniper.wtf.tags.AppDispatchServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>resteasy</servlet-name>
 	<url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>appdisptcher</servlet-name>
+	<url-pattern>/apps/*</url-pattern>
+  </servlet-mapping>
+  <jsp-config>
+	<jsp-property-group>
+    	<url-pattern>*.jsp</url-pattern>
+    	<el-ignored>false</el-ignored>
+   	</jsp-property-group>
+  </jsp-config>
 </web-app>

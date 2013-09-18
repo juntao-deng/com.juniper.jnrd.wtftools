@@ -1,7 +1,13 @@
 #################
 ## Eclipse
 #################
-
+/ejb/target
+/ear/target
+/web/target
+.settings
+/ejb/.settings
+/web/.settings
+/ear/.settings
 *.pydevproject
 .project
 .metadata
