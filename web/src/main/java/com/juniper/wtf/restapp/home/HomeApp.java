@@ -33,8 +33,6 @@ public class HomeApp {
 		   allList.addAll(itemList);
 		   homeInfo.setNavList(allList);
 		   
-		   homeInfo.setTopMsgTitle("Just a quick note");
-		   homeInfo.setTopMsgContent("Hope you like this!");
 		   
 		   SessionBean sb = new SessionBean();
 		   sb.setLoginDate(Calendar.getInstance().getTime());

@@ -17,11 +17,8 @@ Jnrd.Wtf.View = {
 					this.updateContent(result);
 				},
 				updateContent: function(content){
-					var reserve = $('footer');
 					var container = $('#home_content_part');
 					container.html(content);
-					if(reserve != null)
-						container.append(reserve);
 				}
 			}); 
 		}
@@ -32,12 +29,10 @@ Jnrd.Wtf.View = {
 			iframe.className = "contentiframe";
 			iframe.style.width = (document.documentElement.clientWidth - 240 - 32) + "px";
 			iframe.style.height = (document.documentElement.clientHeight - 106) + "px";
-			var reserve = $('footer');
+			
 			var container = $('#home_content_part');
 			container.empty();
 			container.append(iframe);
-			if(reserve != null)
-				container.append(reserve);
 		}
 	}
 };

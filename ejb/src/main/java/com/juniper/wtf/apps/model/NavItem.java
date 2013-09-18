@@ -12,8 +12,8 @@ import javax.xml.bind.annotation.XmlType;
 
 @Entity
 @Table (name="wtf_navitem")
-@XmlRootElement(name = "navgroup")  
-@XmlType(propOrder = {"id", "name", "url", "groupId"})  
+@XmlRootElement(name = "navitem")  
+@XmlType(propOrder = {"id", "name", "url", "groupId", "target"})  
 @XmlAccessorType(XmlAccessType.FIELD)  
 public class NavItem extends NavType {
 	@Id
@@ -25,6 +25,9 @@ public class NavItem extends NavType {
 	private String url;
 	@NotNull
 	private String groupId;
+	@NotNull
+	private String target;
+	
 	public String getName() {
 		return name;
 	}
@@ -42,6 +45,12 @@ public class NavItem extends NavType {
 	}
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public void setTarget(String target) {
+		this.target = target;
 	}
 	
 }

@@ -1,5 +1,5 @@
 <script type="text/template" id="sidenav-item-template">
-	<li><a href="{{= url}}">{{= name}}</a></li>
+	<li><a href="{{= url}}" class="app_item_click" target="{{= target}}">{{= name}}</a></li>
 </script>
 
 <script type="text/template" id="sidenav-group-template">

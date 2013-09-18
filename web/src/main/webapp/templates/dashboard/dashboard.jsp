@@ -1,8 +1,4 @@
-<div class="header">
-	<div class="stats">
-	</div>
-    <h1 class="page-title">Dashboard</h1>
-</div>
+<%@ include file="../common/apptitle.jsp" %>
 <%@ include file="./stats.jsp"%> 
     
 <%@ include file="../common/breadcrumb.jsp" %>

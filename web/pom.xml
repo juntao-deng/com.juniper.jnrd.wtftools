@@ -25,7 +25,6 @@
 
    <artifactId>wtftools</artifactId>
    <packaging>war</packaging>
-
    <name>com.juniper.jnrd.wtftools - web</name>
 
    <url>http://jboss.org/jbossas</url>
@@ -92,6 +91,11 @@
        	<groupId>org.slf4j</groupId>
        	<artifactId>slf4j-api</artifactId>
        	<version>1.7.5</version>
+       </dependency>
+       <dependency>
+       	<groupId>org.apache.commons</groupId>
+       	<artifactId>commons-lang3</artifactId>
+       	<version>3.1</version>
        </dependency>
    </dependencies>
 

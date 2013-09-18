@@ -7,6 +7,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ * Foward a servlet url to mapped jsp. The default rule is : 
+ * servlet path '/ctxpath/apps/home' ==> '/applications/home/home.jsp'
+ * @author juntaod
+ *
+ */
 public class AppDispatchServlet extends HttpServlet {
 	private static final String PAGE_PATH = "PAGE_PATH";
 	private static final long serialVersionUID = -5849457629464390672L;
@@ -21,7 +29,8 @@ public class AppDispatchServlet extends HttpServlet {
 		}
 		pathInfo = pathInfo.substring(1);
 		String path = BASE_PATH + pathInfo + "/" + pathInfo + ".jsp";
-		req.setAttribute(PAGE_PATH, pathInfo);
+		//The jsp page will use this as a navgation
+		req.setAttribute(PAGE_PATH, StringUtils.capitalize(pathInfo));
 		req.getServletContext().getRequestDispatcher(path).forward(req, resp);
 	}
 

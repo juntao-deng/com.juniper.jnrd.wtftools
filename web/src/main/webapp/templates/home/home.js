@@ -53,13 +53,11 @@ $(function(){
     },
 
     addOne: function(item) {
-    	var navList = item.get("navList");
     	var view = new ItemsView({model: item});
     	view.render();
     },
 
     addAll: function() {
-    	alert(333);
 //      Todos.each(this.addOne, this);
     }
 
@@ -118,6 +116,10 @@ $(function(){
 			  else
 				  pItem.append(this.template(item));
 	  	  }
+		  $('.app_item_click').click(function() {
+			  Jnrd.Wtf.View.navigateTo(this.href, null, this.target != 'Y');
+			  return false;
+		  });
 		  Jnrd.Wtf.View.navigateTo("apps/dashboard");
 //		  this.$el.toggleClass('done', this.model.get('done'));
 //		  this.input = this.$('.edit');
