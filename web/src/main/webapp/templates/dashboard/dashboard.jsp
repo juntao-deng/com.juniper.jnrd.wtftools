@@ -1,6 +1,4 @@
 <%@ include file="../common/apptitle.jsp" %>
-<%@ include file="./stats.jsp"%> 
-    
 <%@ include file="../common/breadcrumb.jsp" %>
 
 <div class="container-fluid">

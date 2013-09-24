@@ -18,4 +18,5 @@
     <script src="ext-lib/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="ext-lib/underscore/underscore.js"></script>
   	<script src="ext-lib/backbone/backbone.js"></script>
+  	<script src="ext-lib/requirejs/require.js"></script>
   	<script src="library/common/common.js"></script>

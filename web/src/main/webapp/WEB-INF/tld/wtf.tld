@@ -10,7 +10,7 @@ version="2.0">
 <short-name>wtf</short-name>
 <uri>http://www.wtf.com/wtf</uri>
 	<tag>
-		<description>wtf Base Tag</description>
+		<description>Wtf Base Tag</description>
 		<name>base</name>
 		<tag-class>com.juniper.wtf.tags.HtmlBaseTag</tag-class>
 		<body-content>scriptless</body-content>
@@ -20,4 +20,16 @@ version="2.0">
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+	<tag>
+		<description>Wtf Menu Tag</description>
+		<name>menu</name>
+		<tag-class>com.juniper.wtf.tags.control.WtfMenuControlTag</tag-class>
+		<body-content>scriptless</body-content>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	
 </taglib>

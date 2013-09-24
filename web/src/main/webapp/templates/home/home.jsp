@@ -70,13 +70,15 @@
 	</div>
 	<%@ include file="./sidenav.jsp"%> 
     
-    <div class="content" id="home_content_part">
+    <div class="content">
+    	<div id="home_content_part">
+    	</div>
+	    <footer>
+		    <hr>
+		    <p class="pull-right"><a href="index.jsp" target="_self">Junos </a> by <a href="http://www.portnine.com" target="_blank">Juniper</a></p>
+		    <p>Copyright &copy; 2009-2013 Juniper Networks, Inc. All rights reserved. 
+		</footer>
     </div>
-    <footer>
-	    <hr>
-	    <p class="pull-right"><a href="index.jsp" target="_self">Junos </a> by <a href="http://www.portnine.com" target="_blank">Juniper</a></p>
-	    <p>Copyright &copy; 2009-2013 Juniper Networks, Inc. All rights reserved. 
-	</footer>
     
 
     <script src="ext-lib/bootstrap/js/bootstrap.js"></script>
