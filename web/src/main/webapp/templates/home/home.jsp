@@ -1,4 +1,5 @@
 <%@ include file="../common/header.jsp"%> 
+    <link rel="stylesheet" type="text/css" href="templates/home/theme.css">
 	<script src="templates/home/home.js" type="text/javascript"></script>
     <!-- Demo page code -->
 
@@ -73,14 +74,12 @@
     <div class="content">
     	<div id="home_content_part">
     	</div>
-	    <footer>
-		    <hr>
-		    <p class="pull-right"><a href="index.jsp" target="_self">Junos </a> by <a href="http://www.portnine.com" target="_blank">Juniper</a></p>
-		    <p>Copyright &copy; 2009-2013 Juniper Networks, Inc. All rights reserved. 
-		</footer>
     </div>
-    
-
+	<div class="footer">
+	    <hr>
+	    <p class="pull-right"><a href="index.jsp" target="_self">Junos </a> by <a href="http://www.portnine.com" target="_blank">Juniper</a></p>
+	    <p>Copyright &copy; 2009-2013 Juniper Networks, Inc. All rights reserved.</p> 
+	</div>
     <script src="ext-lib/bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript">
         $("[rel=tooltip]").tooltip();

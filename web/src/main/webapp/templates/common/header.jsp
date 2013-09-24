@@ -12,7 +12,6 @@
 
     <link rel="stylesheet" type="text/css" href="ext-lib/bootstrap/css/bootstrap.css">
     
-    <link rel="stylesheet" type="text/css" href="templates/stylesheets/theme.css">
     <link rel="stylesheet" href="ext-lib/font-awesome/css/font-awesome.css">
 
     <script src="ext-lib/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>

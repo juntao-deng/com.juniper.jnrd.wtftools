@@ -142,18 +142,26 @@ hr {
 .page-content {
   padding: 1em;
 }
-footer {
-  padding: 1em;
-  margin-top: 2em;
-  margin-left:1em;
-  margin-right:1em;
-  color: #666;
-  font-size: .85em;
-  line-height: 1.3em;
+.footer {
+  padding: 0px 20px 5px 20px; 
+  font-size: 12px;
 }
-footer hr {
-  /*margin: 2em -2em;*/
+
+.footer hr{
+  margin-top:0px;
 }
+
+.footer:after,
+.footer:before {
+  content: "";
+  display: table;
+  line-height: 0;
+}
+
+.footer:after {
+  clear: both;
+}
+
 
 .contentiframe {
 	margin-left:1em;
