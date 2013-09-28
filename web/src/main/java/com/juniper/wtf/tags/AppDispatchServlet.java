@@ -23,12 +23,18 @@ public class AppDispatchServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String pathInfo = req.getPathInfo();
-		if(pathInfo == null || pathInfo.indexOf("/", 1) != -1){
+		if(pathInfo == null || pathInfo.equals("")){
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
 		pathInfo = pathInfo.substring(1);
-		String path = BASE_PATH + pathInfo + "/" + pathInfo + ".jsp";
+		String path = null;
+		if(pathInfo.indexOf("/") != -1){
+			String[] paths = pathInfo.split("/");
+			path = BASE_PATH + StringUtils.join(paths, "/") + "/" + paths[paths.length - 1] + ".jsp";
+		}
+		else
+			path = BASE_PATH + pathInfo + "/" + pathInfo + ".jsp";
 		//The jsp page will use this as a navgation
 		req.setAttribute(PAGE_PATH, StringUtils.capitalize(pathInfo));
 		req.getServletContext().getRequestDispatcher(path).forward(req, resp);

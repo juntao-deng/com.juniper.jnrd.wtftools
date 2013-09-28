@@ -9,13 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <link rel="stylesheet" type="text/css" href="ext-lib/bootstrap/css/bootstrap.css">
-    
     <link rel="stylesheet" href="ext-lib/font-awesome/css/font-awesome.css">
-
+	<link rel="stylesheet" href="library/common/common.css">
     <script src="ext-lib/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="ext-lib/jquery/jquery-ui.min.js" type="text/javascript"></script>
     <script src="ext-lib/underscore/underscore.js"></script>
   	<script src="ext-lib/backbone/backbone.js"></script>
+  	<script src="ext-lib/bootstrap/js/bootstrap.js"></script>
   	<script src="ext-lib/requirejs/require.js"></script>
   	<script src="library/common/common.js"></script>

@@ -16,8 +16,9 @@ INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.020'
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.030','010','My Favarite2','Y','apps/treelist');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.110','011','Simple List','Y','apps/simplelist');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.111','011','Tree List','Y','apps/treelist');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.112','011','Simple Form','Y','apps/simpleform');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.113','011','Wizard Form','Y','apps/wizardform');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.112','011','Input Controls','Y','apps/inputs');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.113','011','Simple Form','Y','apps/simpleform');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Wizard Form','Y','apps/wizardform');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('1.010','020','Device Management','Y','rest/devicemgr');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('1.020','020','Device Discovery','Y','rest/devicediscovery');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('1.030','020','Specify Probes','Y','rest/specifyprobes');
