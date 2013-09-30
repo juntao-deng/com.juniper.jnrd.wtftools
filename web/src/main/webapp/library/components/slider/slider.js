@@ -1,6 +1,8 @@
 //loadCss("library/controls/slider/slider.css");
 define(["base/base"], function(base, uislider){
-	FwBase.Wtf.View.Controls.Slider = function(){};
+	FwBase.Wtf.View.Controls.Slider = function(){
+		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
+	};
 	$.extend(FwBase.Wtf.View.Controls.Slider.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, {
 		template: _.template($('#sys_atom_controls_slider').html()),
 		postInit : function(){
@@ -17,12 +19,7 @@ define(["base/base"], function(base, uislider){
 			);
 		},
 		makeDefault : function(metadata){
-			if(!metadata.value)
-				metadata.value = 0;
-			if(!metadata.min)
-				metadata.min = 0;
-			if(!metadata.max)
-				metadata.max = 
+			
 		}
 	});
 	return FwBase.Wtf.View.Controls.Slider;

@@ -1,0 +1,11 @@
+<script type="text/template" id="sys_atom_controls_input">
+	<div class="control-group">
+		<label class="control-label" style="float:left;width:170">{{= label}}</label>
+		<div class="controls" style="margin-left:180px">
+			<input type="text" class="span6 m-wrap popovers" data-trigger="hover" data-content="{{= popOverContent}}" data-original-title="{{= popOverTitle}}" placeholder="{{= placeHolder}}"/>
+			{{if(hint){}}
+				<span class="help-inline">{{= hint}}</span>
+		    {{}}}
+		</div>
+	</div>
+</script>

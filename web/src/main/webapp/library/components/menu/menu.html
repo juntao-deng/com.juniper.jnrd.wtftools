@@ -1,0 +1,45 @@
+<script type="text/template" id="sys_atom_controls_menu">
+	<div class="btn-toolbar">
+		{{_.each(groups, function(group){}}
+		<div class="btn-group">
+			{{_.each(group.menus, function(menu){
+					if(menu.menus){}}
+						<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">{{= menu.name}}
+    						<span class="caret"></span>
+  						</a>
+						<ul class="dropdown-menu">
+						{{
+							_.each(menu.menus, function(cmenu){
+								if(cmenu.menus){}}
+									<li class="dropdown-submenu">
+    									<a tabindex="-1" href="#">{{= cmenu.name}}</a>
+    									<ul class="dropdown-menu">
+											{{
+											_.each(cmenu.menus, function(ccmenu){
+											}}
+												<li class="{{= ccmenu.disabled? 'disabled' : ''}}"><a tabindex="-1" href="#">{{= ccmenu.name}}</a></li>
+											{{});}}
+										</ul>
+									</li>
+								{{
+								}
+								else if(cmenu.divider){}}
+									<li class="divider"></li>
+								{{}
+								else{}}
+								<li class="{{= cmenu.disabled? 'disabled' : ''}}"><a tabindex="-1" href="#">{{= cmenu.name}}</a></li>
+								{{}
+							});
+						}}
+						</ul>
+					{{}
+					
+					else{}}
+						<button class="btn btn-primary {{=menu.disabled? 'disabled' : ''}}" id="{{= menu.id}}" wtfinnertype="wtfitem">{{= menu.name}}</button>
+					{{}
+				});
+			}}
+		</div>
+		{{});}}
+	</div>
+</script>

@@ -9,7 +9,7 @@ define({
         	iframe.src = url;
         	$(iframe).load(function(){
         		var currFrame = $(this)[0];
-        		var content = $(currFrame.contentWindow.document.getElementsByTagName("head")).html();
+        		var content = $(currFrame.contentWindow.document.body).html();
         		currFrame.inUsing = false;
         		onload(content);
         	});
