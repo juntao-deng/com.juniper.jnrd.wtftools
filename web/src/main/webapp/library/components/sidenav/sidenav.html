@@ -1,0 +1,18 @@
+<script type="text/template" id="sys_atom_controls_sidenav_item">
+	<li><a id="{{= name}}" href="{{= url}}" class="app_item_click" target="{{= target}}" wtfinnertype="sidenavlink">{{= name}}</a></li>
+</script>
+
+<script type="text/template" id="sys_atom_controls_sidenav_group">
+	{{if(url == null || url == ""){}}
+		<a href="#{{= id}}" class="nav-header" data-toggle="collapse"><i class="{{= icon}}"></i>{{= name}}</a>
+    	<ul id="{{= id}}" class="nav nav-list collapse {{= (collapse=='Y'? 'in' : '')}}">
+		</ul>
+	{{}else{}}
+		 <a href="{{= url}}" class="nav-header" ><i class="{{= icon}}"></i>{{= name}}</a>
+	{{}}}
+</script>
+
+<script type="text/template" id="sys_atom_controls_sidenav">
+	<div id="sidenavdiv">
+	</div>
+</script>

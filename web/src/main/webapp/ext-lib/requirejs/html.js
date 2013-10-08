@@ -4,7 +4,7 @@ define({
         	var truePath = config.paths[id];
         	if(truePath == null)
         		truePath = name;
-        	var url = window.baseLocation + req.toUrl(truePath);
+        	var url = req.toUrl(truePath);
         	var iframe = getWtfTempLoaderIframe();
         	iframe.src = url;
         	$(iframe).load(function(){

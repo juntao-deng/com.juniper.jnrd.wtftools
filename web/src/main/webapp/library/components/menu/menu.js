@@ -6,7 +6,6 @@ define(["base/base"], function(base){
 	$.extend(FwBase.Wtf.View.Controls.Menu.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, 
 		{		
 			template: _.template($('#sys_atom_controls_menu').html()),
-			type: "menu",
 			postInit : function() {
 				for(var i = 0; i < this.metadata.groups.length; i ++){
 					var group = this.metadata.groups[i];

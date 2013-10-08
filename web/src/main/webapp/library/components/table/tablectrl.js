@@ -16,16 +16,16 @@ var TableAdvanced = function () {
                 "iDisplayLength": 10,
             });
 
-            jQuery('#sample_2_wrapper .dataTables_filter input').addClass("m-wrap small"); // modify table search input
-            jQuery('#sample_2_wrapper .dataTables_length select').addClass("m-wrap small"); // modify table per page dropdown
-            //jQuery('#sample_2_wrapper .dataTables_length select').select2(); // initialzie select2 dropdown
-
-            $('#sample_2_column_toggler input[type="checkbox"]').change(function(){
-                /* Get the DataTables object again - this is not a recreation, just a get of the object */
-                var iCol = parseInt($(this).attr("data-column"));
-                var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
-                oTable.fnSetColumnVis(iCol, (bVis ? false : true));
-            });
+//            jQuery('#sample_2_wrapper .dataTables_filter input').addClass("m-wrap small"); // modify table search input
+//            jQuery('#sample_2_wrapper .dataTables_length select').addClass("m-wrap small"); // modify table per page dropdown
+//            //jQuery('#sample_2_wrapper .dataTables_length select').select2(); // initialzie select2 dropdown
+//
+//            $('#sample_2_column_toggler input[type="checkbox"]').change(function(){
+//                /* Get the DataTables object again - this is not a recreation, just a get of the object */
+//                var iCol = parseInt($(this).attr("data-column"));
+//                var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
+//                oTable.fnSetColumnVis(iCol, (bVis ? false : true));
+//            });
         }
 
     };
