@@ -1,4 +1,4 @@
-define(["base/base"], function(base){	
+define(["base/base", "css!./sidenav"], function(base){	
 	FwBase.Wtf.View.Controls.Sidenav = function(){
 		this.menuitems = [];
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);

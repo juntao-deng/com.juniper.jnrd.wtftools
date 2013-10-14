@@ -1,7 +1,6 @@
 <script type="text/template" id="sys_atom_controls_wizard">
 	<div class="row-fluid">
 		<div class="span12">
-			<div class="portlet box blue" id="form_wizard_1">
 				<div class="portlet-title">
 					<div class="caption">
 						<i class="icon-reorder"></i> {{= title}} - <span class="step-title">Step 1 of 3</span>
@@ -13,11 +12,10 @@
 							<div class="navbar steps">
 								<div class="navbar-inner">
 									<ul class="row-fluid nav nav-pills">
-										{{_.each(pages, function(page, index){}}
-								
-											<li class="span3 active">
-												<a href="#tab1" data-toggle="tab" class="step active">
-													<span class="number">{{= (index + 1)}}</span>
+										{{_.each(pages, function(page, currIndex){}}
+											<li class="span3{{= (currIndex == index)? " active" : ""}}">
+												<a href="#tab{{= currIndex + 1}}" data-toggle="tab" class="step{{= (currIndex == index)? " active" : ""}}">
+													<span class="number">{{= (currIndex + 1)}}</span>
 													<span class="desc"><i class="icon-ok"></i> {{= page.title}}</span>   
 												</a>
 											</li>
@@ -513,7 +511,6 @@
 									</div>
 								</form>
 							</div>
-						</div>
 					</div>
 				</div>
 </script>

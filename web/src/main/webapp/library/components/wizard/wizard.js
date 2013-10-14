@@ -1,4 +1,4 @@
-define(["base/base"], function(base){
+define(["base/base", "css!./wizardctrl"], function(base){
 	FwBase.Wtf.View.Controls.Wizard = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};

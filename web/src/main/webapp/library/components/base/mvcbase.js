@@ -199,82 +199,50 @@ define(function(){
   	  			FwBase.Wtf.Application.navigateTo(appid);
   	  		 });
   	 	},
-  	 	navigateTo : function(url, reqData, useFrame) {
-	 		if(useFrame == null)
-	 			useFrame = false;
-	 		if(useFrame == false){
-	 			if(true){
-	 				var pathInfo = url.split("/");
-	 				var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
-	 				prefix += "!";
-	 				var rb = "../../applications/";
-	 				var rqhtml = rb;
-	 				for(var i = 0; i < pathInfo.length; i ++){
-	 					rqhtml += pathInfo[i] + "/";
-	 				}
-	 				requirejs([prefix + rqhtml + pathInfo[pathInfo.length - 1] + ".html"], function(html){
- 						var container = $('#sys_home_content_part');
- 						if(container.length == 0){
- 							container = $(document.body);
- 							container.append(html);
- 						}
- 						else
- 							container.html(html);
- 						var app = new FwBase.Wtf.Application(url);
- 						FwBase.Wtf.Application.current(app);
- 						
-// 						var jsPrefix = window.ClientConfig ? ClientConfig.prefix("js", "js") : null;
-// 						if(jsPrefix != null)
-// 							jsPrefix += "!";
-// 						else
-// 							jsPrefix = "";
- 						var modelJs = rqhtml + "model";
- 						requirejs([modelJs], function(){
-		 					FwBase.Wtf.Application.repaint();
-		 					app.tempCallback = function(){
-			 					var controllerJs = rqhtml + "controller";
-			 					requirejs([controllerJs], function() {
-			 						var models = FwBase.Wtf.Application.current().models();
-							 		for(var i = 0; i < models.length; i ++)
-							 			models[i].toInit();
-			 					});
-		 					};
- 						});
- 					});
- 					var title = FwBase.Wtf.Lang.Utils.capitalize(pathInfo[pathInfo.length - 1]);
- 					FwBase.Wtf.Application.updateTitle({title: title});
-	 			}
-	 			else{
-		 			$.ajax({url: url, 
-		 				type: 'GET', 
-		 				data: reqData, 
-		 				dataType: 'html', 
-		 				timeout: 1000, 
-		 				error: function(){
-		 					this.updateContent('page request error!');
-		 				}, 
-		 				success: function(result){
-		 					this.updateContent(result);
-		 				},
-		 				updateContent: function(content){
-		 					var container = $('#home_content_part');
-		 					container.html(content);
-		 				}
-		 			});
-	 			}
-	 		}
-	 		else{
-	 			var iframe = document.createElement("iframe");
-	 			//todo reqData
-	 			iframe.src = url;
-	 			iframe.className = "contentiframe";
-	 			iframe.style.width = (document.documentElement.clientWidth - 240 - 32) + "px";
-	 			iframe.style.height = (document.documentElement.clientHeight - 106) + "px";
-	 			
-	 			var container = $('#home_content_part');
-	 			container.empty();
-	 			container.append(iframe);
-	 		}
+  	 	navigateTo : function(url, reqData, options) {
+  	 		var container = $('#sys_home_content_part');
+			if(container.length == 0){
+				container = $("#sys_design_home_content_part");
+			}
+			
+			FwBase.Wtf.Application.doNavigateTo(url, reqData, options, container);
+			var pathInfo = url.split("/");
+			var title = FwBase.Wtf.Lang.Utils.capitalize(pathInfo[pathInfo.length - 1]);
+			FwBase.Wtf.Application.updateTitle({title: title});
+	 	},
+	 	
+	 	doNavigateTo : function(url, reqData, options, container) {
+	 		var pathInfo = url.split("/");
+			var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
+			prefix += "!";
+			var rb = "../../applications/";
+			var rqhtml = rb;
+			for(var i = 0; i < pathInfo.length; i ++){
+				rqhtml += pathInfo[i] + "/";
+			}
+			requirejs([prefix + rqhtml + pathInfo[pathInfo.length - 1] + ".html"], function(html){
+				if(container.length == 0){
+					container = $(document.body);
+					container.append(html);
+				}
+				else
+					container.html(html);
+				var app = new FwBase.Wtf.Application(url);
+				FwBase.Wtf.Application.current(app);
+				window.$app = app;
+				var modelJs = rqhtml + "model";
+				requirejs([modelJs], function(){
+ 					app.tempCallback = function(){
+	 					var controllerJs = rqhtml + "controller";
+	 					requirejs([controllerJs], function() {
+	 						var models = FwBase.Wtf.Application.current().models();
+					 		for(var i = 0; i < models.length; i ++)
+					 			models[i].toInit();
+	 					});
+ 					};
+ 					FwBase.Wtf.Application.repaint();
+				});
+			});
 	 	},
   		 	
   		updateTitle : function(titleInfo){
@@ -285,31 +253,18 @@ define(function(){
   			if(breadcrumb.length > 0)
   				breadcrumb.html(titleInfo.title);
   		},
-	 	showDialog : function(url, reqData, options){
-	 		$.ajax({url: url, 
-	 			type: 'GET', 
-	 			data: reqData, 
-	 			dataType: 'html', 
-	 			timeout: 1000, 
-	 			error: function(){
-	 				this.updateContent('page request error!');
-	 			}, 
-	 			success: function(result){
-	 				this.popDialog(result);
-	 			},
-	 			updateContent: function(content){
-	 				var container = $('#home_content_part');
-	 				container.html(content);
-	 			},
-	 			popDialog : function(result){
-	 				$('#sys_modal_dialog > .modal-body > p').html(result);
-	 				var title = "Title";
-	 				if(options != null && options.title != null)
-	 					title = options.title;
-	 				$('#sys_modal_dialog_label').html(title);
-	 				$('#sys_modal_dialog').modal();
-	 			}
-	 		}); 
+	 	navigateToDialog : function(url, reqData, options){
+	 		requireComponent(['dialog'], function(){
+		 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
+		 		var container = dialog.bodyContainer();
+		 		FwBase.Wtf.Application.doNavigateTo(url, reqData, null, container);
+		 		dialog.visible(true);
+	 		});
+	 	},
+	 	
+	 	closeDialog : function() {
+	 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
+	 		dialog.visible(false);
 	 	},
   		 	
 	 	createControl : function(obj) {
@@ -371,7 +326,14 @@ define(function(){
 	 		requirejs(requireCssList, function(){
 	 			requirejs(requireList, function(){
 	 				for(var i = 0; i < arguments.length; i ++){
+	 					var children = requireContainer[i].children();
+	 					if(children.length > 0)
+	 						children.remove();
 	 					requireContainer[i].html(arguments[i]);
+	 					var positions = requireContainer[i].find("[wtfpos]");
+	 					//TODO
+	 					if(positions.length > 0 && children.length > 0)
+	 						positions.html(children);
 	 				}
 	 				requireList = [];
 	 				requireCssList = [];
@@ -401,60 +363,63 @@ define(function(){
 	 	},
 	 	parseHtml : function() {
 	 		var typeList = [];
-	 		var requireList = [];
-	 		var requireHtmlList = [];
-	 		var prefix = window.ClientConfig ? ClientConfig.prefix("html", "text") : "text";
+//	 		var requireList = [];
+//	 		var requireHtmlList = [];
+//	 		var prefix = window.ClientConfig ? ClientConfig.prefix("html", "text") : "text";
 	 		$("[wtftype]").each(function(){
 	 			if($(this).attr('wtfdone') != null)
 	 				return;
 	 			var wtfType = $(this).attr('wtftype');
+	 			if(wtfType == 'container')
+	 				return;
+	 			if(wtfType.startWith('input')){
+	 				typeList.push("input_base");
+	 			}
 	 			typeList.push(wtfType);
-	 			requireList.push(wtfType + "/" + wtfType);
-	 			requireHtmlList.push(prefix + "!" + wtfType + "/" + wtfType + ".html");
+//	 			requireList.push(wtfType + "/" + wtfType);
+//	 			requireHtmlList.push(prefix + "!" + wtfType + "/" + wtfType + ".html");
 	 		});
-	 		if(requireList.length > 0){
-	 			requirejs(requireHtmlList, function(){
-	 				for(var i = 0; i < arguments.length; i ++){
-	 					var template = $('#sys_atom_controls_' + typeList[i]);
-	 					if(template.length == 0){
-	 						$('body').append(arguments[i]);
-	 					}
-	 				}
-	 				requirejs(requireList, function() {
-	 					$("[wtftype]").each(function(){
-	 						if($(this).attr('wtfdone') != null)
-	 							return;
-	 						$(this).attr('wtfdone', 'done');
-	 						var wtfType = $(this).attr('wtftype');
-	 						var id = $(this).attr("id");
-	 						if(id == null){
-	 							alert("id can not be null for element with wtftype:" + wtfType);
-	 							return;
-	 						}
-	 						var objMeta = FwBase.Wtf.Application.current().metadata(id);
-	 						if(objMeta == null){
-		 						var metadataStr = $(this).attr("wtfmeta");
-		 						if(metadataStr == null || metadataStr == ""){
-		 							objMeta = window.globalEmptyObj;
-		 						}
-		 						else{
-		 							objMeta = $.paraseJSON(metadataStr);
-		 						}
-	 						}
-	 						var capStr = FwBase.Wtf.Lang.Utils.capitalize(wtfType);
-	 						var ctrl = new FwBase.Wtf.View.Controls[capStr]($(this), objMeta, id);
-	 						var app = FwBase.Wtf.Application.current();
-	 						app.component(ctrl);
-	 						var tempCallback = app.tempCallback;
-	 						if(tempCallback != null){
-	 							app.tempCallback = null;
-	 							tempCallback.apply(app);
-	 						}
-	 					});
-	 				});
-	 			});
+ 			requireComponent(typeList, function(){
+				$("[wtftype]").each(function(){
+					if($(this).attr('wtfdone') != null)
+						return;
+					$(this).attr('wtfdone', 'done');
+					var wtfType = $(this).attr('wtftype');
+					if(wtfType == 'container')
+ 						return;
+					var id = $(this).attr("id");
+					if(id == null){
+						alert("id can not be null for element with wtftype:" + wtfType);
+						return;
+					}
+					var objMeta = FwBase.Wtf.Application.current().metadata(id);
+					if(objMeta == null){
+ 						var metadataStr = $(this).attr("wtfmetadata");
+ 						if(metadataStr == null || metadataStr == ""){
+ 							objMeta = window.globalEmptyObj;
+ 						}
+ 						else{
+ 							try{
+ 								eval("objMeta = " + metadataStr);
+ 							}
+ 							catch(error){
+ 								alert("error while parsing wtfmeta:" + metadataStr);
+ 							}
+ 						}
+					}
+					var capStr = FwBase.Wtf.Lang.Utils.capitalize(wtfType);
+					var ctrl = new FwBase.Wtf.View.Controls[capStr]($(this), objMeta, id);
+					$app.component(ctrl);
+				});
+//				var app = FwBase.Wtf.Application.current();
+//				app.component(ctrl);
+				var tempCallback = $app.tempCallback;
+				if(tempCallback != null){
+					$app.tempCallback = null;
+					tempCallback.apply($app);
+				}
+ 			});
 	 			
-	 		}
   		 }
   	 });
   	 $.extend(FwBase.Wtf.Application.prototype, {
@@ -504,6 +469,12 @@ define(function(){
   	 	},
   	 	metadata : function(id){
   	 		return this.metadataMap[id];
+  	 	},
+  	 	/**
+  	 	 * will cause current dialog be closed
+  	 	 */
+  	 	close : function() {
+  	 		FwBase.Wtf.Application.closeDialog();
   	 	}
   	 });
 });

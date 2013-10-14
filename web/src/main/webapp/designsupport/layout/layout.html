@@ -1,0 +1,34 @@
+<div wtftype="template" wtfmetadata="dialogheader"><div>Add Layouts</div></div>
+<div wtftype="template" wtfmetadata="dialogbody">
+	<div for="body">
+		 <p>
+			<fieldset>
+				<legend>
+					Columns
+				</legend>
+				<div class="row-fluid">
+					<div class="span3">
+						<div id="colsinput" wtftype="input_integer" wtfmetadata="{repeat: 1, defaultValue:2}"></div>
+					</div>
+					<div class="span9">
+						<div id="colslider" wtftype="slider" wtfmetadata="{max:12, min:0, values:[6]}"></div>
+					</div>
+				</div>
+			</fieldset>
+		</p>
+		<p>
+			<fieldset>
+				<legend>
+					Rows
+				</legend>
+				<div class="row-fluid">
+					<div class="span3">
+						<div id="rowsinput" wtftype="input_integer" wtfmetadata="{repeat: 1, defaultValue:1}"></div>
+					</div>
+				</div>
+			</fieldset>
+		</p>
+	</div>
+</div>
+<div wtftype="template" wtfmetadata="okcanceldialogfooter">
+</div>

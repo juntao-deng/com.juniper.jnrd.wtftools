@@ -1,0 +1,23 @@
+.btn{
+	position:relative;
+	border-radius:4px;
+	behavior: url(library/iepatch/PIE.htc);
+}
+
+/*
+.btn-group > *:first-child + .btn{
+	margin-left: 0;
+  	border-radius: 4px 0 0 4px;
+}
+*/
+.btn-group .btn-first{
+	border-radius: 4px 0 0 4px;
+}
+
+.btn-group .btn-last{
+	border-radius: 0 4px 4px 0;
+}
+
+.btn-group > .btn-onlyone{
+	border-radius: 4px;
+}

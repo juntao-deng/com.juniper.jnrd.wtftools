@@ -1,5 +1,6 @@
 define(["base/mvcbase"], function(){
 	window.globalEmptyObj = {};
+	window.globalScheduleList = {};
 	String.prototype.endWith = function(s){
 		if(s==null || s=="" || this.length == 0 || s.length>this.length)
 			return false;
@@ -37,6 +38,17 @@ define(["base/mvcbase"], function(){
 			if(bi == -1 || ei == -1)
 				return s;
 			return s.substring(bi, ei);
+		},
+		globalScheduleItem : function(item) {
+			if(typeof item == 'string')
+				return window.globalScheduleList[item];
+			else
+				window.globalScheduleList[item.id] = item;
+		},
+		globalSchedule : function(id){
+			var item = window.globalScheduleList[id];
+			if(item != null)
+				item.run();
 		}
 	};
 });

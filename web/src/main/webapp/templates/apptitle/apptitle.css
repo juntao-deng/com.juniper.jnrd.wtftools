@@ -1,5 +1,4 @@
-.header {
-  background: #ffffff;
+.app-header {
   background: #ffffff;
   background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e6e6e6), color-stop(1, #ffffff));
   background: -ms-linear-gradient(bottom, #e6e6e6, #ffffff);
@@ -12,7 +11,7 @@
   border-left: 1px solid #ffffff;
   padding: 0em 1.25em;
 }
-.header h1 {
+.app-header .page-title {
   margin: 1em 0em;
   padding: 0em;
   line-height: 1em;
@@ -21,15 +20,15 @@
   color: #333;
 }
 
-.stats p.stat {
+.app-header .stats p.stat {
   margin: 1em 0em 0em 1em;
 }
-.stats .stat {
+.app-header .stats .stat {
   margin-left: 1em;
   line-height: 2.5em;
   float: right;
 }
-.stats .stat .number {
+.app-header .stats .stat .number {
   font-weight: bold;
   margin-right: .5em;
   padding: .5em;

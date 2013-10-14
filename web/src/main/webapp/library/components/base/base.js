@@ -7,11 +7,15 @@ define(["base/listener"], function(){
 	};
 	$.extend(FwBase.Wtf.View.Controls.BaseControl.prototype, FwBase.Wtf.View.Controls.Listener.prototype, {
 		create : function(){
-			this.makeDefault(this.metadata);
+			if(this.metadata == null || this.metadata === window.globalEmptyObj){
+				this.metadata = {};
+				this.mockMetadata();
+			}
+			this.makeDefault();
 			var childHtml = this.template(this.metadata);
 			this.el.append(childHtml);
 			this.postInit();
-			this.visible = !(this.el.css("display").toLowerCase() == 'none');
+			this.visibleAttr = !(this.el.css("display").toLowerCase() == 'none');
 		},
 		postInit : function() {
 		},
@@ -19,7 +23,11 @@ define(["base/listener"], function(){
 		 * each component set default attr itself
 		 * @param metadata
 		 */
-		makeDefault : function(metadata){
+		makeDefault : function(){
+			
+		},
+		
+		mockMetadata : function() {
 			
 		},
 		
@@ -30,7 +38,7 @@ define(["base/listener"], function(){
 			}
 		},
 		
-		setVisible : function(visible){
+		visible : function(visible){
 			if(this.visbile && visible)
 				return;
 			if(visible)

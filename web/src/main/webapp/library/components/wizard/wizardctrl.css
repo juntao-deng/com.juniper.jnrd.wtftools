@@ -1,0 +1,76 @@
+.form-wizard .steps {
+  padding: 10px 0;
+  margin-bottom: 15px;
+}
+
+.form-wizard .steps .navbar-inner {  
+  background-color: #fff !important;
+  background-image: none !important;
+  filter:none !important;
+  border: 0px;
+  box-shadow: none !important;
+}
+
+.form-wizard .steps .navbar-inner li a {
+  background-color: #fff !important;
+  background-image: none !important;
+  filter:none !important;
+  border: 0px;
+  box-shadow: none !important;
+}
+
+.form-wizard .step:hover {
+  text-decoration: none;
+}
+
+.form-wizard .step .number {
+  background-color: #eee;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 300;
+  padding: 12px 15px 12px 15px !important;
+  margin-right: 10px;
+  -webkit-border-radius: 50% !important;
+     -moz-border-radius: 50% !important;
+          border-radius: 50% !important;
+}
+
+.form-wizard .step .desc {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 300;
+}
+ 
+.form-wizard .active .step .number {
+  background-color: #35aa47;
+  color: #fff;
+}
+
+.form-wizard .active .step .desc {
+  font-weight: 400;
+}
+
+.form-wizard .step i {
+  display: none;
+}
+
+.form-wizard .done .step .number {
+  background-color: #f2ae43;
+  color: #fff;
+}
+
+.form-wizard .done .step .desc {
+  font-weight: 400;
+}
+
+.form-wizard .done .step i {
+  font-size: 12px;
+  font-weight: normal;
+  color: #999;
+  display: inline-block;
+}
+
+/* bootstrap chosen overlaping bug fix*/
+.form-wizard .tab-pane .chzn-container {
+  position: absolute !important;
+}

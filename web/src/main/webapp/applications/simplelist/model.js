@@ -3,7 +3,9 @@ var model = new FwBase.Wtf.Model("a", {});
 var tableModel = {model : model, headers: {}
 };
 
-var SAMPLE_MENU_FUNC = {};
+var SAMPLE_MENU_FUNC = function(eventObj){
+	alert(eventObj);
+};
 var menumd = {
 	groups : [
 			{menus : [{id:'add1',name:'Add1', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}, {id:'edit',name:'Edit', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}, {id:'del',name:'Delete', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}]},

@@ -1,3 +1,13 @@
 .designpart{
 	
 }
+
+.designmenu{
+	position : absolute;
+	top: 0px;
+	right : 40px;
+}
+
+.designele{
+	border: 2px dotted red;
+}

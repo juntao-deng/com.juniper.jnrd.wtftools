@@ -9,3 +9,31 @@
 		</div>
 	</div>
 </script>
+
+
+<div id="example" class="k-content">
+            <div id="email-settings">
+                <div style="margin-top: -6px; margin-left: 180px">
+                    <input id="datepicker" value="10/10/2011" style="width:150px;" />
+                </div>
+                <div style="margin-top: 59px; margin-left: 180px">
+                    <input id="monthpicker" value="November 2011" style="width:150px" />
+                </div>
+            </div>
+        <script>
+            $(document).ready(function() {
+                // create DatePicker from input HTML element
+                $("#datepicker").kendoDatePicker();
+
+                $("#monthpicker").kendoDatePicker({
+                    // defines the start view
+                    start: "year",
+
+                    // defines when the calendar should return date
+                    depth: "year",
+
+                    // display month and year in the input
+                    format: "MMMM yyyy"
+                });
+            });
+        </script>

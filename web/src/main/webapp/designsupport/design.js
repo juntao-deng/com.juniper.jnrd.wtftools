@@ -11,11 +11,4 @@ window.ClientConfig = {
 	}
 };
 
-
-//function sys_getBaseLocation() {
-//	var location = document.location.href;
-//	var index = location.indexOf("design.html");
-//	return location.substring(0, index);
-//}
-//
-//window.baseLocation = sys_getBaseLocation();
+window.extendArr = ['../../designsupport/designtool', 'css!../../designsupport/design'];

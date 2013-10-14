@@ -7,43 +7,43 @@ define(["base/base"], function(base){
 		{		
 			template: _.template($('#sys_atom_controls_menu').html()),
 			postInit : function() {
+				//just for 3 levels
 				for(var i = 0; i < this.metadata.groups.length; i ++){
 					var group = this.metadata.groups[i];
 					for(var j = 0; j < group.menus.length; j ++){
+						var pre = "";
 						var menu = group.menus[j];
-						this.createMenuItem(menu);
+						this.createMenuItem(pre, menu);
+						if(menu.menus){
+							pre = menu.id + "_";
+							for(var k = 0; k < menu.menus.length; k ++){
+								var cmenu = menu.menus[k];
+								this.createMenuItem(pre, cmenu);
+								if(cmenu.menus){
+									pre += cmenu.id + "_";
+									for(var m = 0; m < cmenu.menus.length; m ++){
+										var ccmenu = cmenu.menus[m];
+										this.createMenuItem(pre, ccmenu);
+									}
+								}
+							}
+						}
 					};
 				};
-				var oThis = this;
-				this.el.find("[wtfinnertype='wtfitem']").click(function(){
-					var itemid = $(this).attr('id');
-					var menu = oThis.getMenuItem(itemid);
-					if(menu){
-						var source = {source : oThis, trigger : menu};
-						menu.fireEvent("click", source);
-					}
-					return false;
-				});
 			},
-			makeDefault : function(metadata){
-				if(metadata.groups == null){
-					var SAMPLE_MENU_FUNC = {
-						fire : function(eventObj){
-							alert("Menu Clicked:" + eventObj.source.id + "." + eventObj.trigger.id);
-						}
-					}
-					var groups = [
-									{menus : [{id:'add',name:'Add', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}, {id:'edit',name:'Edit', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}, {id:'del',name:'Delete', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}]},
-									{menus : [{id:'save',name:'Save', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}, {id:'disable',name:'Disable', events:[{name:"click", listener: SAMPLE_MENU_FUNC}]}]},
-									{menus : [{id:'help',name:'Help', menus:[{id:'samplea', name:'Samplea'}, {id:'sampleb', name:'Sampleb', disabled:true}, {divider:true}, {id:'more', name:'More', menus:[{id:'linka', name:'Linka'}, {id:'linkb', name:'Linkb'}]}]}]}
-								 ];
-					metadata.groups = groups;
-				}else{
-					
-				}
+			mockMetadata : function() {
+				var groups = [
+								{menus : [{id:'add',name:'Add', icon:'dd'}, {id:'edit',name:'Edit'}, {id:'del',name:'Delete'}]},
+								{menus : [{id:'save',name:'Save'}, {id:'disable',name:'Disable'}]},
+								{menus : [{id:'help',name:'Help', menus:[{id:'samplea', name:'Samplea'}, {id:'sampleb', name:'Sampleb', disabled:true}, {divider:true}, {id:'more', name:'More', menus:[{id:'linka', name:'Linka'}, {id:'linkb', name:'Linkb'}]}]}]}
+							 ];
+				this.metadata.groups = groups;
 			},
-			createMenuItem : function(itemmetadata) {
-				var menuitem = new FwBase.Wtf.View.Controls.MenuItem(this, itemmetadata);
+			makeDefault : function(){
+				
+			},
+			createMenuItem : function(pre, itemmetadata) {
+				var menuitem = new FwBase.Wtf.View.Controls.MenuItem(this, itemmetadata, this.el, pre);
 				this.menuitems.push(menuitem);
 			},
 			getMenuItem : function(itemid){
@@ -52,26 +52,31 @@ define(["base/base"], function(base){
 						return this.menuitems[i];
 				}
 				return null;
+			},
+			itemClicked : function(item) {
+				var source = {source : this, trigger : item};
+				this.trigger("click", source);
 			}
 		}
 	);
 	
-	FwBase.Wtf.View.Controls.MenuItem = function(menubar, metadata){
+	FwBase.Wtf.View.Controls.MenuItem = function(menubar, metadata, parentEl, pre){
 		this.menubar = menubar;
 		this.metadata = metadata;
 		this.id = metadata.id;
+		this.parentEl = parentEl;
+		this.pre = pre;
 		this.create();
 	};
+	
 	$.extend(FwBase.Wtf.View.Controls.MenuItem.prototype, FwBase.Wtf.View.Controls.Listener.prototype, {
 		create : function() {
-			if(this.metadata.events)
-				this.registerEvent(this.metadata);
-		},
-		registerEvent : function(metadata) {
-			for(var i = 0; i < metadata.events.length; i ++){
-				var event = metadata.events[i];
-				this.addListener("click", event.listener);
-			}
+			this.el = this.parentEl.find("#" + this.pre + this.id);
+			var oThis = this;
+			this.el.click(function(){
+				oThis.menubar.itemClicked(oThis);
+				return false;
+			});
 		}
 	});
 	return FwBase.Wtf.View.Controls.Menu;

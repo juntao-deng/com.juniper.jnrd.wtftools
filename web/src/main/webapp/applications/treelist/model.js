@@ -20,5 +20,3 @@ var gridObj = {
 
 var treeObj = {
 };
-var menuCtrl = FwBase.Wtf.View.createControl({type:"menu", objMeta: menuObj});
-var treeCtrl = FwBase.Wtf.View.createControl({type:"tree", objMeta: treeObj});

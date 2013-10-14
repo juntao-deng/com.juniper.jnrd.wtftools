@@ -1,23 +1,40 @@
 <script type="text/template" id="sys_atom_controls_menu">
-	<div class="btn-toolbar">
+	<div id="menu" class="btn-toolbar">
 		{{_.each(groups, function(group){}}
-		<div class="btn-group">
-			{{_.each(group.menus, function(menu){
+		<ul class="btn-group">
+			{{_.each(group.menus, function(menu, menuIndex, list){
+					var lastStr = (menuIndex == list.length - 1) ? ((list.length == 1) ? "btn-onlyone" : "btn-last") : (menuIndex == 0 ? "btn-first" : "");
 					if(menu.menus){}}
-						<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">{{= menu.name}}
+						<button id="{{= menu.id}}" class="btn btn-primary">
+							{{if(menu.icon && menu.icon != null){}}
+								<i class="{{= menu.icon}}"></i>
+							{{}}}
+							{{= menu.name}}
+						</button>
+						<a class="btn btn-primary dropdown-toggle {{= lastStr}}" data-toggle="dropdown" href="#">
     						<span class="caret"></span>
   						</a>
 						<ul class="dropdown-menu">
 						{{
 							_.each(menu.menus, function(cmenu){
 								if(cmenu.menus){}}
-									<li class="dropdown-submenu">
-    									<a tabindex="-1" href="#">{{= cmenu.name}}</a>
+									<li id="{{= menu.id + '_' + cmenu.id}}" class="dropdown-submenu">
+    									<a tabindex="-1" href="#">
+												{{if(cmenu.icon && cmenu.icon != null){}}
+												<i class="{{= cmenu.icon}}"></i>
+												{{}}}
+											{{= cmenu.name}}
+										</a>
     									<ul class="dropdown-menu">
 											{{
 											_.each(cmenu.menus, function(ccmenu){
 											}}
-												<li class="{{= ccmenu.disabled? 'disabled' : ''}}"><a tabindex="-1" href="#">{{= ccmenu.name}}</a></li>
+												<li id=" id="{{= menu.id + '_' + cmenu.id + "_" + ccmenu.id}}" class="{{= ccmenu.disabled? 'disabled' : ''}}"><a tabindex="-1" href="#">
+														{{if(ccmenu.icon && ccmenu.icon != null){}}
+															<i class="{{= ccmenu.icon}}"></i>
+														{{}}}
+													{{= ccmenu.name}}</a>
+												</li>
 											{{});}}
 										</ul>
 									</li>
@@ -27,7 +44,12 @@
 									<li class="divider"></li>
 								{{}
 								else{}}
-								<li class="{{= cmenu.disabled? 'disabled' : ''}}"><a tabindex="-1" href="#">{{= cmenu.name}}</a></li>
+								<li id="{{= menu.id + '_' + cmenu.id}}" class="{{= cmenu.disabled? 'disabled' : ''}}"><a tabindex="-1" href="#">
+									{{if(cmenu.icon && cmenu.icon != null){}}
+										<i class="{{= cmenu.icon}}"></i>
+									{{}}}
+									{{= cmenu.name}}</a>
+								</li>
 								{{}
 							});
 						}}
@@ -35,11 +57,16 @@
 					{{}
 					
 					else{}}
-						<button class="btn btn-primary {{=menu.disabled? 'disabled' : ''}}" id="{{= menu.id}}" wtfinnertype="wtfitem">{{= menu.name}}</button>
+						<li id="{{= menu.id}}" class="btn btn-primary {{=menu.disabled? 'disabled' : ''}} {{= lastStr}}" id="{{= menu.id}}" wtfinnertype="wtfitem">
+							{{if(menu.icon && menu.icon != null){}}
+								<i class="{{= menu.icon}}"></i>
+							{{}}}
+							{{= menu.name}}
+						</li>
 					{{}
 				});
 			}}
-		</div>
+		</ul>
 		{{});}}
 	</div>
 </script>
