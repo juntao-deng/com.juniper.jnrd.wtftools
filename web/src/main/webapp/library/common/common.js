@@ -82,6 +82,14 @@ function requireComponent(typeList, func){
 	}
 }
 
+function wdefine(req, func){
+	return define(req, function(){
+		return {
+			exec : func
+		};
+	});
+}
+
 function commonCallback() {
 	//for backbone templates in jsp environment
 	_.templateSettings = {

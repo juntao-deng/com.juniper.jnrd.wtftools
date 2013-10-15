@@ -33,14 +33,17 @@ define(["base/base"], function(base){
 				this.dialog = this.el.children("#dialog");
 			},
 			makeDefault : function(){
+				this.setDefault({visible : false});
 			},
 			visible : function() {
 				if(arguments.length == 0)
-					return this.visibleAttr;
-				if(arguments[0])
+					return this.dialog.css('display') != 'none';
+				if(arguments[0]){
 					this.dialog.modal();
-				else
-					this.dialog.hide();
+				}
+				else{
+					this.dialog.modal('hide');
+				}
 			},
 			/**
 			 * update the content of dialog

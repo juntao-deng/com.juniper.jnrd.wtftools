@@ -3,7 +3,7 @@ define(function(){
 	window.FwBase.Wtf.Design = {};
 	FwBase.Wtf.Design.DesignSupport = {
 			designable : function() {
-				$("[wtftype]").each(function(){
+				$('#design_container').find("[wtftype]").each(function(){
 					if($(this).attr("designable") == 'done')
 						return;
 					$(this).attr("designable", "done");
@@ -14,12 +14,16 @@ define(function(){
 				var type = designItem.attr("wtftype");
 				if(type == "application")
 					return;
-				
-				var ttimes = designItem.attr('wtftt');
+				if(type == "container"){
+					designItem.addClass("designele_sign");
+				}
+				//var ttimes = designItem.attr('wtftt');
 				//			if(ttimes == null || ttimes == "" || ttimes == "1")
-				designItem.mouseover(function(){
+				designItem.click(function(event){
+					if(event.target != this)
+						return;
+					FwBase.Wtf.Design.DesignSupport.currentItem = $(this);
 					FwBase.Wtf.Design.DesignSupport.showMenu($(this), type);
-					return;
 				});
 				designItem.mouseout(function(){
 					//FwBase.Wtf.Design.DesignSupport.hideMenu($(this));
@@ -27,32 +31,22 @@ define(function(){
 				});
 			},
 			showMenu : function(designItem, type) {
-				if(!FwBase.Wtf.Design.DesignSupport.divs)
-					FwBase.Wtf.Design.DesignSupport.divs = {};
-				var key = type + "_div";
-				if(FwBase.Wtf.Design.DesignSupport.divs[key] == null){
-					var div = "<div class='designmenu' id='" + key + "'></div>";
-					$(document.body).append(div);
-					FwBase.Wtf.Design.DesignSupport.divs[key] = $('#' + key);
-					FwBase.Wtf.Design.DesignSupport.createMenu(type);
+//				$(document.body).append(div);
+				var oriItem = FwBase.Wtf.Design.DesignSupport.currParent;
+				if(oriItem == designItem)
+					return;
+				if(oriItem){
+					if(oriItem.attr('wtftype') == 'container')
+						oriItem.addClass('designele_sign');
+					oriItem.removeClass('designele');
+					oriItem.children('.designmenu').remove();
 				}
-				FwBase.Wtf.Design.DesignSupport.clearOri();
-				
-				FwBase.Wtf.Design.DesignSupport.divs[key].currParent = designItem;
-				$(designItem).addClass("designele");
-				designItem.append(FwBase.Wtf.Design.DesignSupport.divs[key]);
-			},
-			
-			clearOri : function(){
-				for(var i in FwBase.Wtf.Design.DesignSupport.divs){
-					var div = FwBase.Wtf.Design.DesignSupport.divs[i];
-					if(div.currParent){
-						div.currParent.removeClass('designele');
-					}
-					//don't use jquery, it will remove the events
-					if(div[0].parentNode)
-						div[0].parentNode.removeChild(div[0]);
-				}
+				FwBase.Wtf.Design.DesignSupport.currParent = designItem;
+				designItem.removeClass('designele_sign');
+				designItem.addClass('designele');
+				var div = "<div class='designmenu'></div>";
+				designItem.append(div);
+				FwBase.Wtf.Design.DesignSupport.createMenu(type);
 			},
 			
 			createMenu : function(type){
@@ -64,7 +58,7 @@ define(function(){
 					                      }
 					                      ]
 					};
-					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.divs[type + "_div"], meta, 'design_menu_' + type);
+					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
 						if(obj.trigger.id == "addlayout")
 							FwBase.Wtf.Design.DesignSupport.addLayout();
@@ -79,7 +73,7 @@ define(function(){
 					                      }
 					                      ]
 					};
-					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.divs[type + "_div"], meta, 'design_menu_' + type);
+					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
 						alert(obj.source);
 					});

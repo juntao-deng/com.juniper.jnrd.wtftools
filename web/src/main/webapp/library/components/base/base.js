@@ -12,10 +12,12 @@ define(["base/listener"], function(){
 				this.mockMetadata();
 			}
 			this.makeDefault();
+			this.setDefault({enable : true, visible : true});
 			var childHtml = this.template(this.metadata);
 			this.el.append(childHtml);
 			this.postInit();
-			this.visibleAttr = !(this.el.css("display").toLowerCase() == 'none');
+			this.visibleAttr = this.metadata.visible;
+			this.enableAttr = this.metadata.enable;
 		},
 		postInit : function() {
 		},

@@ -232,9 +232,13 @@ define(function(){
 				window.$app = app;
 				var modelJs = rqhtml + "model";
 				requirejs([modelJs], function(){
+					if(arguments[0] != null)
+						arguments[0].exec();
  					app.tempCallback = function(){
 	 					var controllerJs = rqhtml + "controller";
 	 					requirejs([controllerJs], function() {
+	 						if(arguments[0] != null)
+	 							arguments[0].exec();
 	 						var models = FwBase.Wtf.Application.current().models();
 					 		for(var i = 0; i < models.length; i ++)
 					 			models[i].toInit();
