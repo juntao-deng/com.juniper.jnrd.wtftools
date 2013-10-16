@@ -3,7 +3,9 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
+  <icon></icon>
   <display-name>Archetype Created Web Application</display-name>
+  <description></description>
   <context-param>
   	<param-name>resteasy.scan</param-name>
 	<param-value>true</param-value>
@@ -32,6 +34,7 @@
   	<servlet-name>appdisptcher</servlet-name>
 	<url-pattern>/apps/*</url-pattern>
   </servlet-mapping>
+  <login-config></login-config>
   <jsp-config>
 	<jsp-property-group>
     	<url-pattern>*.jsp</url-pattern>
