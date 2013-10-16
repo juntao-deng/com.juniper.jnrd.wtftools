@@ -58,6 +58,6 @@ wdefine(function(){
 			str += '</div>';
 		}
 		
-		FwBase.Wtf.Design.DesignSupport.currentItem.html(str);
+		FwBase.Wtf.Design.DesignSupport.currParent.html(str);
 	}
 });

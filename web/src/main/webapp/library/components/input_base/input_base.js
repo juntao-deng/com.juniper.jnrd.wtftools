@@ -6,7 +6,7 @@ define(["base/base", "inputmask"], function(base){
 		{
 			template: _.template($('#sys_atom_controls_input_base').html()),
 			postInit : function() {
-				this.input = this.el.find('input');
+				this.input = this.getInput();
 				this.inputMask();
 				this.value(this.metadata.defaultValue);
 				var oThis = this;
@@ -15,8 +15,11 @@ define(["base/base", "inputmask"], function(base){
 					oThis.trigger("change", obj);
 				});
 			},
+			getInput : function() {
+				return this.el.find('input');
+			},
 			makeDefault : function() {
-				if(this.metadata.label){
+				if(this.metadata.label && this.metadata.label != ''){
 					this.setDefault({labelWidth:170});
 				}
 				else{
@@ -29,13 +32,6 @@ define(["base/base", "inputmask"], function(base){
 			},
 			inputMask : function() {
 				this.input.inputmask();
-			},
-			registerCallBack : function() {
-				this.registerCallBackForPopOver();
-			},
-			
-			registerCallBackForPopOver : function() {
-				$('popovers').popover();
 			},
 			
 			value : function() {

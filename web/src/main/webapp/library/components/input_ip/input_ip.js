@@ -9,7 +9,7 @@ define(["input_base/input_base"], function(inputbase){
 							popOverTitle: 'Pop Over', popOverContent : 'Popover body goes here. This is a IP v4 input',
 							hint : 'This is hint for input'});
 			},
-			makeDefault : function() {
+			makeDefaultFurther : function() {
 			},
 			inputMask : function() {
 				this.input.inputmask("ip");

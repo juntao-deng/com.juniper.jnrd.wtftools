@@ -2,9 +2,7 @@ define(["base/base", "./ztree.core", "css!./ztree"], function(base, treectrl){
 	FwBase.Wtf.View.Controls.Tree = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
-	var setting = {	};
-
-	var zNodes =[
+	var datas =[
 		{ name:"父节点1 - 展开", open:true,
 			children: [
 				{ name:"父节点11 - 折叠",
@@ -54,8 +52,20 @@ define(["base/base", "./ztree.core", "css!./ztree"], function(base, treectrl){
 	$.extend(FwBase.Wtf.View.Controls.Tree.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, {
 		template: _.template($('#sys_atom_controls_tree').html()),
 		postInit: function() {
-			$.fn.zTree.init(this.el.children("#tree"), setting, zNodes);
+			var settings = buildSettings(this.metadata);
+			var datas = this.metadata.data;
+			$.fn.zTree.init(this.el.children("#tree"), settings, datas);
+		},
+		makeDefault : function() {
+			this.setDefault({data : [{ name:"ROOT", open:false}]});
+		},
+		mockMetadata : function() {
+			this.setDefault({data : datas});
 		}
 	});
+	
+	function buildSettings(metadata){
+		return {};
+	}
 	return FwBase.Wtf.View.Controls.Tree;
 });

@@ -9,7 +9,6 @@
 /web/.settings
 /ear/.settings
 *.pydevproject
-.project
 .metadata
 bin/
 tmp/
@@ -18,7 +17,6 @@ tmp/
 *.swp
 *~.nib
 local.properties
-.classpath
 .settings/
 .loadpath
 

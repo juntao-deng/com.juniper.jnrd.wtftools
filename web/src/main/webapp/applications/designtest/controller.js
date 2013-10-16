@@ -1,7 +1,4 @@
-define(['../../designsupport/designtool', 'css!../../designsupport/design'], function(){
-	return {
-		exec: function(){
-			FwBase.Wtf.Design.DesignSupport.designable();
-		}
+wdefine(['../../designsupport/designtool', 'css!../../designsupport/design'], function(){
+		FwBase.Wtf.Design.DesignSupport.designable();
 	}
-});
+);

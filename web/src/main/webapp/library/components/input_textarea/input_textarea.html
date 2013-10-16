@@ -1,4 +1,12 @@
 <script type="text/template" id="sys_atom_controls_input_textarea">
-	<textarea id="textarea" rows="{{= rows}}" style="{{= 'width:' + (isNaN(width) ? width : (width + 'px')) }}">
-	</textarea>
+	{{if(labelWidth != 0){}}
+	<label class="control-label" style="float:left;width:{{= labelWidth}}px">{{= label}}</label>
+	{{}}}
+	<div class="controls" style="margin-left:{{= (labelWidth != 0)? (labelWidth + 10) : 0}}px">
+		<textarea id="textarea" rows="{{= rows}}" style="{{= 'width:' + (isNaN(width) ? width : (width + 'px')) }}">
+		</textarea>
+		{{if(typeof hint != 'undefined'){}}
+			<span class="help-inline">{{= hint}}</span>
+		{{}}}
+	</div>
 </script>

@@ -12,7 +12,7 @@ define(["base/listener"], function(){
 				this.mockMetadata();
 			}
 			this.makeDefault();
-			this.setDefault({enable : true, visible : true});
+			this.setDefault({enable : true, visible : true, compId: this.id});
 			var childHtml = this.template(this.metadata);
 			this.el.append(childHtml);
 			this.postInit();
@@ -48,6 +48,15 @@ define(["base/listener"], function(){
 			else
 				this.el.css("display", "none");
 			this.visible = visible;
+		},
+		
+		reset : function(metadata){
+			this.destroy();
+			this.metadata = metadata;
+			this.create();
+		},
+		destroy : function() {
+			this.el.html("");
 		}
 	});
 	return FwBase.Wtf.View.Controls.BaseControl;

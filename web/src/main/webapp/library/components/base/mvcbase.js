@@ -242,6 +242,8 @@ define(function(){
 	 						var models = FwBase.Wtf.Application.current().models();
 					 		for(var i = 0; i < models.length; i ++)
 					 			models[i].toInit();
+					 		if(container.notifyContentChange)
+								container.notifyContentChange();
 	 					});
  					};
  					FwBase.Wtf.Application.repaint();
@@ -260,6 +262,7 @@ define(function(){
 	 	navigateToDialog : function(url, reqData, options){
 	 		requireComponent(['dialog'], function(){
 		 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
+		 		dialog.update(options);
 		 		var container = dialog.bodyContainer();
 		 		FwBase.Wtf.Application.doNavigateTo(url, reqData, null, container);
 		 		dialog.visible(true);
@@ -267,8 +270,7 @@ define(function(){
 	 	},
 	 	
 	 	closeDialog : function() {
-	 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
-	 		dialog.visible(false);
+	 		var dialog = FwBase.Wtf.View.Controls.Dialog.closeDialog();
 	 	},
   		 	
 	 	createControl : function(obj) {
@@ -311,8 +313,17 @@ define(function(){
 	 	getControl : function(id){
 	 		return FwBase.Wtf.Application._controlMap[id];
 	 	},
-	 	repaint : function() {
-	 		FwBase.Wtf.Application.parseTemplate(FwBase.Wtf.Application.parseHtml);
+	 	repaint : function(callback) {
+	 		var func = null;
+	 		if(callback){
+	 			func = function(){
+	 				FwBase.Wtf.Application.parseHtml();
+	 				callback();
+	 			};
+	 		}
+	 		else
+	 			func = FwBase.Wtf.Application.parseHtml;
+	 		FwBase.Wtf.Application.parseTemplate(func);
 	 	},
 	 	
 	 	parseTemplate : function(callback){
@@ -397,20 +408,21 @@ define(function(){
 						return;
 					}
 					var objMeta = FwBase.Wtf.Application.current().metadata(id);
-					if(objMeta == null){
- 						var metadataStr = $(this).attr("wtfmetadata");
- 						if(metadataStr == null || metadataStr == ""){
- 							objMeta = window.globalEmptyObj;
- 						}
- 						else{
- 							try{
- 								eval("objMeta = " + metadataStr);
- 							}
- 							catch(error){
- 								alert("error while parsing wtfmeta:" + metadataStr);
- 							}
- 						}
-					}
+					var attMeta = null;
+					var metadataStr = $(this).attr("wtfmetadata");
+ 					if(metadataStr != null && metadataStr != ""){
+						try{
+							eval("attMeta = " + metadataStr);
+						}
+						catch(error){
+							alert("error while parsing wtfmeta:" + metadataStr);
+						}
+				    }
+				    if(attMeta != null){
+				    	objMeta = FwBase.Wtf.Application.mergeMetadata(objMeta, attMeta);
+				    }
+				    if(objMeta == null)
+ 						objMeta = window.globalEmptyObj;
 					var capStr = FwBase.Wtf.Lang.Utils.capitalize(wtfType);
 					var ctrl = new FwBase.Wtf.View.Controls[capStr]($(this), objMeta, id);
 					$app.component(ctrl);
@@ -424,6 +436,15 @@ define(function(){
 				}
  			});
 	 			
+  		 },
+  		 mergeMetadata : function(ori, newMd){
+  		 	if(ori == null)
+  		 		return newMd;
+  		 	for(var i in newMd){
+  		 		if(typeof ori[i] == 'undefined')
+  		 			ori[i] = newMd[i];
+  		 	}
+  		 	return ori;
   		 }
   	 });
   	 $.extend(FwBase.Wtf.Application.prototype, {
@@ -468,11 +489,10 @@ define(function(){
   	 			return this.componentsMap[component];
   	 		this.componentsMap[component.id] = component;
   	 	},
-  	 	applyMetadata : function(id, metadata){
-  	 		this.metadataMap[id] = metadata;
-  	 	},
-  	 	metadata : function(id){
-  	 		return this.metadataMap[id];
+  	 	metadata : function(metadata){
+  	 		if(typeof metadata == "string")
+  	 			return this.metadataMap[metadata];
+  	 		this.metadataMap[metadata.id] = metadata;
   	 	},
   	 	/**
   	 	 * will cause current dialog be closed

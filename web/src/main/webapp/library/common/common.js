@@ -83,11 +83,22 @@ function requireComponent(typeList, func){
 }
 
 function wdefine(req, func){
-	return define(req, function(){
-		return {
-			exec : func
-		};
-	});
+	if(typeof req == "function"){
+		return define(function(){
+			return {
+				exec : req
+			};
+		});
+	}
+	else{
+		return define(req, function(){
+			return {
+				exec : func
+			};
+		});
+
+	}
+	
 }
 
 function commonCallback() {

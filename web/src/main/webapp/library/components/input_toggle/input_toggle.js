@@ -1,4 +1,4 @@
-define(["input/inputbase", "./toggle-buttons", "css!./toggle-buttons"], function(inputbase){	
+define(["input_base/input_base", "./toggle_buttons", "css!./toggle_buttons"], function(inputbase){	
 	FwBase.Wtf.View.Controls.Input_toggle = function(){
 		FwBase.Wtf.View.Controls.InputBase.apply(this, arguments);
 	};
@@ -10,15 +10,13 @@ define(["input/inputbase", "./toggle-buttons", "css!./toggle-buttons"], function
 					label : {enabled:'ON', disabled:'OFF'}
 				});
 			},
-			makeDefault : function(metadata){
-				if(metadata === window.globalEmptyObj){
-					metadata = {linear: true, label : 'String Input:', placeHolder : 'Please input here ...', 
-								popOverTitle: 'Pop Over', popOverContent : 'Popover body goes here. This is a String input',
-								hint : 'This is hint for input'};
-					this.metadata = metadata;
-				}
+			makeDefaultFurther : function(){
+			},
+			mockMetadata : function() {
+				this.setDefault({label : 'Toggle Input:', placeHolder : 'Please input here ...', 
+						hint : 'This is hint for input'});
 			}
 		}
 	);
-	return FwBase.Wtf.View.Controls.Input;
+	return FwBase.Wtf.View.Controls.Input_toggle;
 });

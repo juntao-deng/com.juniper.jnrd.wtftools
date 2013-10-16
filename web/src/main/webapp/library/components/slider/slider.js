@@ -35,7 +35,7 @@ define(["base/base"], function(base, uislider){
 			for(var i in meta){
 				this.metadata[i] = meta[i];
 			}
-			if(values.length == 1)
+			if(this.metadata.values.length == 1)
 				this.metadata.range = false;
 			this.postInit();
 		},

@@ -1,6 +1,16 @@
 define(function(){
 	requireComponent(['menu']);
 	window.FwBase.Wtf.Design = {};
+	function directChild(child, target){
+		var pnode = child;
+		while(pnode && pnode != document.body){
+			if(pnode.getAttribute('wtftype') != null){
+				return pnode == target;
+			}
+			pnode = pnode.parentNode;
+		}
+		return false;
+	}
 	FwBase.Wtf.Design.DesignSupport = {
 			designable : function() {
 				$('#design_container').find("[wtftype]").each(function(){
@@ -20,9 +30,9 @@ define(function(){
 				//var ttimes = designItem.attr('wtftt');
 				//			if(ttimes == null || ttimes == "" || ttimes == "1")
 				designItem.click(function(event){
-					if(event.target != this)
+					if(!directChild(event.target, this))
 						return;
-					FwBase.Wtf.Design.DesignSupport.currentItem = $(this);
+//					FwBase.Wtf.Design.DesignSupport.currentItem = $(this);
 					FwBase.Wtf.Design.DesignSupport.showMenu($(this), type);
 				});
 				designItem.mouseout(function(){
@@ -33,7 +43,7 @@ define(function(){
 			showMenu : function(designItem, type) {
 //				$(document.body).append(div);
 				var oriItem = FwBase.Wtf.Design.DesignSupport.currParent;
-				if(oriItem == designItem)
+				if(oriItem && oriItem[0] == designItem[0])
 					return;
 				if(oriItem){
 					if(oriItem.attr('wtftype') == 'container')
@@ -53,7 +63,12 @@ define(function(){
 				if(type == "container"){
 					var meta = {groups : [
 					                      {menus : [
-					                                {id:'design',name:'', icon: 'icon-th-list', menus : [{id:'addlayout',name:'Add Layout', icon: 'icon-edit'}, {id:'addtemplates',name:'Add Templates', icon: 'icon-edit'}, {id:'addcomponents',name:'Add Components', icon: 'icon-edit'}]}
+					                                {id:'design',name:'', icon: 'icon-th-list', 
+					                                	menus : [{id:'addlayout',name:'Add Layout', icon: 'icon-edit'}, 
+					                                	         {id:'addtemplate',name:'Add Templates', icon: 'icon-edit'}, 
+					                                	         {id:'addcomponent',name:'Add Components', icon: 'icon-edit'},
+					                                	         {id:'clear',name:'Clear Content', icon: 'icon-edit'}
+					                                	         ]}
 					                                ]
 					                      }
 					                      ]
@@ -62,20 +77,31 @@ define(function(){
 					menu.on('click', function(obj){
 						if(obj.trigger.id == "addlayout")
 							FwBase.Wtf.Design.DesignSupport.addLayout();
+						else if(obj.trigger.id == "addtemplate")
+							FwBase.Wtf.Design.DesignSupport.addTemplate();
+						else if(obj.trigger.id == "addcomponent")
+							FwBase.Wtf.Design.DesignSupport.addComponent();
+						else if(obj.trigger.id == "clear")
+							FwBase.Wtf.Design.DesignSupport.clearContent();
 					});
 					return menu;
 				}
 				else{
 					var meta = {groups : [
 					                      {menus : [
-					                                {id:'design',name:'', icon: 'icon-th-list', menus : [{id:'edit',name:'Edit', icon: 'icon-edit'}, {id:'delete',name:'Delete', icon: 'icon-remove'}]}
+					                                {id:'design',name:'', icon: 'icon-th-list', 
+					                                	menus : [{id:'edit',name:'Edit', icon: 'icon-edit'}, 
+					                                	         {id:'delete',name:'Delete', icon: 'icon-remove'}
+					                                	]}
 					                                ]
 					                      }
 					                      ]
 					};
 					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
-						alert(obj.source);
+						if(obj.trigger.id == "edit"){
+							FwBase.Wtf.Design.DesignSupport.editComponentAttr();
+						}
 					});
 					return menu;
 				}
@@ -85,10 +111,27 @@ define(function(){
 //			},
 			addLayout : function() {
 				var url = "../designsupport/layout";
-				FwBase.Wtf.Design.DesignSupport.popDialog(url);
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, null);
 			},
-			popDialog : function(url, reqData) {
-				FwBase.Wtf.Application.navigateToDialog(url, reqData);
+			addTemplate : function() {
+				var url = "../designsupport/template";
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
+			},
+			
+			addComponent : function() {
+				var url = "../designsupport/component";
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
+			},
+			clearContent : function() {
+				FwBase.Wtf.Design.DesignSupport.currParent.html("");
+			},
+			editComponentAttr : function() {
+				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
+				var url = "../designsupport/compattr/" + type;
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
+			},
+			popDialog : function(url, reqData, options) {
+				FwBase.Wtf.Application.navigateToDialog(url, reqData, options);
 			}
 	};
 	return FwBase.Wtf.Design.DesignSupport;
