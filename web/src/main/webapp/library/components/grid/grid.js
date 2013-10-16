@@ -22,7 +22,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				    rowList: this.metadata.pagination? this.metadata.pagination.rowList : null,
 				    colNames: getColNames(this.metadata),
 				    colModel: this.metadata.columns,
-				    pager: this.pagination? this.paginationEle : null,
+				    pager: this.metadata.pagination? this.paginationEle : null,
 				    viewrecords: true,
 				    hidegrid:false,
 				    altRows: this.metadata.altRows,

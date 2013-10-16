@@ -12,7 +12,9 @@ wdefine(function(){
 				height: '100%',
 				multiselect : false,
 				autowidth : false,
-				multiSort : true
+				multiSort : true,
+				minHeight: 150,
+				pagination: null
 			}
 	);
 	/*== For Designer End ==*/

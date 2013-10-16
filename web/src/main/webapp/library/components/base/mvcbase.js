@@ -490,9 +490,13 @@ define(function(){
   	 		this.componentsMap[component.id] = component;
   	 	},
   	 	metadata : function(metadata){
-  	 		if(typeof metadata == "string")
+  	 		if(typeof metadata == "string" && arguments.length == 1)
   	 			return this.metadataMap[metadata];
-  	 		this.metadataMap[metadata.id] = metadata;
+  	 		else if(typeof metadata == "string"){
+  	 			this.metadataMap[metadata] = arguments[1];
+  	 		}
+  	 		else
+  	 			this.metadataMap[metadata.id] = metadata;
   	 	},
   	 	/**
   	 	 * will cause current dialog be closed
