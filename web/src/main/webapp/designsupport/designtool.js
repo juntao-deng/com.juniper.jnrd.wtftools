@@ -132,7 +132,35 @@ define(function(){
 			},
 			popDialog : function(url, reqData, options) {
 				FwBase.Wtf.Application.navigateToDialog(url, reqData, options);
-			}
+			},
+			
+			//========================= for editor ======================================
+			syncAppFiles : function(id, md, controller, rest) {
+				$app.component(id).reset(md);
+				var action = 'updatejs';
+				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, metadata : md, controller: controller, rest : rest});	
+			},
+			
+			interactWithEclipse : function(obj, callback) {
+				var eventId = Math.random();
+				obj['eventId'] = eventId;
+				window.status = 'wtf_event:' + $.toJSON(obj);
+				if(callback){
+					FwBase.Wtf.Design.DesignSupport.eventPool[eventId] = callback;
+				}
+			},
+			
+			fireInput : function(str) {
+				var json = toJson(str);
+				var eventId = json.eventId;
+				if(FwBase.Wtf.Design.DesignSupport.eventPool[eventId])
+					FwBase.Wtf.Design.DesignSupport.eventPool[eventId]();
+			},
+			
+			eventPool : {}
+			//===========================================================================
+			
 	};
+	
 	return FwBase.Wtf.Design.DesignSupport;
 });

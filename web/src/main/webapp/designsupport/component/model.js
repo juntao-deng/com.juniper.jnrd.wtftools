@@ -9,6 +9,10 @@ wdefine(function(){
 									    {name : "slider", value : "slider"},
 									    {name : "wizard", value : "wizard"}
 									    ]},
+		    {label: 'Container', options:[
+		                                {name : "tab", value : "tab"},
+									    {name : "card", value : "card"},
+									    ]},
 									    
 		    {label: 'Input', options:[
 		                                {name : "input", value : "input"},

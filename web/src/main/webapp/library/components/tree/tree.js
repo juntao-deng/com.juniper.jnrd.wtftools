@@ -3,49 +3,49 @@ define(["base/base", "./ztree.core", "css!./ztree"], function(base, treectrl){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
 	var datas =[
-		{ name:"父节点1 - 展开", open:true,
+		{ name:"Parent1 - Expand", open:true,
 			children: [
-				{ name:"父节点11 - 折叠",
+				{ name:"Parent11 - Collapse",
 					children: [
-						{ name:"叶子节点111"},
-						{ name:"叶子节点112"},
-						{ name:"叶子节点113"},
-						{ name:"叶子节点114"}
+						{ name:"Leaf111"},
+						{ name:"Leaf112"},
+						{ name:"Leaf113"},
+						{ name:"Leaf114"}
 					]},
-				{ name:"父节点12 - 折叠",
+				{ name:"Parent12 - Expand", open:true,
 					children: [
-						{ name:"叶子节点121"},
-						{ name:"叶子节点122"},
-						{ name:"叶子节点123"},
-						{ name:"叶子节点124"}
+						{ name:"Leaf121"},
+						{ name:"Leaf122"},
+						{ name:"Leaf123"},
+						{ name:"Leaf124"}
 					]},
-				{ name:"父节点13 - 没有子节点", isParent:true}
+				{ name:"Parent13 - NoChildren", isParent:true}
 			]},
-		{ name:"父节点2 - 折叠",
+		{ name:"Parent2 - Collapse",
 			children: [
-				{ name:"父节点21 - 展开", open:true,
+				{ name:"Parent21 - Expand", open:true,
 					children: [
-						{ name:"叶子节点211"},
-						{ name:"叶子节点212"},
-						{ name:"叶子节点213"},
-						{ name:"叶子节点214"}
+						{ name:"Leaf211"},
+						{ name:"Leaf212"},
+						{ name:"Leaf213"},
+						{ name:"Leaf214"}
 					]},
-				{ name:"父节点22 - 折叠",
+				{ name:"Parent22 - Collapse",
 					children: [
-						{ name:"叶子节点221"},
-						{ name:"叶子节点222"},
-						{ name:"叶子节点223"},
-						{ name:"叶子节点224"}
+						{ name:"Leaf221"},
+						{ name:"Leaf222"},
+						{ name:"Leaf223"},
+						{ name:"Leaf224"}
 					]},
-				{ name:"父节点23 - 折叠",
+				{ name:"Parent23 - Collapse",
 					children: [
-						{ name:"叶子节点231"},
-						{ name:"叶子节点232"},
-						{ name:"叶子节点233"},
-						{ name:"叶子节点234"}
+						{ name:"Leaf231"},
+						{ name:"Leaf232"},
+						{ name:"Leaf233"},
+						{ name:"Leaf234"}
 					]}
 			]},
-		{ name:"父节点3 - 没有子节点", isParent:true}
+		{ name:"Parent3 - NoChildren", isParent:true}
 
 	];
 

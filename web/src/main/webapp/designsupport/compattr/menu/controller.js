@@ -1,12 +1,12 @@
 wdefine(function(){
 	$app.on('loaded', function(){
-		var compId = FwBase.Wtf.Design.DesignSupport.currParent.attr('id');
-		var comp = $app.parent.component(compId);
-		var metadata = comp.metadata;
-		$app.component('idattr').value(compId);
-		$app.component('textattr').value(metadata.text);
-		$app.component('enableattr').checked(metadata.enable);
-		$app.component('styleattr').value(metadata.style);
+//		var compId = FwBase.Wtf.Design.DesignSupport.currParent.attr('id');
+//		var comp = $app.parent.component(compId);
+//		var metadata = comp.metadata;
+//		$app.component('idattr').value(compId);
+//		$app.component('textattr').value(metadata.text);
+//		$app.component('enableattr').checked(metadata.enable);
+//		$app.component('styleattr').value(metadata.style);
 	});
 	var okbt = $app.component("okbt");
 	okbt.on('click', function(){

@@ -35,7 +35,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					multiSort : this.metadata.multiSort,
 					viewsortcols : [true, 'vertical', true]
 				});
-				this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
+				//this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
 			},
 			repaint : function() {
 			},

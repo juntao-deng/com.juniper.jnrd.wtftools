@@ -27,17 +27,19 @@ requirejs.config({
     	js : '../../ext-lib/requirejs/js',
     	templ : '../../ext-lib/requirejs/templ',
     	jquery : '../../ext-lib/jquery/jquery-1.7.2',
+    	jqueryjson : '../../ext-lib/jquery/jquery-json-2.4',
     	underscore: '../../ext-lib/underscore/underscore',
     	backbone: '../../ext-lib/backbone/backbone',
     	bootstrap: '../../ext-lib/bootstrap/bootstrap',
     	fontawesome: '../../ext-lib/font-awesome/css/font-awesome',
     	jqueryui: '../../ext-lib/jquery/jquery-ui',
+    	jqueryuibootstrap: '../../ext-lib/jquery/jquery-ui-bootstrap',
     	flot: '../../ext-lib/flot/jquery.flot',
     	inputmask : '../../ext-lib/inputmask/jquery.inputmask.bundle'
     }
 });
 
-var requireArr = ['jquery', 'underscore', 'backbone', 'bootstrap', 'jqueryui', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryui.css', "css!../common/common"];
+var requireArr = ['jquery', 'underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
 requirejs(requireArr,
 	function   ($, underscore, backbone, bootstrap) {
 		var arr = [];
@@ -108,7 +110,10 @@ function commonCallback() {
 		interpolate : /\{\{=([\s\S]+?)\}\}/g,
 		escape      : /\{\{-([\s\S]+?)\}\}/g
 	};
-	FwBase.Wtf.Application.init();
+	var callback = null;
+	if(window.DesignMode)
+		callback = FwBase.Wtf.Design.DesignSupport.designable;
+	FwBase.Wtf.Application.init(callback);
 	window.Jnrd = FwBase;
 }
 

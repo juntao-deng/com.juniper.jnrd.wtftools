@@ -15,3 +15,11 @@
 .designele_sign{
 	border: 1px dotted gray;
 }
+
+.design_container{
+	height : 99%;
+}
+
+html,body{
+	height:100%;
+}

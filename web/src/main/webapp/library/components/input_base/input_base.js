@@ -14,16 +14,18 @@ define(["base/base", "inputmask"], function(base){
 					var obj = {source : oThis};
 					oThis.trigger("change", obj);
 				});
+				
+				this.readOnly(this.metadata.readOnly);
 			},
 			getInput : function() {
 				return this.el.find('input');
 			},
 			makeDefault : function() {
 				if(this.metadata.label && this.metadata.label != ''){
-					this.setDefault({labelWidth:170});
+					this.setDefault({readOnly: false, labelWidth:170});
 				}
 				else{
-					this.setDefault({label:'', labelWidth: 0});
+					this.setDefault({readOnly: false, label:'', labelWidth: 0});
 				}
 				this.makeDefaultFurther();
 			},
@@ -31,14 +33,30 @@ define(["base/base", "inputmask"], function(base){
 				
 			},
 			inputMask : function() {
+				this.masked = true;
 				this.input.inputmask();
 			},
 			
 			value : function() {
-				if(arguments.length == 0)
-					return this.input.inputmask("unmaskedvalue");
+				if(arguments.length == 0){
+					if(this.masked)
+						return this.input.inputmask("unmaskedvalue");
+					return this.input.val();
+				}
 				else
 					this.input.val(arguments[0]);
+			},
+			
+			readOnly : function(){
+				if(arguments.length == 0){
+					return this.input.attr('readonly') != null;
+				}
+				else{
+					if(arguments[0])
+						this.input.attr('readonly', 'readonly');
+					else
+						this.input.removeAttr('readonly');
+				}
 			}
 		}
 	);

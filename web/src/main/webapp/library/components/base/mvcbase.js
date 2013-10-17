@@ -102,7 +102,7 @@ define(function(){
 	 FwBase.Wtf.Model.Row = Backbone.Model.extend({
 	 });
 	 
-	 var methodMap = {
+	 methodMap = {
 	    'create': 'POST',
 	    'update': 'PUT',
 	    'patch':  'PATCH',
@@ -173,6 +173,8 @@ define(function(){
   		 this.id = id;
   	 };
   	 
+  	 _.extend(FwBase.Wtf.Application.prototype, Backbone.Events);
+  	 
   	 FwBase.Wtf.Application = $.extend(FwBase.Wtf.Application, {
   		applicationMap : {},
   	 	currentApplication : null,
@@ -188,7 +190,7 @@ define(function(){
   	 		}
   	 		return FwBase.Wtf.Application.currentApplication;
   	 	},
-  	 	init : function() {
+  	 	init : function(callback) {
   	  		 $("[wtftype='application']").each(function(){
   	  			var appid = $(this).attr("wtfmetadata");
   	  			if(appid == null || appid == ""){
@@ -196,7 +198,7 @@ define(function(){
   	  				return;
   	  			}
   	  			$(this).attr('wtfdone', 'done');
-  	  			FwBase.Wtf.Application.navigateTo(appid);
+  	  			FwBase.Wtf.Application.navigateTo(appid, null, {callback : callback});
   	  		 });
   	 	},
   	 	navigateTo : function(url, reqData, options) {
@@ -221,6 +223,9 @@ define(function(){
 				rqhtml += pathInfo[i] + "/";
 			}
 			requirejs([prefix + rqhtml + pathInfo[pathInfo.length - 1] + ".html"], function(html){
+				if(window.DesignMode && $.trim(html) == ''){
+					html = '<div wtftype="container" style="height:99%;min-height:300px">';
+				}
 				if(container.length == 0){
 					container = $(document.body);
 					container.append(html);
@@ -228,6 +233,8 @@ define(function(){
 				else
 					container.html(html);
 				var app = new FwBase.Wtf.Application(url);
+				if(options)
+					app.parent = options.parent;
 				FwBase.Wtf.Application.current(app);
 				window.$app = app;
 				var modelJs = rqhtml + "model";
@@ -239,14 +246,15 @@ define(function(){
 	 					requirejs([controllerJs], function() {
 	 						if(arguments[0] != null)
 	 							arguments[0].exec();
-	 						var models = FwBase.Wtf.Application.current().models();
+	 						var models = $app.models();
 					 		for(var i = 0; i < models.length; i ++)
 					 			models[i].toInit();
 					 		if(container.notifyContentChange)
 								container.notifyContentChange();
+					 		$app.trigger('loaded');
 	 					});
  					};
- 					FwBase.Wtf.Application.repaint();
+ 					FwBase.Wtf.Application.repaint(options ? options.callback : null);
 				});
 			});
 	 	},
@@ -264,8 +272,7 @@ define(function(){
 		 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
 		 		dialog.update(options);
 		 		var container = dialog.bodyContainer();
-		 		FwBase.Wtf.Application.doNavigateTo(url, reqData, null, container);
-		 		dialog.visible(true);
+		 		FwBase.Wtf.Application.doNavigateTo(url, reqData, {callback : lazyDialog, parent : $app}, container);
 	 		});
 	 	},
 	 	
@@ -434,6 +441,7 @@ define(function(){
 					$app.tempCallback = null;
 					tempCallback.apply($app);
 				}
+				
  			});
 	 			
   		 },
@@ -505,4 +513,9 @@ define(function(){
   	 		FwBase.Wtf.Application.closeDialog();
   	 	}
   	 });
+  	 
+  	 function lazyDialog(){
+  		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
+ 		dialog.visible(true);
+  	 }
 });

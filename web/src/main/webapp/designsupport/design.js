@@ -12,3 +12,4 @@ window.ClientConfig = {
 };
 
 window.extendArr = ['../../designsupport/designtool', 'css!../../designsupport/design'];
+

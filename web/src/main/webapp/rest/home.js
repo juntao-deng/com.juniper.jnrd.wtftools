@@ -25,6 +25,7 @@ define(function(){
 				           {"name":"Landing Page","url":"landingpage","groupId":"011","target":"Y"},
 				           {"name":"Landing Page Tree","url":"landingpagetree","groupId":"011","target":"Y"},
 				           {"name":"Input Components","url":"inputtest","groupId":"011","target":"Y"},
+				           {"name":"Tab Layout","url":"tabtest","groupId":"011","target":"Y"},
 				           {"name":"Forms","url":"formtest","groupId":"011","target":"Y"},
 				           {"name":"Wizard Form","url":"wizardform","groupId":"011","target":"Y"},
 				           {"name":"Device Management","url":"rest/devicemgr","groupId":"020","target":"Y"},

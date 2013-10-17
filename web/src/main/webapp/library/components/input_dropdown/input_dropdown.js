@@ -11,15 +11,24 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				this.setDefault(datas);
 			},
 			makeDefaultFurther : function() {
-				this.setDefault({filter : true, multiple : false, emptyRecord:true, options:null, groups:null, placeHolder : 'Select an option ...'});
+				this.setDefault({filter : true, multiple : false, emptyRecord:false, options:null, groups:null, placeHolder : 'Select an option ...'});
 			},
 			inputMask : function() {
-				if(this.metadata.filter){
-					this.input = this.el.find('select');
-					this.input.chosen();
+				this.input = this.el.find('select');
+				this.input.chosen();
+//				if(this.metadata.filter){
+//				}
+				if(this.metadata.value != null)
+					this.value(this.metadata.value);
+			},
+			value : function() {
+				if(arguments.length == 0){
+					return this.input.val();
 				}
-				if(this.metadata.value)
-					this.input.value(this.metadata.value);
+				else{
+					this.input.attr('value', arguments[0]);
+					this.input.trigger("liszt:updated");
+				}
 			}
 		}
 	);
