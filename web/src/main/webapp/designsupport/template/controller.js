@@ -5,6 +5,7 @@ wdefine(function(){
 		insertTemplate(templateinput.value());
 		$app.close();
 		FwBase.Wtf.Application.repaint(FwBase.Wtf.Design.DesignSupport.designable);
+		FwBase.Wtf.Design.DesignSupport.syncHtml();
 	});
 	
 	function insertTemplate(tplId){

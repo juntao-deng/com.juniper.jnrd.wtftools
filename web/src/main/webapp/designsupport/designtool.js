@@ -124,6 +124,7 @@ define(function(){
 			},
 			clearContent : function() {
 				FwBase.Wtf.Design.DesignSupport.currParent.html("");
+				FwBase.Wtf.Design.DesignSupport.syncHtml();
 			},
 			editComponentAttr : function() {
 				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
@@ -138,9 +139,19 @@ define(function(){
 			syncAppFiles : function(id, md, controller, rest) {
 				$app.component(id).reset(md);
 				var action = 'updatejs';
-				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, metadata : md, controller: controller, rest : rest});	
+				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, compId: id, metadata : md, controller: controller, rest : rest});	
 			},
 			
+			syncRest : function(rest) {
+				//todo request rest file, update memory
+				var action = 'updaterest';
+				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, rest: rest});	
+			},
+			
+			syncHtml : function() {
+				var action = 'updatehtml';
+				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, html: $('#sys_design_home_content_part').html()});	
+			},
 			interactWithEclipse : function(obj, callback) {
 				var eventId = Math.random();
 				obj['eventId'] = eventId;

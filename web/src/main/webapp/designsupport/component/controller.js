@@ -14,6 +14,7 @@ wdefine(function(){
 		insertComponent(compId.value(), compInput.value());
 		$app.close();
 		FwBase.Wtf.Application.repaint(FwBase.Wtf.Design.DesignSupport.designable);
+		FwBase.Wtf.Design.DesignSupport.syncHtml();
 	});
 	
 	function insertComponent(id, type){
