@@ -162,6 +162,7 @@ define(function(){
 			},
 			
 			fireInput : function(str) {
+				alert(str);
 				var json = toJson(str);
 				var eventId = json.eventId;
 				if(FwBase.Wtf.Design.DesignSupport.eventPool[eventId])
