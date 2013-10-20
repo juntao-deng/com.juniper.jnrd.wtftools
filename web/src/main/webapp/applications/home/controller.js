@@ -9,5 +9,5 @@ wdefine(function(){
 		}
 	});
 	
-	FwBase.Wtf.Application.navigateTo("dashboard");
+	FwBase.Wtf.Application.navigateTo(window.mainCtx + "/dashboard");
 });

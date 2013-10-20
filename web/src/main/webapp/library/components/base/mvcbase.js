@@ -153,17 +153,20 @@ define(function(){
 	 FwBase.Wtf.Client.restServices = {};
 	 FwBase.Wtf.Client.mockAjax = function(options){
 	 	var url = options.url;
-		var tempUrl = url.substring((FwBase.Wtf.Model.defaults.resturlbase + "/").length);
-	 	var segs = tempUrl.split("/");
-	 	var jsUrl = "../../rest/" + segs[0];
+	 	var segs = url.substring(FwBase.Wtf.Model.defaults.resturlbase.length + 2).split("/");
+	 	var requireUtil = requirejs;
+		if(window.requirelibs){
+			requireUtil = requirelibs[segs[0]];
+		}
+	 	var jsUrl = "../rest/" + segs[1];
 	 	var oThis = this;
-	 	requirejs([jsUrl], function(rest){
-	 		var service = FwBase.Wtf.Client.restServices[segs[0]];
+	 	requireUtil([jsUrl], function(rest){
+	 		var service = FwBase.Wtf.Client.restServices[segs[1]];
 	 		if(service == null){
-	 			alert("can't find rest service with url:" + url + ",name:" + segs[0]);
+	 			alert("can't find rest service with url:" + url + ",name:" + segs[1]);
 	 			return;
 	 		}
-	 		var methodName = options.type + "_" + segs[1];
+	 		var methodName = options.type + "_" + segs[2];
 	 		var result = service[methodName].apply(oThis, segs.splice(2, segs.length));
 	 		options.success(result);
 	 	});
@@ -217,12 +220,17 @@ define(function(){
 	 		var pathInfo = url.split("/");
 			var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
 			prefix += "!";
-			var rb = "../../applications/";
-			var rqhtml = rb;
-			for(var i = 0; i < pathInfo.length; i ++){
+//			var rb = "applications/";
+			var rqhtml = "";
+			for(var i = 1; i < pathInfo.length; i ++){
 				rqhtml += pathInfo[i] + "/";
 			}
-			requirejs([prefix + rqhtml + pathInfo[pathInfo.length - 1] + ".html"], function(html){
+			var requireUtil = requirejs;
+			if(window.requirelibs){
+				requireUtil = requirelibs[pathInfo[0]];
+			}
+			
+			requireUtil([prefix + rqhtml + pathInfo[pathInfo.length - 1] + ".html"], function(html){
 				if(window.DesignMode && $.trim(html) == ''){
 					html = '<div wtftype="container" style="height:99%;min-height:300px">';
 				}
@@ -238,12 +246,12 @@ define(function(){
 				FwBase.Wtf.Application.current(app);
 				window.$app = app;
 				var modelJs = rqhtml + "model";
-				requirejs([modelJs], function(){
+				requireUtil([modelJs], function(){
 					if(arguments[0] != null)
 						arguments[0].exec();
  					app.tempCallback = function(){
 	 					var controllerJs = rqhtml + "controller";
-	 					requirejs([controllerJs], function() {
+	 					requireUtil([controllerJs], function() {
 	 						if(arguments[0] != null)
 	 							arguments[0].exec();
 	 						var models = $app.models();
@@ -275,47 +283,46 @@ define(function(){
 		 		FwBase.Wtf.Application.doNavigateTo(url, reqData, {callback : lazyDialog, parent : $app}, container);
 	 		});
 	 	},
-	 	
 	 	closeDialog : function() {
 	 		var dialog = FwBase.Wtf.View.Controls.Dialog.closeDialog();
 	 	},
   		 	
-	 	createControl : function(obj) {
-	 		if(obj == null){
-	 			alert("illegal null arguments");
-	 			return;
-	 		}
-	 		var type = obj.type;
-	 		if(type == null || type == ""){
-	 			alert("type attribute is needed");
-	 			return;
-	 		}
-	 		
-	 		requirejs(["text!" + type + "/" + type + ".html"], function(html){
-	 			var template = $('#sys_atom_controls_' + type);
-	 			if(template.length == 0){
-	 				$('body').append(html);
-	 			}
-	 			requirejs([type + "/" + type], function(module){
-	 				var id = obj.id;
-	 				var container = null;
-	 				if(id != null && id != ""){
-	 					container = $('#' + id);
-	 				}
-	 				else{
-	 					alert("object meta must contain id attribute");
-	 					return;
-	 				}
-	 				if(!container[0]){
-	 					alert("can not find element by id:" + id);
-	 					return;
-	 				}
-	 				var capStr = FwBase.Wtf.Lang.Utils.capitalize(type);
-	 				var ctrl = new FwBase.Wtf.View.Controls[capStr](container, obj.objMeta, obj.id);
-	 				FwBase.Wtf.Application._controlMap[ctrl.id, ctrl];
-	 			});
-	 		});
-	 	},
+//	 	createControl : function(obj) {
+//	 		if(obj == null){
+//	 			alert("illegal null arguments");
+//	 			return;
+//	 		}
+//	 		var type = obj.type;
+//	 		if(type == null || type == ""){
+//	 			alert("type attribute is needed");
+//	 			return;
+//	 		}
+//	 		
+//	 		requirejs(["text!" + type + "/" + type + ".html"], function(html){
+//	 			var template = $('#sys_atom_controls_' + type);
+//	 			if(template.length == 0){
+//	 				$('body').append(html);
+//	 			}
+//	 			requirejs([type + "/" + type], function(module){
+//	 				var id = obj.id;
+//	 				var container = null;
+//	 				if(id != null && id != ""){
+//	 					container = $('#' + id);
+//	 				}
+//	 				else{
+//	 					alert("object meta must contain id attribute");
+//	 					return;
+//	 				}
+//	 				if(!container[0]){
+//	 					alert("can not find element by id:" + id);
+//	 					return;
+//	 				}
+//	 				var capStr = FwBase.Wtf.Lang.Utils.capitalize(type);
+//	 				var ctrl = new FwBase.Wtf.View.Controls[capStr](container, obj.objMeta, obj.id);
+//	 				FwBase.Wtf.Application._controlMap[ctrl.id, ctrl];
+//	 			});
+//	 		});
+//	 	},
   		 	
 	 	getControl : function(id){
 	 		return FwBase.Wtf.Application._controlMap[id];

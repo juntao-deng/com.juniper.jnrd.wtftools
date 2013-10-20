@@ -7,23 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-	<script>
-		window.designRemoteUrl = "#REPLACE_URL#";
-	</script>
-    <link rel="stylesheet" href="#REPLACE_URL#../library/common/common.css">
-	
-	<script src="#REPLACE_URL#design.js"></script>
-  	<script src="#REPLACE_URL#../ext-lib/requirejs/require.js"></script>
-  	<script src="#REPLACE_URL#../library/common/common.js"></script>
+	  <script>
+	  	window.mainCtx = "#CTX#";
+	    window.frameworkPath = "#FRAME_PATH#";
+	 	window.contextMappings = {
+	 		'wtf' : '#FRAME_PATH#applications/',
+	 		'#CTX#' : '#CTXPATH#applications/'
+	 	};
+	  </script>
+	  <script src="#FRAME_PATH#designsupport/design.js"></script>
+	  <script src="#FRAME_PATH#ext-lib/requirejs/require.js"></script>
+	  <script src="#FRAME_PATH#library/common/common.js"></script>
   </head>
 
-  <!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
-  <!--[if IE 7 ]> <body class="ie ie7 "> <![endif]-->
-  <!--[if IE 8 ]> <body class="ie ie8 "> <![endif]-->
-  <!--[if IE 9 ]> <body class="ie ie9 "> <![endif]-->
-  <!--[if (gt IE 9)|!(IE)]><!--> 
-  <body class=""> 
-  <!--<![endif]-->
+  <body> 
    	<div id="design_container" class="design_container">
    		<div class="container-fluid design_container" id="sys_design_home_content_part">
 			#REPLACE#

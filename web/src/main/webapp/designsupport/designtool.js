@@ -110,16 +110,16 @@ define(function(){
 //				designItem.find('#sys_1designmenu').remove();
 //			},
 			addLayout : function() {
-				var url = "../designsupport/layout";
+				var url = window.frameCtx + "/../designsupport/layout";
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, null);
 			},
 			addTemplate : function() {
-				var url = "../designsupport/template";
+				var url = window.frameCtx + "/../designsupport/template";
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
 			},
 			
 			addComponent : function() {
-				var url = "../designsupport/component";
+				var url = window.frameCtx + "/../designsupport/component";
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
 			},
 			clearContent : function() {
@@ -128,7 +128,7 @@ define(function(){
 			},
 			editComponentAttr : function() {
 				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
-				var url = "../designsupport/compattr/" + type;
+				var url = window.frameCtx + "/../designsupport/compattr/" + type;
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
 			},
 			popDialog : function(url, reqData, options) {
@@ -162,7 +162,6 @@ define(function(){
 			},
 			
 			fireInput : function(str) {
-				alert(str);
 				var json = toJson(str);
 				var eventId = json.eventId;
 				if(FwBase.Wtf.Design.DesignSupport.eventPool[eventId])

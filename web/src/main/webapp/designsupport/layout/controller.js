@@ -42,19 +42,19 @@ wdefine(function(){
 					str += '<div class="span12" wtftype="container"></div>';
 				}
 				else if(cols == 2){
-					str += '<div class="span' + sliders[0] + '"><div wtftype="container" style="min-height:30px"></div></div>';
-					str += '<div class="span' + (12 - parseInt(sliders[0])) + '"><div wtftype="container" style="min-height:30px"></div></div>';
+					str += '<div class="span' + sliders[0] + '" wtftype="container"></div>';
+					str += '<div class="span' + (12 - parseInt(sliders[0])) + '" wtftype="container"></div>';
 				}
 				else if(cols == 3){
-					str += '<div class="span' + sliders[0] + '"><div wtftype="container" style="min-height:30px"></div></div>';
-					str += '<div class="span' + sliders[1] + '"><div wtftype="container" style="min-height:30px"></div></div>';
+					str += '<div class="span' + sliders[0] + '" wtftype="container"></div>';
+					str += '<div class="span' + sliders[1] + '" wtftype="container"></div>';
 				}
 				else{
 					var average = parseInt(12 / cols);
 					for(var j = 0; j < cols - 2; j ++){
-						str += '<div class="span' + average + '"><div wtftype="container" style="min-height:30px"></div></div>';
+						str += '<div class="span' + average + '" wtftype="container"></div>';
 					}
-					str += '<div class="span' + (12 - (cols - 1)* average) + '"><div wtftype="container" style="min-height:30px"></div></div>';
+					str += '<div class="span' + (12 - (cols - 1)* average) + '" wtftype="container"></div>';
 				}
 			str += '</div>';
 		}

@@ -8,8 +8,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    	<div wtftype="application" wtfmetadata="home"></div>
+    	<div wtftype="application" wtfmetadata="#CTX#/home"></div>
   </body>
-  <script src="ext-lib/requirejs/require.js"></script>
-  <script src="library/common/common.js"></script>
+  <script>
+  	window.mainCtx = "#CTX#";
+    window.frameworkPath = "#FRAME_PATH#";
+ 	window.contextMappings = {
+ 		'wtf' : '#FRAME_PATH#applications/',
+ 		'#CTX#' : '#CTXPATH#applications/'
+ 	};
+  </script>
+  <script src="#FRAME_PATH#ext-lib/requirejs/require.js"></script>
+  <script src="#FRAME_PATH#library/common/common.js"></script>
 </html>

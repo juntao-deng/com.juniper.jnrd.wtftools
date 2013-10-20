@@ -10,10 +10,10 @@ wdefine(function(){
 			return;
 		}
 		var model = $app.model('columnsModel');
-		var rows = infos.columnInfos;
-		if(rows && rows.length > 0){
-			for(var i = 0; i < rows.length; i ++){
-				model.addRow(rows[i]);
+		var columnInfos = infos.columnInfos;
+		if(columnInfos && columnInfos.length > 0){
+			for(var i = 0; i < columnInfos.length; i ++){
+				model.addRow(columnInfos[i]);
 			}
 		}
 	}

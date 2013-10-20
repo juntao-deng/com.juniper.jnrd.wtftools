@@ -13,7 +13,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 //				this.listenTo(this.model, "change", this.changeRow);
 //				this.listenTo(this.model, "select", this.selectRow);
 //				this.listenTo(this.model, "unselect", this.unselectRow);
-				this.paginationEle = this.el.children("#table_pagination");
+				this.paginationEle = this.el.children("#table_pagination_" + this.id);
 				this.gridObj = this.el.children('#table').jqGrid({
 					datatype: "json",
 				    height: this.metadata.height,

@@ -1,3 +1,4 @@
+window.frameCtx = 'wtf';
 function testClientMode() {
 	if(window.location.href.indexOf('file://') == 0)
 		return true;
@@ -6,7 +7,9 @@ function testClientMode() {
 window.clientMode = testClientMode();
 if(window.clientMode && window.ClientConfig == null){
 	window.ClientConfig = {
-		baseRequirePath : 'library/components',
+		baseRequirePath : window.frameworkPath + 'library/components',
+		contextPaths : {
+		},
 		localPrefix : {
 			html : "html",
 			template : "templ",
@@ -18,7 +21,25 @@ if(window.clientMode && window.ClientConfig == null){
 	};
 }
 
-requirejs.config({
+if(window.contextMappings){
+	window.requirelibs = {};
+	window.restlibs = {};
+	for(var i in window.contextMappings){
+		requireUtil = require.config({
+			context : 'context' + i,
+			baseUrl: window.contextMappings[i],
+			paths : {
+				css : window.frameworkPath + "ext-lib/requirejs/css",
+				templ : window.frameworkPath + "ext-lib/requirejs/templ",
+			}
+		});
+		window.requirelibs[i] = requireUtil;
+		window.restlibs[i] = window.contextMappings[i] + "rest/";
+	}
+	
+}
+
+window.globalRequireConfig = {
     baseUrl: window.ClientConfig ? window.ClientConfig.baseRequirePath : 'library/components',
     paths : {
     	text : '../../ext-lib/requirejs/text',
@@ -37,7 +58,9 @@ requirejs.config({
     	flot: '../../ext-lib/flot/jquery.flot',
     	inputmask : '../../ext-lib/inputmask/jquery.inputmask.bundle'
     }
-});
+};
+
+requirejs.config(window.globalRequireConfig);
 
 var requireArr = ['jquery', 'underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
 requirejs(requireArr,
