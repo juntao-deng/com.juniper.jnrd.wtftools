@@ -71,7 +71,8 @@ define(function(){
 					                                	         ]}
 					                                ]
 					                      }
-					                      ]
+					                      ],
+					             style: 'inverse'
 					};
 					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
@@ -95,7 +96,8 @@ define(function(){
 					                                	]}
 					                                ]
 					                      }
-					                      ]
+					                      ],
+					            style: 'inverse'
 					};
 					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
@@ -133,6 +135,14 @@ define(function(){
 				if(height == 'grid')
 					height = 500;
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: height});
+			},
+			editModel : function(){
+				var url = window.frameCtx + "/../designsupport/model";
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
+			},
+			editBehavior : function() {
+				var url = window.frameCtx + "/../designsupport/behavior";
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
 			},
 			popDialog : function(url, reqData, options) {
 				FwBase.Wtf.Application.navigateToDialog(url, reqData, options);

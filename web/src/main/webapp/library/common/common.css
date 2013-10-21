@@ -41,6 +41,19 @@ ul, menu, dir {
   color: #fff !important;
 }
 
+/* bootstrap*/
+.btn{
+	margin-bottom: 9px;/*keep with input*/
+}
+
+input, textarea, .uneditable-input {
+	width:138px;
+}
+
+.control-group {
+  margin-bottom: 0px;
+}
+
 .dropdown-menu {
 	min-width : 120px;
 }
