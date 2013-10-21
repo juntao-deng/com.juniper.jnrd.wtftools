@@ -6,13 +6,16 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 		{
 			template: _.template($('#sys_atom_controls_grid').html()),
 			postInit : function(){
-				this.model = this.metadata.model;
-//				this.listenTo(this.model, "pagechange", this.repaint);
-//				this.listenTo(this.model, "add", this.addRow);
+				this.model = $app.model(this.metadata.model);
+				if(this.model){
+//					this.listenTo(this.model, "pagechange", this.repaint);
+					this.listenTo(this.model, "add", this.addRow);
 //				this.listenTo(this.model, "delete", this.deleteRow);
 //				this.listenTo(this.model, "change", this.changeRow);
 //				this.listenTo(this.model, "select", this.selectRow);
 //				this.listenTo(this.model, "unselect", this.unselectRow);
+					
+				}
 				this.paginationEle = this.el.children("#table_pagination_" + this.id);
 				this.gridObj = this.el.children('#table').jqGrid({
 					datatype: "json",
@@ -23,7 +26,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				    colNames: getColNames(this.metadata),
 				    colModel: this.metadata.columns,
 				    pager: this.metadata.pagination? this.paginationEle : null,
-				    viewrecords: true,
+				    viewrecords: false,
 				    hidegrid:false,
 				    altRows: this.metadata.altRows,
 				    multiselect: this.metadata.multiselect,
@@ -39,7 +42,12 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			},
 			repaint : function() {
 			},
-			addRow : function() {
+			addRow : function(obj) {
+				var row = obj.row;
+				var index = obj.index;
+				if(index == null || index == -1)
+					this.gridObj.addRowData(row.cid, row.toJSON());
+				
 			},
 			changeRow : function() {
 			},
@@ -54,41 +62,42 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				this.gridObj.jqGrid('navGrid','hideCol', id);
 			},
 			makeDefault : function() {
+				if(this.metadata.model == null){
+					this.metadata.model = this.id + "_model";
+					var model = new FwBase.Wtf.Model();
+					$app.model(this.id + "_model", model);
+				}
+				else if($app.model(this.metadata.model) == null){
+					var str = this.metadata.model;
+					var model = new FwBase.Wtf.Model();
+					$app.model(str, model);
+				}
 				this.setDefault({height : 'auto', pagination: {rowNum : 10, rowList: [10, 20, 30]}, minHeight : 250, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
 			},
 			mockMetadata : function() {
-				this.setDefault({multiselect : true, columns: models});
+				var model = new FwBase.Wtf.Model(this.id + "_model", {});
+				$app.model(model);
+				this.setDefault({multiselect : true, columns: models, model : model});
 			}
 		}
 	);
 	function getColNames(metadata) {
 		var arr = [];
 		for(var i = 0; i < metadata.columns.length; i ++){
-			arr.push(metadata.columns[i].name);
+			arr.push(metadata.columns[i].text);
 		}
 		return arr;
 	}
 	var models = [
-			        {id: 'id', name:'Inv No',index:'id', width:80, sorttype:"int", search:true},
-			        {id: 'invdate', name:'Date',index:'invdate', width:90, sorttype:"date", formatter:"date"},
-			        {id: 'name', name:'Client',index:'name', width:100},
-			        {id: 'amout', name:'Amount',index:'amount', width:80, align:"right",sorttype:"float", formatter:"number"},
-			        {id: 'tax', name:'Tax',index:'tax', width:80, align:"right",sorttype:"float"},        
-			        {id: 'total', name:'Total',index:'total', width:80,align:"right",sorttype:"float"},        
-			        {id: 'note', name:'Notes',index:'note', width:150, sortable:false}
+			        {name: 'id', text:'Inv No',index:'id', width:80, sorttype:"int", search:true},
+			        {name: 'invdate', text:'Date',index:'invdate', width:90, sorttype:"date", formatter:"date"},
+			        {name: 'name', text:'Client',index:'name', width:100},
+			        {name: 'amount', text:'Amount',index:'amount', width:80, align:"right",sorttype:"float", formatter:"number"},
+			        {name: 'tax', text:'Tax',index:'tax', width:80, align:"right",sorttype:"float"},        
+			        {name: 'total', text:'Total',index:'total', width:80,align:"right",sorttype:"float"},        
+			        {name: 'note', text:'Notes',index:'note', width:150, sortable:false}
 				];
 	
-	var mydata3 = [
-	       		{id:"12345",name:"Desktop Computer",note:"note",stock:"Yes",ship:"FedEx", sdate:"2007-12-03"},
-	       		{id:"23456",name:"Laptop",note:"Long text ",stock:"Yes",ship:"InTime",sdate:"2007-12-03"},
-	       		{id:"34567",name:"LCD Monitor",note:"note3",stock:"Yes",ship:"TNT",sdate:"2007-12-03"},
-	       		{id:"45678",name:"Speakers",note:"note",stock:"No",ship:"ARAMEX",sdate:"2007-12-03"},
-	       		{id:"56789",name:"Laser Printer",note:"note2",stock:"Yes",ship:"FedEx",sdate:"2007-12-03"},
-	       		{id:"67890",name:"Play Station",note:"note3",stock:"No", ship:"FedEx",sdate:"2007-12-03"},
-	       		{id:"76543",name:"Mobile Telephone",note:"note",stock:"Yes",ship:"ARAMEX",sdate:"2007-12-03"},
-	       		{id:"87654",name:"Server",note:"note2",stock:"Yes",ship:"TNT",sdate:"2007-12-03"},
-	       		{id:"98765",name:"Matrix Printer",note:"note3",stock:"No", ship:"FedEx",sdate:"2007-12-03"}
-	       		];
 	
 	return FwBase.Wtf.View.Controls.Grid;
 });

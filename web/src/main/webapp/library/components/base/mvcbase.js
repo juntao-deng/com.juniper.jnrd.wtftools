@@ -6,16 +6,18 @@ define(function(){
 	 FwBase.Wtf.View.Controls = {};
 	 
 	 
-	 FwBase.Wtf.Model = function(id, metadata){
-	 	if(id == null){
-	 		alert("id is required");
-	 		return;
-	 	}
-	 	this.id = id;
+	 FwBase.Wtf.Model = function(metadata){
+//	 	if(id == null){
+//	 		alert("id is required");
+//	 		return;
+//	 	}
+//	 	this.id = id;
+		if(metadata == null)
+			metadata = {};
 	 	this.metadata = this.makeDefault(metadata);
 	 	this.currentKey = FwBase.Wtf.Model.DEFAULT_KEY;
 	 	this.stores = {};
-	 	this.observers = {};
+//	 	this.observers = {};
 	 };
 	 FwBase.Wtf.Model.DEFAULT_KEY = "SYS_DEFAULT_KEY";
 	 FwBase.Wtf.Model.defaults = {
@@ -46,26 +48,31 @@ define(function(){
 			if(!this.metadata.lazyInit)
 	 		this.init();
 		},
-		bind : function(ctrl) {
-			this.observers[ctrl.id] = ctrl;
-		},
-		unbind : function(ctrl) {
-			this.observers[ctrl.id] = null;
-		},
+//		bind : function(ctrl) {
+//			this.observers[ctrl.id] = ctrl;
+//		},
+//		unbind : function(ctrl) {
+//			this.observers[ctrl.id] = null;
+//		},
 		
-		fireAddRow : function(row){
-	 		for(var i in this.observers){
-	 			this.observers[i].onModelAdd(row);
-	 		}
-	 		this.trigger("add", row);
+		fireAddRow : function(arguments){
+			var index = arguments[2].at;
+			var row = arguments[0].collection._byId[arguments[0].cid];
+			this.trigger("add", {row : row, index : index});
+	 	},
+	 	addRow : function(row, index) {
+	 		this.store().addRow(row, index);
 	 	},
 	 	
-	 	page : function(key) {
+	 	store : function(key) {
 	 		var tmpKey = key ? key : this.currentKey;
 	 		var store = this.stores[tmpKey];
 	 		if(store == null)
 	 			return null;
-	 		return store.page();
+	 		return store;
+	 	},
+	 	page : function(key, index){
+	 		return this.store(key).page(index);
 	 	}
 	 });
 	 
@@ -81,7 +88,7 @@ define(function(){
 	 	reload : function() {
 	 		var rowList = new FwBase.Wtf.Model.RowList();
 	 		this.pages[this.currentPage] = rowList;
-	 		this.listenTo(rowList, 'add', this.addOne);
+	 		this.listenTo(rowList, 'add', this.fireAddRow);
 //      		rowList.on('reset', rowList, this.addAll);
 //      		rowList.on('all', rowList, this.render);
       		if(this.model.metadata.url){
@@ -89,8 +96,11 @@ define(function(){
 	 			rowList.fetch();
       		}
 	 	},
-	 	addOne : function(item) {
-	 		this.model.fireAddRow(item);
+	 	addRow : function(row, index) {
+	 		this.page().addRow(row, index);
+	 	},
+	 	fireAddRow : function() {
+	 		this.model.fireAddRow(arguments);
 	 	},
 	 	page : function(index){
 	 		if(index)
@@ -119,6 +129,15 @@ define(function(){
 	 		else{
 	 			Backbone.sync.apply(this, arguments);
 	 		}
+	 	},
+	 	addRow : function(row, index) {
+	 		if(index == null || index == -1)
+	 			this.add(row);
+	 		else
+	 			this.add(row, {at : index});
+	 	},
+	 	rows : function(){
+	 		return this.models;
 	 	},
 	 	syncFromClient : function(method, model, options) {
 	 		var type = methodMap[method];
@@ -482,9 +501,12 @@ define(function(){
   	 	},
   	 	
   	 	model : function(model){
-  	 		if(typeof model == "string")
+  	 		if(typeof model == "string" && arguments.length == 1)
   	 			return this.modelMap[model];
-  	 		this.modelMap[model.id] = model;
+  	 		else if(typeof model == "string")
+  	 			this.modelMap[model] = arguments[1];
+  	 		else
+  	 			this.modelMap[model.id] = model;
   	 	},
   	 	
   	 	models : function() {

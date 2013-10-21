@@ -129,7 +129,10 @@ define(function(){
 			editComponentAttr : function() {
 				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
 				var url = window.frameCtx + "/../designsupport/compattr/" + type;
-				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
+				var height = 400;
+				if(height == 'grid')
+					height = 500;
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: height});
 			},
 			popDialog : function(url, reqData, options) {
 				FwBase.Wtf.Application.navigateToDialog(url, reqData, options);
@@ -153,19 +156,22 @@ define(function(){
 				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, html: $('#sys_design_home_content_part').html()});	
 			},
 			interactWithEclipse : function(obj, callback) {
-				var eventId = Math.random();
+				var eventId = parseInt(Math.random() * 1000000);
 				obj['eventId'] = eventId;
-				window.status = 'wtf_event:' + $.toJSON(obj);
 				if(callback){
 					FwBase.Wtf.Design.DesignSupport.eventPool[eventId] = callback;
 				}
+				window.status = 'wtf_event:' + $.toJSON(obj);
 			},
 			
 			fireInput : function(str) {
-				var json = toJson(str);
-				var eventId = json.eventId;
-				if(FwBase.Wtf.Design.DesignSupport.eventPool[eventId])
-					FwBase.Wtf.Design.DesignSupport.eventPool[eventId]();
+				var json = $.evalJSON(str);
+				var eventId = json['eventId'];
+				var callback = FwBase.Wtf.Design.DesignSupport.eventPool[eventId];
+				if(callback){
+					FwBase.Wtf.Design.DesignSupport.eventPool[eventId] = null;
+					callback(json);
+				}
 			},
 			
 			eventPool : {}

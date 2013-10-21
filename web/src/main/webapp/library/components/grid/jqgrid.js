@@ -1798,7 +1798,7 @@ $.fn.jqGrid = function( pin ) {
 			pgboxes = ts.p.pager || "";
 			pgboxes += ts.p.toppager ?  (pgboxes ? "," + ts.p.toppager : ts.p.toppager) : "";
 			if(pgboxes) {
-				fmt = $.jgrid.formatter.integer || {};
+				fmt = ($.jgrid.formatter != null) ? ($.jgrid.formatter.integer || {}) : {};
 				cp = intNum(ts.p.page);
 				last = intNum(ts.p.lastpage);
 				$(".selbox",pgboxes)[ this.p.useProp ? 'prop' : 'attr' ]("disabled",false);

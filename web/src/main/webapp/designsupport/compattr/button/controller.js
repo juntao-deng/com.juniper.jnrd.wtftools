@@ -15,7 +15,7 @@ wdefine(function(){
 		var enableattr = $app.component('enableattr').checked();
 		var styleattr = $app.component('styleattr').value();
 		
-		var md = {text : textattr, enable : (enableattr == 'on'), style: styleattr};
+		var md = {text : textattr, enable : enableattr, style: styleattr};
 		
 		var controller = null;
 		var rest = null;
