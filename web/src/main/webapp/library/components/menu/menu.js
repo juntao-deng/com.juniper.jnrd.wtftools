@@ -40,7 +40,8 @@ define(["base/base"], function(base){
 				this.metadata.groups = groups;
 			},
 			makeDefault : function(){
-				
+				this.setDefault({style: "primary"});
+				this.metadata.cssclass = "btn btn-" + this.metadata.style;
 			},
 			createMenuItem : function(pre, itemmetadata) {
 				var menuitem = new FwBase.Wtf.View.Controls.MenuItem(this, itemmetadata, this.el, pre);

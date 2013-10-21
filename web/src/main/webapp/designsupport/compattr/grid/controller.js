@@ -5,6 +5,14 @@ wdefine(function(){
 		var metadata = comp.metadata;
 		$app.component('idattr').value(compId);
 		$app.component('editableattr').checked(metadata.editable);
+		$app.component('multiattr').checked(metadata.multiselect);
+		$app.component('heightattr').value(metadata.height);
+		$app.component('minheightattr').value(metadata.minHeight);
+		$app.component('pageattr').value(metadata.pagination != null);
+		
+		var columns = metadata.columns;
+		var model = $app.model('columnsModel');
+		model.addRow(columns);
 	});
 	
 	$app.component("entitybutton").on("click", function(){
@@ -24,6 +32,18 @@ wdefine(function(){
 			model.addRow(columnInfos);
 		}
 	}
+	
+	
+	var modelBt = $app.component("modelbt");
+	modelBt.on('click', function(){
+		FwBase.Wtf.Design.DesignSupport.editModel();
+	});
+
+	var behaviorBt = $app.component("behaviorbt");
+	behaviorBt.on('click', function(){
+		FwBase.Wtf.Design.DesignSupport.editBehavior();
+	});
+	
 	
 	var okbt = $app.component("okbt");
 	okbt.on('click', function(){

@@ -5,13 +5,13 @@
 			{{_.each(group.menus, function(menu, menuIndex, list){
 					var lastStr = (menuIndex == list.length - 1) ? ((list.length == 1) ? "btn-onlyone" : "btn-last") : (menuIndex == 0 ? "btn-first" : "");
 					if(menu.menus){}}
-						<button id="{{= menu.id}}" class="btn btn-primary">
+						<button id="{{= menu.id}}" class="{{= cssclass}}">
 							{{if(menu.icon && menu.icon != null){}}
 								<i class="{{= menu.icon}}"></i>
 							{{}}}
 							{{= menu.name}}
 						</button>
-						<a class="btn btn-primary dropdown-toggle {{= lastStr}}" data-toggle="dropdown" href="#">
+						<a class="{{= cssclass}} dropdown-toggle {{= lastStr}}" data-toggle="dropdown" href="#">
     						<span class="caret"></span>
   						</a>
 						<ul class="dropdown-menu">
@@ -57,7 +57,7 @@
 					{{}
 					
 					else{}}
-						<li id="{{= menu.id}}" class="btn btn-primary {{=menu.disabled? 'disabled' : ''}} {{= lastStr}}" id="{{= menu.id}}" wtfinnertype="wtfitem">
+						<li id="{{= menu.id}}" class="{{= cssclass}} {{=menu.disabled? 'disabled' : ''}} {{= lastStr}}" id="{{= menu.id}}" wtfinnertype="wtfitem">
 							{{if(menu.icon && menu.icon != null){}}
 								<i class="{{= menu.icon}}"></i>
 							{{}}}

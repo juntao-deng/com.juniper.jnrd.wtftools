@@ -13,8 +13,8 @@ define(["input_base/input_base", "./toggle_buttons", "css!./toggle_buttons"], fu
 			makeDefaultFurther : function(){
 			},
 			mockMetadata : function() {
-				this.setDefault({label : 'Toggle Input:', placeHolder : 'Please input here ...', 
-						hint : 'This is hint for input'});
+//				this.setDefault({label : 'Toggle Input:', placeHolder : 'Please input here ...', 
+//						hint : 'This is hint for input'});
 			},
 			checked : function(){
 				if(arguments.length == 0)
