@@ -125,6 +125,11 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-ehcache</artifactId>
             <version>4.1.2</version>
         </dependency>
@@ -147,6 +152,22 @@
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-beans</artifactId>
         	<version>3.1.4.RELEASE</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.jboss.resteasy</groupId>
+        	<artifactId>jaxrs-api</artifactId>
+        	<version>3.0.4.Final</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.jboss.resteasy</groupId>
+        	<artifactId>resteasy-jaxrs-all</artifactId>
+        	<version>3.0.4.Final</version>
+        	<type>pom</type>
+        </dependency>
+        <dependency>
+        	<groupId>org.jboss.resteasy</groupId>
+        	<artifactId>resteasy-servlet-initializer</artifactId>
+        	<version>3.0.4.Final</version>
         </dependency>
    </dependencies>
 

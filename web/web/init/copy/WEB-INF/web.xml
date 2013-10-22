@@ -1,0 +1,50 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <icon></icon>
+  <display-name>Archetype Created Web Application</display-name>
+  <description></description>
+  <context-param>
+  	<param-name>resteasy.scan</param-name>
+	<param-value>true</param-value>
+  </context-param>
+  <context-param>
+	<param-name>resteasy.servlet.mapping.prefix</param-name>
+	<param-value>/rest</param-value>
+  </context-param>
+  <listener> 
+     <listener-class>
+          org.springframework.web.context.ContextLoaderListener
+     </listener-class> 
+  </listener> 
+  <listener>
+  	<listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+  </listener>
+  <servlet>
+  	<servlet-name>initilize</servlet-name>
+  	<servlet-class>net.juniper.space.core.servlet.WtfInitializeServlet</servlet-class>
+  	<load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+  	<servlet-name>resteasy</servlet-name>
+	<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>appdisptcher</servlet-name>
+  	<servlet-class>com.juniper.wtf.tags.AppDispatchServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>initilize</servlet-name>
+  	<url-pattern>/sys</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>resteasy</servlet-name>
+	<url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>appdisptcher</servlet-name>
+	<url-pattern>/apps/*</url-pattern>
+  </servlet-mapping>
+</web-app>

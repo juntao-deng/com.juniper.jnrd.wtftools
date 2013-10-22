@@ -1,0 +1,11 @@
+<script type="text/template" id="sys_atom_controls_card">
+	<div id="tab">
+    	<ul style="display:none">
+			{{_.each(items, function(item){}}
+				<li><a href="#{{= item.id}}">{{= item.text}}</a></li>
+			{{
+				});	
+			}}
+		</ul>
+  	</div>
+</script>
