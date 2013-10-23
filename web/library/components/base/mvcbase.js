@@ -7,17 +7,14 @@ define(function(){
 	 
 	 
 	 FwBase.Wtf.Model = function(metadata){
-//	 	if(id == null){
-//	 		alert("id is required");
-//	 		return;
-//	 	}
-//	 	this.id = id;
 		if(metadata == null)
 			metadata = {};
 	 	this.metadata = this.makeDefault(metadata);
 	 	this.currentKey = FwBase.Wtf.Model.DEFAULT_KEY;
 	 	this.stores = {};
-//	 	this.observers = {};
+	 	if(this.metadata.url){
+			this.url(this.metadata.url);
+		}
 	 };
 	 FwBase.Wtf.Model.DEFAULT_KEY = "SYS_DEFAULT_KEY";
 	 FwBase.Wtf.Model.defaults = {
@@ -48,12 +45,6 @@ define(function(){
 			if(!this.metadata.lazyInit)
 	 		this.init();
 		},
-//		bind : function(ctrl) {
-//			this.observers[ctrl.id] = ctrl;
-//		},
-//		unbind : function(ctrl) {
-//			this.observers[ctrl.id] = null;
-//		},
 		
 		fireAddRow : function(arguments){
 			var index = arguments[2].at;
@@ -73,6 +64,26 @@ define(function(){
 	 	},
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
+	 	},
+	 	
+	 	pageSize : function(pageSize) {
+	 		if(pageSize == this.metadata.pageSize)
+	 			return;
+	 		this.metadata.pageSize = pageSize;
+	 		for(var i in this.stores){
+	 			if(i == this.currentKey){
+	 				this.stores[i].fireDirty();
+	 			}
+	 			else
+	 				delete this.stores[i];
+	 		}
+	 	},
+	 	url : function(url){
+	 		if(!url.startWith('/')){
+	 			var ctx = $app.webroot;
+	 			url = "/" + ctx + "/" + FwBase.Wtf.Model.defaults.resturlbase + "/" + url;
+	 			this.metadata.url = url;
+	 		}
 	 	}
 	 });
 	 
@@ -87,26 +98,29 @@ define(function(){
 	 $.extend(FwBase.Wtf.Model.Store.prototype, {
 	 	reload : function() {
 	 		var rowList = new FwBase.Wtf.Model.RowList();
+	 		rowList.setParent(this, this.model);
 	 		this.pages[this.currentPage] = rowList;
 	 		this.listenTo(rowList, 'add', this.fireAddRow);
 //      		rowList.on('reset', rowList, this.addAll);
 //      		rowList.on('all', rowList, this.render);
-      		if(this.model.metadata.url){
-      			var url = this.model.metadata.url;
-      		 	//fix url
-      			if(!url.startWith('/')){
-      		 		var ctx = $app.webroot;
-      		 		url = "/" + ctx + "/" + FwBase.Wtf.Model.defaults.resturlbase + "/" + url;
-      		 		rowList.url = url;
-      		 	}
-	 			rowList.fetch();
-      		}
+      		
+	 		rowList.fetch();
 	 	},
 	 	addRow : function(row, index) {
 	 		this.page().addRow(row, index);
 	 	},
 	 	fireAddRow : function() {
 	 		this.model.fireAddRow(arguments);
+	 	},
+	 	fireDirty : function() {
+	 		for(var i in this.pages){
+	 			if(i == this.currentPage){
+	 				this.pages[i].reset([]);
+	 			}
+	 			else{
+	 				delete this.pages[i];
+	 			}
+	 		}
 	 	},
 	 	page : function(index){
 	 		if(index)
@@ -128,7 +142,34 @@ define(function(){
   
 	 FwBase.Wtf.Model.RowList = Backbone.Collection.extend({
 	 	model : FwBase.Wtf.Model.Row,
+	 	setParent: function(store, dataset) {
+	 		this.store = store;
+	 		this.dataset = dataset;
+	 	},
 	 	sync : function() {
+	 		var url = this.dataset.metadata.url;
+	 		var type = methodMap[arguments[0]];
+	 		this.url = url;
+	 		if(type == "GET"){
+	 			this.url = url + "/ctx/s_page=" + this.store.currentPage + "," + this.dataset.metadata.pageSize; 
+	 		}
+	 		var filters = null;//this.model.filters();
+	 		filters = [{key:'a', value:'d', joint:'='}, {key:'x', value:'y', joint:'like'}];
+	 		if(filters != null && filters.length > 0){
+	 			this.url += ";s_filter=" + $.toJSON(filters);
+	 		}
+	 		
+	 		var success = arguments[2].success;
+	 		arguments[2].success = function() {
+	 			var respObj = arguments[0];
+	 			if(typeof respObj.totalRecords == 'undefined')
+	 				success.apply(this, arguments);
+	 			else{
+	 				arguments[0] = respObj.records;
+	 				success.apply(this, arguments);
+	 			}
+	 		}
+	 		
 	 		if(window.clientMode){
 	 			this.syncFromClient.apply(this, arguments);
 	 		}

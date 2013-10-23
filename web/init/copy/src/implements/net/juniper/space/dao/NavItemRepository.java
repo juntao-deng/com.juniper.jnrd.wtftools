@@ -1,6 +1,6 @@
 package net.juniper.space.dao;
 
-import net.juniper.space.models.NavItem;
+import net.juniper.space.models.home.NavItem;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.Repository;

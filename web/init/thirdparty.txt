@@ -37,3 +37,4 @@
 /home/juntaod/Dev/repository/org/codehaus/jackson/jackson-jaxrs/1.9.12/jackson-jaxrs-1.9.12.jar
 /home/juntaod/Dev/repository/org/codehaus/jackson/jackson-mapper-asl/1.9.12/jackson-mapper-asl-1.9.12.jar
 /home/juntaod/Dev/repository/org/codehaus/jackson/jackson-xc/1.9.12/jackson-xc-1.9.12.jar
+/home/juntaod/Dev/repository/net/sf/json-lib/json-lib/2.4/json-lib-2.4-jdk15.jar

@@ -5,9 +5,9 @@ import java.util.List;
 
 import net.juniper.space.dao.NavGroupRepository;
 import net.juniper.space.dao.NavItemRepository;
-import net.juniper.space.models.NavGroup;
-import net.juniper.space.models.NavItem;
-import net.juniper.space.models.NavType;
+import net.juniper.space.models.home.NavGroup;
+import net.juniper.space.models.home.NavItem;
+import net.juniper.space.models.home.NavType;
 import net.juniper.space.services.NavTypeService;
 
 import org.springframework.beans.factory.annotation.Autowired;

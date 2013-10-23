@@ -17,7 +17,7 @@ if(window.clientMode){
 else{
 	window.frameworkPath = "/" + window.frameCtx + "/";
 	window.contextMappings = {
-		'#CTX#' : '#CTX#applications/'
+		'#CTX#' : '/#CTX#/applications/'
 	};
 	window.contextMappings[window.frameCtx] = '/' + window.frameCtx + "/applications/";
 }
