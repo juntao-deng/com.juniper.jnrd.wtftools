@@ -1,15 +1,21 @@
-<div class="control-group">
-	<label class="control-label">Default Dropdown(Multiple)</label>
-	<div class="controls">
-		<select class="span6 m-wrap" multiple="multiple" data-placeholder="Choose a Category" tabindex="1">
-			<option value="Category 1">Category 1</option>
-			<option value="Category 2">Category 2</option>
-			<option value="Category 3">Category 5</option>
-			<option value="Category 4">Category 4</option>
-			<option value="Category 3">Category 6</option>
-			<option value="Category 4">Category 7</option>
-			<option value="Category 3">Category 8</option>
-			<option value="Category 4">Category 9</option>
-		</select>
+<script type="text/template" id="sys_atom_controls_input_select">
+	<div class="control-group">
+		{{if(labelWidth != 0){}}
+			<label class="control-label" style="float:left;width:{{= labelWidth}}px">{{= label}}</label>
+		{{}}}
+		<div class="controls" style="margin-left:{{= (labelWidth != 0)? (labelWidth + 10) : 0}}px">
+			<select {{= multiple ? 'multiple="multiple"' : ''}} tabindex="1">
+			{{if(emptyRecord){}}
+				<option value="">{{= placeHolder}}</option>
+			{{}
+				if(options && options.length > 0){
+					for(var i = 0; i < options.length; i ++){
+			}}
+				<option value="{{= options[i].value}}">{{= options[i].name}}</option>
+			{{
+					}
+				}
+			}}
+		</div>
 	</div>
-</div>
+</script>
