@@ -273,8 +273,21 @@ define(function(){
 	 			alert("can't find rest service with url:" + url + ",name:" + segs[1]);
 	 			return;
 	 		}
-	 		var methodName = options.type + "_" + segs[3];
-	 		var result = service[methodName].apply(oThis, segs.splice(2, segs.length));
+	 		var method = null;
+	 		var params = null;
+	 		if(segs[3] == 'ctx'){
+	 			method = "root";
+	 		}
+	 		else if(segs[3] == 'action'){
+	 			method = "action_" + segs[4];
+	 		}
+	 		else if(segs[4] != null){
+	 		}
+	 		else{
+	 			method = "root_id";
+	 		}
+	 		var methodName = options.type + "_" + method;
+	 		var result = service[methodName].apply(oThis, params);
 	 		options.success(result);
 	 	});
 	 };
@@ -443,13 +456,91 @@ define(function(){
 	 		var func = null;
 	 		if(callback){
 	 			func = function(){
-	 				FwBase.Wtf.Application.parseHtml();
-	 				callback();
+	 				FwBase.Wtf.Application.parseHtml(callback);
 	 			};
 	 		}
 	 		else
 	 			func = FwBase.Wtf.Application.parseHtml;
-	 		FwBase.Wtf.Application.parseTemplate(func);
+	 		
+	 		var widgetCallback = function() {
+	 			FwBase.Wtf.Application.parseTemplate(func);
+	 		}
+	 		
+	 		FwBase.Wtf.Application.parseWidget(widgetCallback);
+	 	},
+	 	
+	 	parseWidget : function(callback){
+	 		var groups = [];
+	 		var hasWidget = FwBase.Wtf.Application.detectWidget(groups);
+	 		if(hasWidget)
+	 			FwBase.Wtf.Application.doParseWidget(groups, callback);
+	 		else
+	 			callback();
+	 	},
+	 	
+	 	doParseWidget : function(groups, callback){
+			var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
+			prefix += "!";
+			var rqhtml = "../widgets/";
+			//TODO , neet wait all widgets displayed
+			for(var i in groups){
+				var requireUtil = requirejs;
+				if(window.requirelibs){
+					requireUtil = requirelibs[i];
+				}
+				var htmlArr = [];
+				var modelJsArr = [];
+				var controllerArr = [];
+				for(var j = 0; j < groups[i].length; j ++){
+					var group = groups[i];
+					var id = groups[i][j].id;
+					htmlArr.push(prefix + rqhtml + id + "/" + id + ".html");
+					modelJsArr.push(rqhtml + id + "/model");
+					controllerArr.push(rqhtml + id + "/model");
+				}
+				requireUtil(htmlArr, function(){
+					for(var j = 0; j < arguments.length; j ++){
+						var html = arguments[j];
+						var container = groups[i][j].container;
+						container.html(html);
+					}
+					requireUtil(modelJsArr, function(){
+						for(var m = 0; m < arguments.length; m ++){
+							if(arguments[m] != null)
+								arguments[m].exec();
+						}
+						
+						requireUtil(controllerArr, function() {
+							for(var m = 0; m < arguments.length; m ++){
+								if(arguments[m] != null)
+									arguments[m].exec();
+							}
+						});
+					});
+					if(callback)
+						callback();
+				});
+			}
+	 	},
+	 	
+	 	detectWidget : function(groups) {
+	 		var has = false;
+	 		var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
+	 		$("[wtftype='widget']").each(function(ele){
+	 			if($(this).attr('wtfdone') != null)
+	 				return;
+	 			$(this).attr('wtfdone', 'done');
+	 			has = true;
+	 			var widgetId = $(this).attr("wtfmetadata");
+	 			if(widgetId == null || widgetId == "")
+	 				return;
+	 			var ids = widgetId.split("/");
+	 			if(groups[ids[0]] == null){
+	 				groups[ids[0]] = [];
+	 			}
+	 			groups[ids[0]].push({id: ids[1], container: $(this)});
+	 		});
+	 		return has;
 	 	},
 	 	
 	 	parseTemplate : function(callback){
@@ -502,7 +593,7 @@ define(function(){
 	 			requireContainer.push($(this));
 	 		});
 	 	},
-	 	parseHtml : function() {
+	 	parseHtml : function(callback) {
 	 		var typeList = [];
 //	 		var requireList = [];
 //	 		var requireHtmlList = [];
@@ -511,7 +602,7 @@ define(function(){
 	 			if($(this).attr('wtfdone') != null)
 	 				return;
 	 			var wtfType = $(this).attr('wtftype');
-	 			if(wtfType == 'container')
+	 			if(wtfType == 'container' || wtfType == 'widget')
 	 				return;
 	 			if(wtfType.startWith('input')){
 	 				typeList.push("input_base");
@@ -526,7 +617,7 @@ define(function(){
 						return;
 					$(this).attr('wtfdone', 'done');
 					var wtfType = $(this).attr('wtftype');
-					if(wtfType == 'container')
+					if(wtfType == 'container' || wtfType == 'widget')
  						return;
 					var id = $(this).attr("id");
 					if(id == null){
@@ -560,6 +651,8 @@ define(function(){
 					$app.tempCallback = null;
 					tempCallback.apply($app);
 				}
+				if(callback)
+					callback();
 				
  			});
 	 			

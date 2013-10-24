@@ -1,4 +1,4 @@
-define(["flot", "flotpie"], function(plot){	
+define(["base/base", "flot", "flotpie"], function(plot){	
 	FwBase.Wtf.View.Controls.Chart_pie = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};

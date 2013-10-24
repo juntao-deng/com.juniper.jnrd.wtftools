@@ -1,20 +1,25 @@
 define(function(){
-	FwBase.Wtf.Client.restServices["devicesmgr"] = {
-		GET_devices : function(params) {
+	FwBase.Wtf.Client.restServices["#SERVICE_NAME#"] = {
+		GET_root : function(params) {
 			return [{"id":"010","code":"010","name":"Dashboard","icon":"icon-dashboard","url":"","collapse":"Y"},
 			        {"id":"010","code":"010","name":"Dashboard","icon":"icon-dashboard","url":"","collapse":"Y"}
 			];
 		},
-		POST_devices : function(){
+		GET_root_id : function(id) {
+			return [{"id":"010","code":"010","name":"Dashboard","icon":"icon-dashboard","url":"","collapse":"Y"},
+			        {"id":"010","code":"010","name":"Dashboard","icon":"icon-dashboard","url":"","collapse":"Y"}
+			];
+		},
+		POST_root : function(obj){
 			
 		},
-		DELETE_devices : function() {
+		DELETE_root : function(id) {
 			
 		},
-		PUT_devices : function() {
+		PUT_root : function() {
 			
 		},
-		POST_operate1 : function(params){
+		POST_action_name : function(action){
 			
 		}
 	};

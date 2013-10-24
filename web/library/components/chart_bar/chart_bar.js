@@ -1,4 +1,4 @@
-define(["flot", "flotcategories"], function(plot){	
+define(["base/base", "flot", "flotcategories"], function(plot){	
 	FwBase.Wtf.View.Controls.Chart_bar = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};

@@ -11,11 +11,11 @@ INSERT INTO `wtf_navgroup` (`id`,`code`,`collapse`,`icon`,`name`,`url`) VALUES (
 INSERT INTO `wtf_navgroup` (`id`,`code`,`collapse`,`icon`,`name`,`url`) VALUES ('100','100',NULL,'icon-briefcase','Users','');
 INSERT INTO `wtf_navgroup` (`id`,`code`,`collapse`,`icon`,`name`,`url`) VALUES ('110','110',NULL,'icon-briefcase','Audit Logs','');
 INSERT INTO `wtf_navgroup` (`id`,`code`,`collapse`,`icon`,`name`,`url`) VALUES ('120','120',NULL,'icon-briefcase','Administration','');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.010','010','Dashboard','Y','dashboard');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.020','010','My Favarite1','Y','simplelist');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.030','010','My Favarite2','Y','treelist');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.110','011','Simple List','Y','simplelist');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.111','011','Tree List','Y','treelist');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.010','010','#CTX#/Dashboard','Y','dashboard');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.020','010','My Favarite1','Y','wtf/charttest');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.030','010','My Favarite2','Y','wtf/buttontest');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.110','011','Buttons','Y','wtf/buttontest');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.111','011','Chart','Y','wtf/charttest');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.112','011','Input Controls','Y','inputs');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.113','011','Simple Form','Y','simpleform');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Wizard Form','Y','wizardform');
