@@ -132,9 +132,10 @@ define(function(){
 				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
 				var url = window.frameCtx + "/../designsupport/compattr/" + type;
 				var height = 400;
-				if(height == 'grid')
-					height = 500;
-				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: height});
+				var width = 800;
+//				if(type == 'grid')
+//					width = 900;
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:width, height: height});
 			},
 			editModel : function(){
 				var url = window.frameCtx + "/../designsupport/model";
@@ -150,7 +151,7 @@ define(function(){
 			
 			//========================= for editor ======================================
 			syncAppFiles : function(id, md, controller, rest) {
-				$app.component(id).reset(md);
+				$app.parent.component(id).reset(md);
 				var action = 'updatejs';
 				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, compId: id, metadata : md, controller: controller, rest : rest});	
 			},
@@ -175,9 +176,12 @@ define(function(){
 			},
 			
 			fireInput : function(str) {
+				alert(str);
 				var json = $.evalJSON(str);
+				alert(json);
 				var eventId = json['eventId'];
 				var callback = FwBase.Wtf.Design.DesignSupport.eventPool[eventId];
+				alert(callback);
 				if(callback){
 					FwBase.Wtf.Design.DesignSupport.eventPool[eventId] = null;
 					callback(json);

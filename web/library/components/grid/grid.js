@@ -8,7 +8,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			postInit : function(){
 				this.model = $app.model(this.metadata.model);
 				if(this.model){
-					this.listenTo(this.model, "pagechange", this.repaint);
+					this.listenTo(this.model, "clear", this.clearPage);
 					this.listenTo(this.model, "add", this.addRow);
 					this.listenTo(this.model, "remove", this.deleteRow);
 					this.listenTo(this.model, "change", this.changeRow);
@@ -16,8 +16,8 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 //					this.listenTo(this.model, "unselect", this.unselectRow);
 					
 				}
-				this.paginationEle = this.el.children("#table_pagination_" + this.id);
-				this.gridObj = this.el.children('#table').jqGrid({
+				this.paginationEle = this.el.children("#table_pagination_" + this.instance);
+				this.gridObj = this.el.children('#table' + this.instance).jqGrid({
 					datatype: "json",
 				    height: this.metadata.height,
 				    minHeight: this.metadata.minHeight,
@@ -64,6 +64,9 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			},
 			hideColumn : function(id){
 				this.gridObj.jqGrid('navGrid','hideCol', id);
+			},
+			clearPage : function() {
+				this.gridObj.clearGridData();
 			},
 			makeDefault : function() {
 				if(this.metadata.model == null){

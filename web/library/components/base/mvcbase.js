@@ -30,8 +30,8 @@ define(function(){
 		makeDefault : function(metadata){
 			if(!metadata.pageSize)
 				metadata.pageSize = FwBase.Wtf.Model.defaults.pageSize;
-			if(metadata.lazyInit == null)
-				metadata.lazyInit = false;
+			if(metadata.autoload == null)
+				metadata.autoload = true;
 			return metadata;
 		},
 		init : function(key){
@@ -46,14 +46,17 @@ define(function(){
 	 		this.init();
 		},
 		
-		fireAddRow : function(arguments){
+		fireAddRow : function(){
 			var index = arguments[2].at;
 //			var row = arguments[0].collection._byId[arguments[0].cid];
 			this.trigger("add", {row : arguments[0], index : index});
 	 	},
-	 	fireDelRow : function(arguments){
+	 	fireDelRow : function(){
 //	 		var row = arguments[0].collection._byId[arguments[0].cid];
 	 		this.trigger("remove", {row : arguments[0]});
+	 	},
+	 	fireClear : function(argument){
+	 		this.trigger("clear", {});
 	 	},
 	 	firePageChange : function(){
 //	 		this.trigger("pagechange", {key: this.currentKey, pageIndex: this.store().currentPage});
@@ -112,18 +115,20 @@ define(function(){
 	 		this.pages[this.currentPage] = rowList;
 	 		this.listenTo(rowList, 'add', this.fireAddRow);
 	 		this.listenTo(rowList, 'remove', this.fireDelRow);
-	 		
-//      		rowList.on('reset', rowList, this.addAll);
+      		this.listenTo(rowList, 'reset', this.fireClear);
 //      		rowList.on('all', rowList, this.render);
-      		
-	 		rowList.fetch();
+      		if(this.model.metadata.url != null && this.model.metadata.autoload){
+      			rowList.fetch();
+      		}
 	 	},
-	 	
 	 	fireAddRow : function() {
-	 		this.model.fireAddRow(arguments);
+	 		this.model.fireAddRow.apply(this.model, arguments);
 	 	},
 	 	fireDelRow : function() {
-	 		this.model.fireDelRow(arguments);
+	 		this.model.fireDelRow.apply(this.model, arguments);
+	 	},
+	 	fireClear : function() {
+	 		this.model.fireClear.apply(this.model, arguments);
 	 	},
 	 	fireDirty : function() {
 	 		for(var i in this.pages){
@@ -298,6 +303,7 @@ define(function(){
   	 	 this.modelMap = {};
   	 	 this.componentsMap = {};
   	 	 this.metadataMap = {};
+  	 	 this.attrs = {};
   	 };
   	 
   	 _.extend(FwBase.Wtf.Application.prototype, Backbone.Events);
@@ -668,7 +674,12 @@ define(function(){
   		 }
   	 });
   	 $.extend(FwBase.Wtf.Application.prototype, {
-  	 	
+  		attr : function(){
+	 		if(arguments.length == 1)
+	 			return this.attrs[arguments[0]];
+	 		else
+	 			this.attrs[arguments[0]] = arguments[1];
+	 	},
   	 	view : function(view){
   	 		if(typeof view == "string")
   	 			return this.viewMap[view];
@@ -711,6 +722,7 @@ define(function(){
   	 	component : function(component){
   	 		if(typeof component == "string")
   	 			return this.componentsMap[component];
+  	 		component.app = this;
   	 		this.componentsMap[component.id] = component;
   	 	},
   	 	metadata : function(metadata){

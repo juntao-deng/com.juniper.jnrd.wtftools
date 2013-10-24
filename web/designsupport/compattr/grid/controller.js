@@ -12,14 +12,13 @@ wdefine(function(){
 		
 		var columns = metadata.columns;
 		var model = $app.model('columnsModel');
-		model.addRow(columns);
+		model.page().add(columns);
 	});
 	
 	$app.component("entitybutton").on("click", function(){
 		var event = {action: 'entity'};
 		FwBase.Wtf.Design.DesignSupport.interactWithEclipse(event, callbackForEntity);
 	});
-	
 	function callbackForEntity(infos) {
 		if(infos.errormsg){
 			alert(infos.errormsg);
@@ -28,11 +27,16 @@ wdefine(function(){
 		var model = $app.model('columnsModel');
 		var columnInfos = infos.columnInfos;
 		if(columnInfos && columnInfos.length > 0){
-			alert(columnInfos);
-			model.addRow(columnInfos);
+			model.page().reset();
+			model.page().add(columnInfos);
+		}
+		if(infos.generateClass != null){
+			$app.attr('generateClass', infos.generateClass);
+			alert("The restful service for class '" + infos.generateClass + "' doesn't exist, it will be created after you click the 'Save Changes' Button");
 		}
 	}
 	
+	window.ccc = callbackForEntity;
 	
 	var modelBt = $app.component("modelbt");
 	modelBt.on('click', function(){
@@ -47,9 +51,10 @@ wdefine(function(){
 	
 	var okbt = $app.component("okbt");
 	okbt.on('click', function(){
-		var idattr = $app.component('idattr').value();
-		var editableattr = $app.component('editableattr').checked();
-		var model = $app.model('columnsModel');
+		var app = this.app;
+		var idattr = app.component('idattr').value();
+		var editableattr = app.component('editableattr').checked();
+		var model = app.model('columnsModel');
 		var rows = model.page().rows();
 		if(rows == null || rows.length == 0){
 			alert("no columns defined");
@@ -63,9 +68,9 @@ wdefine(function(){
 		var md = {'columns': columns, editable : editableattr};
 		
 		var controller = null;
-		var rest = null;
+		var rest = {generateClass: app.attr('generateClass')};
 		updateComponent(idattr, md, controller, rest);
-		$app.close();
+		app.close();
 	});
 	
 	function updateComponent(id, md, controller, rest){
