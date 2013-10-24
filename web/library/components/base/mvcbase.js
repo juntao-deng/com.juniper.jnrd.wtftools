@@ -48,12 +48,19 @@ define(function(){
 		
 		fireAddRow : function(arguments){
 			var index = arguments[2].at;
-			var row = arguments[0].collection._byId[arguments[0].cid];
-			this.trigger("add", {row : row, index : index});
+//			var row = arguments[0].collection._byId[arguments[0].cid];
+			this.trigger("add", {row : arguments[0], index : index});
 	 	},
-	 	addRow : function(row, index) {
-	 		this.store().addRow(row, index);
+	 	fireDelRow : function(arguments){
+//	 		var row = arguments[0].collection._byId[arguments[0].cid];
+	 		this.trigger("remove", {row : arguments[0]});
 	 	},
+	 	firePageChange : function(){
+//	 		this.trigger("pagechange", {key: this.currentKey, pageIndex: this.store().currentPage});
+	 	},
+//	 	addRow : function(row, index) {
+//	 		this.store().addRow(row, index);
+//	 	},
 	 	
 	 	store : function(key) {
 	 		var tmpKey = key ? key : this.currentKey;
@@ -84,6 +91,9 @@ define(function(){
 	 			url = "/" + ctx + "/" + FwBase.Wtf.Model.defaults.resturlbase + "/" + url;
 	 			this.metadata.url = url;
 	 		}
+	 	},
+	 	filters : function() {
+	 		return null;
 	 	}
 	 });
 	 
@@ -101,16 +111,19 @@ define(function(){
 	 		rowList.setParent(this, this.model);
 	 		this.pages[this.currentPage] = rowList;
 	 		this.listenTo(rowList, 'add', this.fireAddRow);
+	 		this.listenTo(rowList, 'remove', this.fireDelRow);
+	 		
 //      		rowList.on('reset', rowList, this.addAll);
 //      		rowList.on('all', rowList, this.render);
       		
 	 		rowList.fetch();
 	 	},
-	 	addRow : function(row, index) {
-	 		this.page().addRow(row, index);
-	 	},
+	 	
 	 	fireAddRow : function() {
 	 		this.model.fireAddRow(arguments);
+	 	},
+	 	fireDelRow : function() {
+	 		this.model.fireDelRow(arguments);
 	 	},
 	 	fireDirty : function() {
 	 		for(var i in this.pages){
@@ -130,6 +143,40 @@ define(function(){
 	 });
 	 
 	 FwBase.Wtf.Model.Row = Backbone.Model.extend({
+		 sync : function() {
+			 var dataset = this.collection.dataset;
+			 var url = dataset.metadata.url;
+		 	 var type = methodMap[arguments[0]];
+		 	 this.url = url;
+		 	 if(type == "DELETE")
+		 		 this.url = this.url + "/" + this.id;
+//		 		if(type == "GET"){
+//		 			this.url = url + "/ctx/s_page=" + this.store.currentPage + "," + this.dataset.metadata.pageSize; 
+//		 		}
+//		 		var filters = null;//this.model.filters();
+//		 		filters = [{key:'a', value:'d', joint:'='}, {key:'x', value:'y', joint:'like'}];
+//		 		if(filters != null && filters.length > 0){
+//		 			this.url += ";s_filter=" + $.toJSON(filters);
+//		 		}
+		 		
+//		 		var success = arguments[2].success;
+//		 		arguments[2].success = function() {
+//		 			var respObj = arguments[0];
+//		 			if(typeof respObj.totalRecords == 'undefined')
+//		 				success.apply(this, arguments);
+//		 			else{
+//		 				arguments[0] = respObj.records;
+//		 				success.apply(this, arguments);
+//		 			}
+//		 		}
+		 		
+		 	if(window.clientMode){
+		 		this.syncFromClient.apply(this, arguments);
+		 	}
+		 	else{
+		 		Backbone.sync.apply(this, arguments);
+		 	}
+		 }
 	 });
 	 
 	 methodMap = {
@@ -153,8 +200,8 @@ define(function(){
 	 		if(type == "GET"){
 	 			this.url = url + "/ctx/s_page=" + this.store.currentPage + "," + this.dataset.metadata.pageSize; 
 	 		}
-	 		var filters = null;//this.model.filters();
-	 		filters = [{key:'a', value:'d', joint:'='}, {key:'x', value:'y', joint:'like'}];
+	 		var filters = this.dataset.filters();
+//	 		filters = [{key:'a', value:'d', joint:'='}, {key:'x', value:'y', joint:'like'}];
 	 		if(filters != null && filters.length > 0){
 	 			this.url += ";s_filter=" + $.toJSON(filters);
 	 		}
@@ -176,12 +223,6 @@ define(function(){
 	 		else{
 	 			Backbone.sync.apply(this, arguments);
 	 		}
-	 	},
-	 	addRow : function(row, index) {
-	 		if(index == null || index == -1)
-	 			this.add(row);
-	 		else
-	 			this.add(row, {at : index});
 	 	},
 	 	rows : function(){
 	 		return this.models;
@@ -240,6 +281,10 @@ define(function(){
 	 
   	 FwBase.Wtf.Application = function(id){
   		 this.id = id;
+  		 this.viewMap = {};
+  	 	 this.modelMap = {};
+  	 	 this.componentsMap = {};
+  	 	 this.metadataMap = {};
   	 };
   	 
   	 _.extend(FwBase.Wtf.Application.prototype, Backbone.Events);
@@ -530,10 +575,7 @@ define(function(){
   		 }
   	 });
   	 $.extend(FwBase.Wtf.Application.prototype, {
-  	 	viewMap : {},
-  	 	modelMap : {},
-  	 	componentsMap : {},
-  	 	metadataMap: {},
+  	 	
   	 	view : function(view){
   	 		if(typeof view == "string")
   	 			return this.viewMap[view];
@@ -551,10 +593,14 @@ define(function(){
   	 	model : function(model){
   	 		if(typeof model == "string" && arguments.length == 1)
   	 			return this.modelMap[model];
-  	 		else if(typeof model == "string")
+  	 		else if(typeof model == "string"){
+  	 			arguments[1].app = this;
   	 			this.modelMap[model] = arguments[1];
-  	 		else
+  	 		}
+  	 		else{
+  	 			model.app = this;
   	 			this.modelMap[model.id] = model;
+  	 		}
   	 	},
   	 	
   	 	models : function() {

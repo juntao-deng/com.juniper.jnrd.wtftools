@@ -723,7 +723,10 @@
 
       // Trigger `add` events.
       for (i = 0, l = toAdd.length; i < l; i++) {
+    	//fixed 
         (model = toAdd[i]).trigger('add', model, this, options);
+        if(options.at != null)
+        	options.at ++;
       }
 
       // Trigger `sort` if the collection was sorted.

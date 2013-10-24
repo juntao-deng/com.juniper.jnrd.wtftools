@@ -39,14 +39,14 @@ public class #ENTITY_NAME#RestService {
 		return service.get#ENTITY_NAME#(id);
 	}
  
-	@POST
+	@PUT
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public #ENTITY_NAME# update#ENTITY_NAME#(#ENTITY_NAME# device){
 		return service.update#ENTITY_NAME#(device);
 	}
 	
-	@PUT
+	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public #ENTITY_NAME# add#ENTITY_NAME#(#ENTITY_NAME# device){

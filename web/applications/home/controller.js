@@ -1,13 +1,15 @@
 wdefine(function(){
+	$app.on('loaded', function(){
+		FwBase.Wtf.Application.navigateTo(window.mainCtx + "/dashboard");
+	});
 	var homeModel = $app.model("navmodel");
 	homeModel.on("add", function(){
-		var model = homeModel.page().at(0);
-		var navList = model.get("navList");
-		var sidenav = $app.component("homesidenav");
+		var row = this.page().at(0);
+		var navList = row.get("navList");
+		var sidenav = this.app.component("homesidenav");
 		for(var i = 0; i < navList.length; i ++){
 			sidenav.addItem(navList[i]);
 		}
 	});
 	
-	FwBase.Wtf.Application.navigateTo(window.mainCtx + "/dashboard");
 });

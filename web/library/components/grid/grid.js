@@ -8,12 +8,12 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			postInit : function(){
 				this.model = $app.model(this.metadata.model);
 				if(this.model){
-//					this.listenTo(this.model, "pagechange", this.repaint);
+					this.listenTo(this.model, "pagechange", this.repaint);
 					this.listenTo(this.model, "add", this.addRow);
-//				this.listenTo(this.model, "delete", this.deleteRow);
-//				this.listenTo(this.model, "change", this.changeRow);
-//				this.listenTo(this.model, "select", this.selectRow);
-//				this.listenTo(this.model, "unselect", this.unselectRow);
+					this.listenTo(this.model, "remove", this.deleteRow);
+					this.listenTo(this.model, "change", this.changeRow);
+//					this.listenTo(this.model, "page", this.selectRow);
+//					this.listenTo(this.model, "unselect", this.unselectRow);
 					
 				}
 				this.paginationEle = this.el.children("#table_pagination_" + this.id);
@@ -40,18 +40,22 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				});
 				//this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
 			},
-			repaint : function() {
+			repaint : function(obj) {
+				this.gridObj.clearGridData();
 			},
 			addRow : function(obj) {
 				var row = obj.row;
 				var index = obj.index;
-				if(index == null || index == -1)
+				if(index == null)
 					this.gridObj.addRowData(row.cid, row.toJSON());
-				
+				else
+					this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index));
 			},
 			changeRow : function() {
 			},
-			selectRow : function() {
+			deleteRow : function(obj) {
+				var row = obj.row;
+				this.gridObj.delRowData(row.cid);
 			},
 			unselectRow : function() {
 			},
