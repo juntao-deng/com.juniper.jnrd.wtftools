@@ -22,7 +22,7 @@ define(["base/mvcbase"], function(){
 	 };
 	
 	 FwBase.Wtf.Lang = {};
-	 FwBase.Wtf.Lang.Utils = {
+	 window.Util = FwBase.Wtf.Lang.Utils = {
 		capitalize: function(str){
 			if(str == null || str == "")
 				return str;
@@ -51,4 +51,5 @@ define(["base/mvcbase"], function(){
 				item.run();
 		}
 	};
+	 
 });

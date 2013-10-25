@@ -47,7 +47,8 @@ wdefine(function(){
 				}
 				else if(cols == 3){
 					str += '<div class="span' + sliders[0] + '" wtftype="container"></div>';
-					str += '<div class="span' + sliders[1] + '" wtftype="container"></div>';
+					str += '<div class="span' + (parseInt(sliders[1]) - parseInt(sliders[0])) + '" wtftype="container"></div>';
+					str += '<div class="span' + (12 - parseInt(sliders[1])) + '" wtftype="container"></div>';
 				}
 				else{
 					var average = parseInt(12 / cols);

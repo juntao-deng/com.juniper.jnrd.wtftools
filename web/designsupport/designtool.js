@@ -113,7 +113,7 @@ define(function(){
 //			},
 			addLayout : function() {
 				var url = window.frameCtx + "/../designsupport/layout";
-				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, null);
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:700, height: 400});
 			},
 			addTemplate : function() {
 				var url = window.frameCtx + "/../designsupport/template";

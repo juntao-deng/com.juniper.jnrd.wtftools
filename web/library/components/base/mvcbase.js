@@ -297,7 +297,7 @@ define(function(){
 	 	});
 	 };
 	 
-  	 FwBase.Wtf.Application = function(id){
+  	 window.AppUtil = FwBase.Wtf.Application = function(id){
   		 this.id = id;
   		 this.viewMap = {};
   	 	 this.modelMap = {};
