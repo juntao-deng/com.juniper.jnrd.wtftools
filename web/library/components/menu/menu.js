@@ -1,4 +1,4 @@
-define(["base/base", "../uipattern/cruduihandler"], function(base){	
+define(["base/base", "../../uipattern/cruduihandler"], function(base){	
 	FwBase.Wtf.View.Controls.Menu = function(){
 		this.menuitems = [];
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
@@ -13,20 +13,17 @@ define(["base/base", "../uipattern/cruduihandler"], function(base){
 					for(var j = 0; j < group.menus.length; j ++){
 						var pre = "";
 						var menu = group.menus[j];
-						var createdItem = this.createMenuItem(pre, menu);
-						this.listenTo(createdItem, "click", this.itemClicked);
+						this.createMenuItem(pre, menu);
 						if(menu.menus){
 							pre = menu.id + "_";
 							for(var k = 0; k < menu.menus.length; k ++){
 								var cmenu = menu.menus[k];
-								createdItem = this.createMenuItem(pre, cmenu);
-								this.listenTo(createdItem, "click", this.itemClicked);
+								this.createMenuItem(pre, cmenu);
 								if(cmenu.menus){
 									pre += cmenu.id + "_";
 									for(var m = 0; m < cmenu.menus.length; m ++){
 										var ccmenu = cmenu.menus[m];
-										createdItem = this.createMenuItem(pre, ccmenu);
-										this.listenTo(createdItem, "click", this.itemClicked);
+										this.createMenuItem(pre, ccmenu);
 									}
 								}
 							}
@@ -36,14 +33,19 @@ define(["base/base", "../uipattern/cruduihandler"], function(base){
 			},
 			mockMetadata : function() {
 				var groups = [
-								{menus : [{id:'add',name:'Add', icon:'dd'}, {id:'edit',name:'Edit'}, {id:'del',name:'Delete'}]},
-								{menus : [{id:'save',name:'Save'}, {id:'disable',name:'Disable'}]},
-								{menus : [{id:'help',name:'Help', menus:[{id:'samplea', name:'Samplea'}, {id:'sampleb', name:'Sampleb', disabled:true}, {divider:true}, {id:'more', name:'More', menus:[{id:'linka', name:'Linka'}, {id:'linkb', name:'Linkb'}]}]}]}
+								{menus : [{id:'add',name:'Add', icon:'dd'}, {id:'edit',name:'Edit'}, {id:'save',name:'Save'}, {id:'del',name:'Delete'}]},
+								{menus : [{id:'actions',name:'Actions', menus:[{id:'action1', name:'Action1'}, {id:'action2', name:'Action2'}, {id:'action3', name:'Action3'}]}]},
+								{menus : [{id:'export',name:'Export', menus: [{id:'print', name:'Print'}, {id:'printall', name:'Print All Pages'}, {divider:true},
+								                                               {id:'export2csv', name:'Export to CSV'}, {id:'exportallcsv', name:'Export all pages to CSV'}, {divider:true},
+								                                               {id:'export2pdf', name:'Export to PDF'}, {id:'exportallpdf', name:'Export all pages to PDF'}
+								                                              ]
+										  }]},
+								{menus : [{id:'help',name:'Help', menus:[{id:'contents', name:'Contents'}, {id:'faq', name:'FAQ', disabled:true}, {divider:true}, {id:'more', name:'More', menus:[{id:'morea', name:'More A'}, {id:'moreb', name:'More B'}]}]}]}
 							 ];
 				this.metadata.groups = groups;
 			},
 			makeDefault : function(){
-				this.setDefault({style: "primary"});
+				this.setDefault({style: "inverse"});
 				this.setDefault({handler : FwBase.Wtf.UIPattern.Handler.CrudUIHandler});
 				this.metadata.cssclass = "btn btn-" + this.metadata.style;
 			},
@@ -59,9 +61,12 @@ define(["base/base", "../uipattern/cruduihandler"], function(base){
 				}
 				return null;
 			},
-			itemClicked : function(item) {
-				var source = {source : this, trigger : item};
+			itemClicked : function(ctx) {
+				var source = {source : this, trigger : ctx.source, eventCtx : ctx.eventCtx};
 				this.trigger("click", source);
+				if(!source.eventCtx.stop && this.metadata.handler){
+					this.metadata.handler.call(this, source);
+				}
 			}
 		}
 	);
@@ -79,7 +84,10 @@ define(["base/base", "../uipattern/cruduihandler"], function(base){
 			this.el = this.parentEl.find("#" + this.pre + this.id);
 			var oThis = this;
 			this.el.click(function(){
-				oThis.trigger("click", {source : oThis, eventCtx : {}});
+				var ctx = {source : oThis, eventCtx : {}};
+				oThis.trigger("click", ctx);
+				if(!ctx.eventCtx.stop)
+					oThis.menubar.itemClicked(ctx);
 				return false;
 			});
 		}

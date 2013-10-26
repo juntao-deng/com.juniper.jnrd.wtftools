@@ -49,6 +49,33 @@ define(["base/mvcbase"], function(){
 			var item = window.globalScheduleList[id];
 			if(item != null)
 				item.run();
+		},
+		/*require one pack, including html, model.js and controller.js*/
+		requireOnePack : function(requireUtil, obj) {
+			requireUtil(obj.htmlArr, function(){
+				for(var i = 0; i < arguments.length; i ++){
+					var html = arguments[i];
+					var container = obj.containerArr[i];
+					container.html(html);
+				}
+				if(obj.htmlCallback)
+					obj.htmlCallback();
+				requireUtil(obj.modelJsArr, function(){
+					for(var i = 0; i < arguments.length; i ++){
+						if(arguments[i] != null)
+							arguments[i].exec();
+					}
+					
+					requireUtil(obj.controllerArr, function() {
+						for(var i = 0; i < arguments.length; i ++){
+							if(arguments[i] != null)
+								arguments[i].exec();
+						}
+						if(obj.finalCallback)
+							obj.finalCallback();
+					});
+				});
+			});
 		}
 	};
 	 

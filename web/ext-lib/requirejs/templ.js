@@ -9,13 +9,21 @@ define({
         	iframe.src = url;
         	$(iframe).load(function(){
         		var currFrame = $(this)[0];
-        		var body = $(currFrame.contentWindow.document.body);
-        		var content = body.html();
-        		if(content.startWith('<pre')){
-        			content = $(body.children()[0]).html();
+        		try{
+        			var body = $(currFrame.contentWindow.document.body);
+        			var content = body.html();
+        			if(content.startWith('<pre')){
+        				content = $(body.children()[0]).html();
+        			}
         		}
-        		currFrame.inUsing = false;
-        		onload(content);
+        		catch(error){
+        			alert("can not access : " + $(this)[0].src);
+        			throw error;
+        		}
+        		finally{
+	        		currFrame.inUsing = false;
+	        		onload(content);
+        		}
         	});
     	}
      }

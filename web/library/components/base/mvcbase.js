@@ -359,8 +359,10 @@ define(function(){
 			if(window.requirelibs){
 				requireUtil = requirelibs[pathInfo[0]];
 			}
-			
-			requireUtil([prefix + rqhtml + pathInfo[pathInfo.length - 1] + ".html"], function(html){
+			var htmlArr = [prefix + rqhtml + pathInfo[pathInfo.length - 1] + ".html"];
+			var modelJsArr = [rqhtml + "model"];
+			var controllerArr = [rqhtml + "controller"];
+			requireUtil(htmlArr, function(html){
 				if(window.DesignMode && $.trim(html) == ''){
 					html = '<div wtftype="container" style="height:99%;min-height:300px">';
 				}
@@ -377,12 +379,12 @@ define(function(){
 				FwBase.Wtf.Application.current(app);
 				window.$app = app;
 				var modelJs = rqhtml + "model";
-				requireUtil([modelJs], function(){
+				requireUtil(modelJsArr, function(){
 					if(arguments[0] != null)
 						arguments[0].exec();
- 					app.tempCallback = function(){
+ 					function appCallback(){
 	 					var controllerJs = rqhtml + "controller";
-	 					requireUtil([controllerJs], function() {
+	 					requireUtil(controllerArr, function() {
 	 						if(arguments[0] != null)
 	 							arguments[0].exec();
 	 						var models = $app.models();
@@ -393,7 +395,17 @@ define(function(){
 					 		$app.trigger('loaded');
 	 					});
  					};
- 					FwBase.Wtf.Application.repaint(options ? options.callback : null);
+ 					var oriCallback = options ? options.callback : null;
+ 					var callback = null;
+ 					if(oriCallback){
+ 						callback = function() {
+ 							appCallback();
+ 	 						oriCallback();
+ 						}
+ 					}
+ 					else
+ 						callback = appCallback;
+ 					FwBase.Wtf.Application.repaint(callback);
 				});
 			});
 	 	},
@@ -551,40 +563,43 @@ define(function(){
 	 	
 	 	parseTemplate : function(callback){
 	 		var requireList = [];
-	 		var requireCssList = [];
+	 		var requireModelList = [];
+	 		var requireControllerList = [];
 	 		var requireContainer = [];
-	 		FwBase.Wtf.Application.detectTemplate(requireList, requireCssList, requireContainer);
+	 		FwBase.Wtf.Application.detectTemplate(requireList, requireModelList, requireControllerList, requireContainer);
 	 		if(requireList.length > 0)
-	 			FwBase.Wtf.Application.doParseTemplate(requireList, requireCssList, requireContainer, callback);
+	 			Util.requireOnePack(requirejs, {htmlArr : requireList, modelJsArr : requireModelList, controllerArr : requireControllerList, containerArr : requireContainer, finalCallback : callback});
 	 		else
 	 			callback();
 	 	},
 	 	
-	 	doParseTemplate : function(requireList, requireCssList, requireContainer, callback){
-	 		requirejs(requireCssList, function(){
-	 			requirejs(requireList, function(){
-	 				for(var i = 0; i < arguments.length; i ++){
-	 					var children = requireContainer[i].children();
-	 					if(children.length > 0)
-	 						children.remove();
-	 					requireContainer[i].html(arguments[i]);
-	 					var positions = requireContainer[i].find("[wtfpos]");
-	 					//TODO
-	 					if(positions.length > 0 && children.length > 0)
-	 						positions.html(children);
-	 				}
-	 				requireList = [];
-	 				requireCssList = [];
-	 				requireContainer = [];
-	 				FwBase.Wtf.Application.detectTemplate(requireList, requireCssList, requireContainer);
-	 				if(requireList.length > 0)
-	 					FwBase.Wtf.Application.doParseTemplate(requireList, requireCssList, requireContainer, callback);
-	 				else
-	 					callback();
-	 			});
-	 		});
-	 	},
-	 	detectTemplate : function(requireList, requireCssList, requireContainer) {
+//	 	doParseTemplate : function(requireList, requireCssList, requireContainer, callback){
+//	 		Util.requireOnePack();
+//	 		requirejs(requireCssList, function(){
+//	 			requirejs(requireList, function(){
+//	 				for(var i = 0; i < arguments.length; i ++){
+//	 					var children = requireContainer[i].children();
+//	 					if(children.length > 0)
+//	 						children.remove();
+//	 					requireContainer[i].html(arguments[i]);
+//	 					var positions = requireContainer[i].find("[wtfpos]");
+//	 					//TODO
+//	 					if(positions.length > 0 && children.length > 0)
+//	 						positions.html(children);
+//	 				}
+//	 				var requireList = [];
+//	 		 		var requireModelList = [];
+//	 		 		var requireControllerList = [];
+//	 		 		var requireContainer = [];
+//	 				FwBase.Wtf.Application.detectTemplate(requireList, requireModelList, requireControllerList, requireContainer);
+//	 				if(requireList.length > 0)
+//	 					FwBase.Wtf.Application.doParseTemplate(requireList, requireModelList, requireControllerList, requireContainer, callback);
+//	 				else
+//	 					callback();
+//	 			});
+//	 		});
+//	 	},
+	 	detectTemplate : function(requireList, requireModelList, requireControllerList, requireContainer) {
 	 		var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
 	 		$("[wtftype='template']").each(function(ele){
 	 			if($(this).attr('wtfdone') != null)
@@ -593,9 +608,11 @@ define(function(){
 	 			var templateId = $(this).attr("wtfmetadata");
 	 			if(templateId == null || templateId == "")
 	 				return;
-	 			var urlStr = "../../templates/" + templateId + "/" + templateId;
+	 			var path = "../../templates/" + templateId + "/";
+	 			var urlStr = path + templateId;
 	 			requireList.push(prefix + "!" + urlStr + ".html");
-	 			requireCssList.push("css!" + urlStr);
+	 			requireModelList.push(path + "model");
+	 			requireControllerList.push(path + "controller");
 	 			requireContainer.push($(this));
 	 		});
 	 	},

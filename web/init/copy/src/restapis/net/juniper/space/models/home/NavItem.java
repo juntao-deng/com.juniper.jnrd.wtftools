@@ -21,7 +21,7 @@ public class NavItem extends NavType {
 	private String name;
 	@NotNull
 	private String url;
-	@NotNull
+	@NotNull @Integer
 	private String groupId;
 	@NotNull
 	private String target;

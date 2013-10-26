@@ -19,7 +19,7 @@ wdefine(function(){
 	
 	function insertComponent(id, type){
 		var str = null;
-		if(type == 'tab' || type == 'card'){
+		if(type == 'tab' || type == 'card' || type == 'wizard'){
 			str = '<div id="' + id + '" wtftype="' + type + '">' +
 					'<div id="item1"><div wtftype="container" style="min-height:200px"></div></div>' + 
 					'<div id="item2"><div wtftype="container" style="min-height:200px"></div></div>' + 	

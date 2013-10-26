@@ -1,2 +1,2 @@
-wdefine(['css!./apptitle.css'], function(){
+wdefine(['css!./apptitle'], function(){
 });

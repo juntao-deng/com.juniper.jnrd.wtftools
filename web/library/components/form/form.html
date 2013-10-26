@@ -1,331 +1,129 @@
 <script type="text/template" id="sys_atom_controls_form">
-								<form action="#" class="form-horizontal">
-									<div class="control-group">
-										<label class="control-label">Input</label>
-										<div class="controls">
-											<input type="text" class="span6 m-wrap" />
-											<span class="help-inline">Some hint here</span>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Disabled Input</label>
-										<div class="controls">
-											<input class="span6 m-wrap" type="text" placeholder="Disabled input here..." disabled />
-											<span class="help-inline">Some hint here</span>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Readonly Input</label>
-										<div class="controls">
-											<input class="span6 m-wrap" type="text" placeholder="Readonly input here..." disabled />
-											<span class="help-inline">Some hint here</span>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Input with Popover</label>
-										<div class="controls">
-											<input type="text" class="span6 m-wrap popovers" data-trigger="hover" data-content="Popover body goes here. Popover body goes here." data-original-title="Popover header" />
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Input with Tooltip</label>
-										<div class="controls">
-											<input type="text" class="span6 m-wrap tooltips" data-trigger="hover" data-original-title="Tooltip text goes here. Tooltip text goes here." />                       
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Auto Complete</label>
-										<div class="controls">
-											<input type="text" class="span6 m-wrap" style="margin: 0 auto;" data-provide="typeahead" data-items="4" data-source="[&quot;Alabama&quot;,&quot;Alaska&quot;,&quot;Arizona&quot;,&quot;Arkansas&quot;,&quot;California&quot;,&quot;Colorado&quot;,&quot;Connecticut&quot;,&quot;Delaware&quot;,&quot;Florida&quot;,&quot;Georgia&quot;,&quot;Hawaii&quot;,&quot;Idaho&quot;,&quot;Illinois&quot;,&quot;Indiana&quot;,&quot;Iowa&quot;,&quot;Kansas&quot;,&quot;Kentucky&quot;,&quot;Louisiana&quot;,&quot;Maine&quot;,&quot;Maryland&quot;,&quot;Massachusetts&quot;,&quot;Michigan&quot;,&quot;Minnesota&quot;,&quot;Mississippi&quot;,&quot;Missouri&quot;,&quot;Montana&quot;,&quot;Nebraska&quot;,&quot;Nevada&quot;,&quot;New Hampshire&quot;,&quot;New Jersey&quot;,&quot;New Mexico&quot;,&quot;New York&quot;,&quot;North Dakota&quot;,&quot;North Carolina&quot;,&quot;Ohio&quot;,&quot;Oklahoma&quot;,&quot;Oregon&quot;,&quot;Pennsylvania&quot;,&quot;Rhode Island&quot;,&quot;South Carolina&quot;,&quot;South Dakota&quot;,&quot;Tennessee&quot;,&quot;Texas&quot;,&quot;Utah&quot;,&quot;Vermont&quot;,&quot;Virginia&quot;,&quot;Washington&quot;,&quot;West Virginia&quot;,&quot;Wisconsin&quot;,&quot;Wyoming&quot;]" />
-											<p class="help-block">Start typing to auto complete!. E.g: California</p>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Email Address Input</label>
-										<div class="controls">
-											<div class="input-prepend"><span class="add-on">@</span><input class="m-wrap " type="text" placeholder="Email Address" />
-											</div>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Email Address Input</label>
-										<div class="controls">
-											<div class="input-icon left">
-												<i class="icon-envelope"></i>
-												<input class="m-wrap " type="text" placeholder="Email Address" />    
-											</div>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Currency Input</label>
-										<div class="controls">
-											<div class="input-prepend input-append">
-												<span class="add-on">$</span><input class="m-wrap " type="text" /><span class="add-on">.00</span>
-											</div>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Default Dropdown</label>
-										<div class="controls">
-											<select class="span6 m-wrap" data-placeholder="Choose a Category" tabindex="1">
-												<option value="">Select...</option>
-												<option value="Category 1">Category 1</option>
-												<option value="Category 2">Category 2</option>
-												<option value="Category 3">Category 5</option>
-												<option value="Category 4">Category 4</option>
-											</select>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Default Dropdown(Multiple)</label>
-										<div class="controls">
-											<select class="span6 m-wrap" multiple="multiple" data-placeholder="Choose a Category" tabindex="1">
-												<option value="Category 1">Category 1</option>
-												<option value="Category 2">Category 2</option>
-												<option value="Category 3">Category 5</option>
-												<option value="Category 4">Category 4</option>
-												<option value="Category 3">Category 6</option>
-												<option value="Category 4">Category 7</option>
-												<option value="Category 3">Category 8</option>
-												<option value="Category 4">Category 9</option>
-											</select>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Custom Dropdown</label>
-										<div class="controls">
-											<select class="span6 chosen" data-placeholder="Choose a Category" tabindex="1">
-												<option value=""></option>
-												<option value="Category 1">Category 1</option>
-												<option value="Category 2">Category 2</option>
-												<option value="Category 3">Category 5</option>
-												<option value="Category 4">Category 4</option>
-											</select>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Grouped Custom Dropdown</label>
-										<div class="controls">
-											<select data-placeholder="Your Favorite Football Team" class="chosen span6" tabindex="-1" id="selS0V">
-												<option value=""></option>
-												<optgroup label="NFC EAST">
-													<option>Dallas Cowboys</option>
-													<option>New York Giants</option>
-													<option>Philadelphia Eagles</option>
-													<option>Washington Redskins</option>
-												</optgroup>
-												<optgroup label="NFC NORTH">
-													<option>Chicago Bears</option>
-													<option>Detroit Lions</option>
-													<option>Green Bay Packers</option>
-													<option>Minnesota Vikings</option>
-												</optgroup>
-												<optgroup label="NFC SOUTH">
-													<option>Atlanta Falcons</option>
-													<option>Carolina Panthers</option>
-													<option>New Orleans Saints</option>
-													<option>Tampa Bay Buccaneers</option>
-												</optgroup>
-												<optgroup label="NFC WEST">
-													<option>Arizona Cardinals</option>
-													<option>St. Louis Rams</option>
-													<option>San Francisco 49ers</option>
-													<option>Seattle Seahawks</option>
-												</optgroup>
-												<optgroup label="AFC EAST">
-													<option>Buffalo Bills</option>
-													<option>Miami Dolphins</option>
-													<option>New England Patriots</option>
-													<option>New York Jets</option>
-												</optgroup>
-												<optgroup label="AFC NORTH">
-													<option>Baltimore Ravens</option>
-													<option>Cincinnati Bengals</option>
-													<option>Cleveland Browns</option>
-													<option>Pittsburgh Steelers</option>
-												</optgroup>
-												<optgroup label="AFC SOUTH">
-													<option>Houston Texans</option>
-													<option>Indianapolis Colts</option>
-													<option>Jacksonville Jaguars</option>
-													<option>Tennessee Titans</option>
-												</optgroup>
-												<optgroup label="AFC WEST">
-													<option>Denver Broncos</option>
-													<option>Kansas City Chiefs</option>
-													<option>Oakland Raiders</option>
-													<option>San Diego Chargers</option>
-												</optgroup>
-											</select>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Custom Dropdown Multiple Select</label>
-										<div class="controls">
-											<select data-placeholder="Your Favorite Football Teams" class="chosen span6" multiple="multiple" tabindex="6">
-												<option value=""></option>
-												<optgroup label="NFC EAST">
-													<option>Dallas Cowboys</option>
-													<option>New York Giants</option>
-													<option>Philadelphia Eagles</option>
-													<option>Washington Redskins</option>
-												</optgroup>
-												<optgroup label="NFC NORTH">
-													<option selected>Chicago Bears</option>
-													<option>Detroit Lions</option>
-													<option>Green Bay Packers</option>
-													<option>Minnesota Vikings</option>
-												</optgroup>
-												<optgroup label="NFC SOUTH">
-													<option>Atlanta Falcons</option>
-													<option selected>Carolina Panthers</option>
-													<option>New Orleans Saints</option>
-													<option>Tampa Bay Buccaneers</option>
-												</optgroup>
-												<optgroup label="NFC WEST">
-													<option>Arizona Cardinals</option>
-													<option>St. Louis Rams</option>
-													<option>San Francisco 49ers</option>
-													<option>Seattle Seahawks</option>
-												</optgroup>
-												<optgroup label="AFC EAST">
-													<option>Buffalo Bills</option>
-													<option>Miami Dolphins</option>
-													<option>New England Patriots</option>
-													<option>New York Jets</option>
-												</optgroup>
-												<optgroup label="AFC NORTH">
-													<option>Baltimore Ravens</option>
-													<option>Cincinnati Bengals</option>
-													<option>Cleveland Browns</option>
-													<option>Pittsburgh Steelers</option>
-												</optgroup>
-												<optgroup label="AFC SOUTH">
-													<option>Houston Texans</option>
-													<option>Indianapolis Colts</option>
-													<option>Jacksonville Jaguars</option>
-													<option>Tennessee Titans</option>
-												</optgroup>
-												<optgroup label="AFC WEST">
-													<option>Denver Broncos</option>
-													<option>Kansas City Chiefs</option>
-													<option>Oakland Raiders</option>
-													<option>San Diego Chargers</option>
-												</optgroup>
-											</select>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Custom Dropdown Diselect</label>
-										<div class="controls">
-											<select data-placeholder="Your Favorite Type of Bear" class="chosen-with-diselect span6" tabindex="-1" id="selCSI">
-												<option value=""></option>
-												<option>American Black Bear</option>
-												<option>Asiatic Black Bear</option>
-												<option>Brown Bear</option>
-												<option>Giant Panda</option>
-												<option selected="">Sloth Bear</option>
-												<option>Sun Bear</option>
-												<option>Polar Bear</option>
-												<option>Spectacled Bear</option>
-											</select>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Radio Buttons</label>
-										<div class="controls">
-											<label class="radio">
-											<input type="radio" name="optionsRadios1" value="option1" />
-											Option 1
-											</label>
-											<label class="radio">
-											<input type="radio" name="optionsRadios1" value="option2" checked />
-											Option 2
-											</label>  
-											<label class="radio">
-											<input type="radio" name="optionsRadios1" value="option2" />
-											Option 3
-											</label>  
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Radio Buttons</label>
-										<div class="controls">
-											<label class="radio line">
-											<input type="radio" name="optionsRadios2" value="option1" />
-											Option 1
-											</label>
-											<label class="radio line">
-											<input type="radio" name="optionsRadios2" value="option2" checked />
-											Option 2
-											</label>  
-											<label class="radio line">
-											<input type="radio" name="optionsRadios2" value="option2" />
-											Option 3
-											</label>  
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Checkbox</label>
-										<div class="controls">
-											<label class="checkbox">
-											<input type="checkbox" value="" /> Checkbox 1
-											</label>
-											<label class="checkbox">
-											<input type="checkbox" value="" /> Checkbox 2
-											</label>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Checkbox</label>
-										<div class="controls">
-											<label class="checkbox line">
-											<input type="checkbox" value="" /> Checkbox 1
-											</label>
-											<label class="checkbox line">
-											<input type="checkbox" value="" /> Checkbox 2
-											</label>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Checkbox Group</label>
-										<div class="controls">
-											<div class="row-fluid">
-												<div class="span3">
-													<label class="checkbox line">
-													<input type="checkbox" value="" /> Checkbox 1
-													</label>
-													<label class="checkbox line">
-													<input type="checkbox" value="" /> Checkbox 2
-													</label>
-													<label class="checkbox line">
-													<input type="checkbox" value="" /> Checkbox 3
-													</label>
-												</div>
-												<div class="span3">
-													<label class="checkbox line">
-													<input type="checkbox" value="" /> Checkbox 4
-													</label>
-													<label class="checkbox line">
-													<input type="checkbox" value="" /> Checkbox 5
-													</label>
-													<label class="checkbox line">
-													<input type="checkbox" value="" /> Checkbox 6
-													</label>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="control-group">
-										<label class="control-label">Textarea</label>
-										<div class="controls">
-											<textarea class="span6 m-wrap" rows="3"></textarea>
-										</div>
-									</div>
-									<div class="form-actions">
-										<button type="submit" class="btn blue">Submit</button>
-										<button type="button" class="btn">Cancel</button>                            
-									</div>
-								</form>
+	<div class="row-fluid">
+		<table width="100%">
+			<form action="#" class="form-horizontal">
+		{{
+			function adjustIndex(nowIndex, infoArr){
+				if(infoArr == null)
+					return nowIndex + 1;
+				for(var i = 0; i < infoArr.length; i++) {
+					if((nowIndex + 1) >= infoArr[i].index && (nowIndex + 1) < (infoArr[i].index + infoArr[i].size))
+					nowIndex += infoArr[i].size;
+				}
+				return nowIndex + 1;
+			}
 
+			var colCount = rows;
+			var nowRow = 0;
+			var spanInfoMap = {};
+			// comp index
+			var compIndex = 0;
+			//row index
+			var rowIndex = -1;
+			//component count in current row
+			var count = 0;
+		
+			var listSize = elements.length;
+		
+			//var rowHeight = form.getRowHeight();
+			//boolean hasTotalHeight = false;
+			while (compIndex < listSize) {
+				var element = elements[compIndex];
+				var colSpan = element.colspan ? element.colspan : 1;
+				var rowSpan = element.rowspan ? element.rowspan : 1;
+			
+				// new line start
+				if (count == 0) {
+			
+		}}
+					<tr>
+		{{
+				}
+
+				// add cross row span count
+				var infoArr = spanInfoMap[nowRow + ""];
+				if (infoArr != null) {
+					delete spanInfoMap[nowRow + ""];
+					for (var i = 0; i < infoArr.length; i++) {
+						count += infoArr[i].size;
+					}
+				}
+
+			
+				// check out bound
+				if (count > colCount)
+					throw new Error("element out of bound in the form, please check you configuration");
+
+				// check if one element is out of bound
+				if (colSpan > colCount)
+					throw new Error("element out of bound in the form, please check you configuration");
+
+				// 如果加上当前控件越界,则补齐当前行td数，转到下一行
+				if (count + colSpan > colCount) {
+					for (; count < colCount; count++){
+		}}
+						<td>&nbsp;</td>
+		{{
+					}
+				} 
+				else {  
+					//if force next row
+					if(count != 0 && element.nextrow){
+						for (; count < colCount; count++){
+		}}
+							<td>&nbsp;</td>
+		{{
+						}
+						continue;
+					}
+					//add components count
+					compIndex ++;
+					rowIndex = adjustIndex(rowIndex, infoArr);
+		}} 
+					<td rowSpan="{{= rowSpan}}" colSpan="{{= colSpan}}">
+						<div id="{{= element.name}}" class="formelement">
+						</div>
+					</td>
+		{{
+					count += colSpan;
+					if (rowSpan != 1) {
+						for (var j = 1; j < rowSpan; j++) {
+							//获得当前行RowSpanInfo列表
+							var infoList = spanInfoMap[nowRow + j + ""];
+							if (infoList == null) {
+								infoList = [];
+								spanInfoMap[nowRow + j + ""] = infoList;
+							}
+							var spanInfo = {};
+							spanInfo["size"] = colSpan;
+							spanInfo["index"] = count;
+							infoList.push(spanInfo);
+						}
+					}
+				}
+				if (count == colCount) {
+		}}
+			</tr>
+		{{
+					//行记录信息复位
+					count = 0;
+					rowIndex = -1;
+					infoArr = null;
+					nowRow++;
+				}
+			
+				//最后一个控件渲染完，填充一行
+				if(compIndex == listSize && count != 0){
+					for (; count < colCount; count++){
+		}}
+						<td>&nbsp;</td>
+		{{
+					}
+				}
+			}
+			
+		}}
+			</form>
+		</table>
+	</div>
 </script>
