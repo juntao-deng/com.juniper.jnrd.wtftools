@@ -60,6 +60,7 @@ var bootstrapWizardCreate = function(element, options) {
 		$index = obj.nextIndex();
 		if($index > obj.navigationLength()) {
 		} else {
+			$navigation.find('li:eq('+ ($index - 1) +')').addClass("done");
 			$navigation.find('li:eq('+$index+') a').tab('show');
 		}
 	};

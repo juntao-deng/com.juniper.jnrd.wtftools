@@ -54,7 +54,7 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 				this.menuitems.push(menuitem);
 				return menuitem;
 			},
-			getMenuItem : function(itemid){
+			item : function(itemid){
 				for(var i = 0; i < this.menuitems.length; i ++){
 					if(this.menuitems[i].id == itemid)
 						return this.menuitems[i];

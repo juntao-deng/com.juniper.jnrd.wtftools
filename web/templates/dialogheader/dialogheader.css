@@ -36,6 +36,7 @@
   padding: .5em;
 }
 .modal .modal-body {
+  max-height: 2000px;
   padding: 1em 2em;
 }
 .modal p {

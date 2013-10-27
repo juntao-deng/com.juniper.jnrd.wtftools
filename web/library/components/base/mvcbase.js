@@ -568,37 +568,52 @@ define(function(){
 	 		var requireContainer = [];
 	 		FwBase.Wtf.Application.detectTemplate(requireList, requireModelList, requireControllerList, requireContainer);
 	 		if(requireList.length > 0)
-	 			Util.requireOnePack(requirejs, {htmlArr : requireList, modelJsArr : requireModelList, controllerArr : requireControllerList, containerArr : requireContainer, finalCallback : callback});
+	 			FwBase.Wtf.Application.doParseTemplate(requireList, requireModelList, requireControllerList, requireContainer, callback);
 	 		else
 	 			callback();
 	 	},
 	 	
-//	 	doParseTemplate : function(requireList, requireCssList, requireContainer, callback){
-//	 		Util.requireOnePack();
-//	 		requirejs(requireCssList, function(){
-//	 			requirejs(requireList, function(){
-//	 				for(var i = 0; i < arguments.length; i ++){
-//	 					var children = requireContainer[i].children();
-//	 					if(children.length > 0)
-//	 						children.remove();
-//	 					requireContainer[i].html(arguments[i]);
-//	 					var positions = requireContainer[i].find("[wtfpos]");
-//	 					//TODO
-//	 					if(positions.length > 0 && children.length > 0)
-//	 						positions.html(children);
-//	 				}
-//	 				var requireList = [];
-//	 		 		var requireModelList = [];
-//	 		 		var requireControllerList = [];
-//	 		 		var requireContainer = [];
-//	 				FwBase.Wtf.Application.detectTemplate(requireList, requireModelList, requireControllerList, requireContainer);
-//	 				if(requireList.length > 0)
-//	 					FwBase.Wtf.Application.doParseTemplate(requireList, requireModelList, requireControllerList, requireContainer, callback);
+	 	doParseTemplate : function(requireList, requireModelList, requireControllerList, requireContainer, callback){
+	 		requirejs(requireList, function(){
+				for(var i = 0; i < arguments.length; i ++){
+					var children = requireContainer[i].children();
+ 					if(children.length > 0)
+ 						children.remove();
+ 					requireContainer[i].html(arguments[i]);
+ 					var positions = requireContainer[i].find("[wtfpos]");
+ 					if(positions.length > 0 && children.length > 0)
+ 						positions.html(children);
+				}
+				requirejs(requireModelList, function(){
+					for(var i = 0; i < arguments.length; i ++){
+						if(arguments[i] != null)
+							arguments[i].exec();
+					}
+					
+					var requireList1 = [];
+					var requireModelList1 = [];
+					var requireControllerList1 = [];
+					var requireContainer1 = [];
+					var needCallback = false;
+					FwBase.Wtf.Application.detectTemplate(requireList1, requireModelList1, requireControllerList1, requireContainer1);
+					if(requireList1.length == 0){
+						needCallback = true;
+					}
+					requirejs(requireControllerList, function() {
+						for(var i = 0; i < arguments.length; i ++){
+							if(arguments[i] != null)
+								arguments[i].exec();
+						}
+						if(needCallback && callback)
+							callback();
+					});
+	 				if(requireList1.length > 0)
+	 					FwBase.Wtf.Application.doParseTemplate(requireList1, requireModelList1, requireControllerList1, requireContainer1, callback);
 //	 				else
 //	 					callback();
-//	 			});
-//	 		});
-//	 	},
+				});
+			});
+	 	},
 	 	detectTemplate : function(requireList, requireModelList, requireControllerList, requireContainer) {
 	 		var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
 	 		$("[wtftype='template']").each(function(ele){
@@ -669,11 +684,11 @@ define(function(){
 				});
 //				var app = FwBase.Wtf.Application.current();
 //				app.component(ctrl);
-				var tempCallback = $app.tempCallback;
-				if(tempCallback != null){
-					$app.tempCallback = null;
-					tempCallback.apply($app);
-				}
+//				var tempCallback = $app.tempCallback;
+//				if(tempCallback != null){
+//					$app.tempCallback = null;
+//					tempCallback.apply($app);
+//				}
 				if(callback)
 					callback();
 				

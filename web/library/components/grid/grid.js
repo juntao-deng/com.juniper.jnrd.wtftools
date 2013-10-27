@@ -79,7 +79,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					var model = new FwBase.Wtf.Model();
 					$app.model(str, model);
 				}
-				this.setDefault({pagination: {rowNum : 10, rowList: [10, 20, 30]}, minHeight : 250, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
+				this.setDefault({pagination: {rowNum : 15, rowList: [10, 15, 30]}, minHeight : 300, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
 			},
 			mockMetadata : function() {
 				var model = new FwBase.Wtf.Model(this.id + "_model", {});

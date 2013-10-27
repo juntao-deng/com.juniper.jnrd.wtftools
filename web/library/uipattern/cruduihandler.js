@@ -8,8 +8,8 @@ define(["./crudaction"], function(){
 		if(action && typeof action == 'function'){
 			action.call(this, obj);
 		}
-		else{
-			alert(obj.source.id + "->" + id + " performed");
-		}
+//		else{
+//			alert(obj.source.id + "->" + id + " performed");
+//		}
 	};
 });

@@ -2,7 +2,7 @@ define(function(){
 	var UIPattern = FwBase.Wtf.UIPattern = {};
 	FwBase.Wtf.UIPattern.defaults = {
 		dialogWidth : 800,
-		dialogHeight : 600,
+		dialogHeight : 420,
 		editform : "editform"
 	};
 	FwBase.Wtf.UIPattern.Action = {};
@@ -11,7 +11,7 @@ define(function(){
 		var height = param.eventCtx.height ? param.eventCtx.height : UIPattern.defaults.dialogHeight;
 		var url = param.eventCtx.url;
 		if(url == null || url == ""){
-			var appid = $app.id;
+			var appid = this.app.id;
 			url = appid + "/" + UIPattern.defaults.editform;
 		}
 		AppUtil.navigateToDialog(url, null, {width: width, height : height});

@@ -133,6 +133,8 @@ function commonCallback() {
 		callback = FwBase.Wtf.Design.DesignSupport.designable;
 	FwBase.Wtf.Application.init(callback);
 	window.Jnrd = FwBase;
+	//preload some componenets, TODO
+	requireComponent(["button"]);
 }
 
 window.wtfTempLoaderContainer = [];

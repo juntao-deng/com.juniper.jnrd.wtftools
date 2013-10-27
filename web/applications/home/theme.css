@@ -45,21 +45,21 @@
   margin: 0em;
   margin-right: -1em;
 }
-.navbar .nav > li > a {
+.topbar > a {
   color: #fff;
   text-shadow: none;
 }
-.navbar .nav > li:hover {
+.topbar > li:hover {
   background-color: #444;
 }
-.navbar .nav > li > a:hover {
+.topbar > li > a:hover {
   color: #fff;
 }
-.navbar .dropdown-menu a:hover {
+.topbar > .dropdown-menu a:hover {
   background: none;
   color: #000;
 }
-.navbar .nav li.dropdown.open > .dropdown-toggle {
+.topbar > li.dropdown.open > .dropdown-toggle {
   background-color: #444;
   color: #fff;
 }

@@ -1,75 +1,70 @@
-define(["base/base", "css!./wizardctrl"], function(base){
+define(["base/base", "./wizardctrl", "css!./wizardctrl"], function(base){
 	FwBase.Wtf.View.Controls.Wizard = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
 	$.extend(FwBase.Wtf.View.Controls.Wizard.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, {
-		template: _.template($('#sys_atom_controls_wizard').html()),
+		templateInit: function(){
+			return _.template($('#sys_atom_controls_wizard').html());
+		},
 		mockMetadata : function() {
 			this.setDefault({title:'Form Wizard' , activeItem: 'step1', items: [{id:'step1', text : 'Step 1, Do Something'}, {id:'step2', text : 'Do something again'}, {id:'step3', text : 'The last thing to do'}]});
 		},
 		makeDefault : function(){
+			this.setDefault({close : false, finish : false});
 		},
 		
 		postInit : function() {
 			this.wizard = this.el.children('#wizard');
-			this.fixpages();
 			this.wizardContent = this.wizard.find(".tab-content");
 			this.wizardContent.append(this.wizard.siblings());
+			this.fixpages();
+			this.wizardObj = this.wizard.bootstrapWizard({}).data("bootstrapWizard");
+			var oThis = this;
+			var previousBtContainer = oThis.wizard.find("#btnprevious");
+			oThis.previousBt = new FwBase.Wtf.View.Controls["Button"](previousBtContainer, {text : 'Previous'}, "btnprevious");
+			oThis.previousBt.on('click', function(){
+				oThis.previous();
+			});
+			
+			var nextBtContainer = oThis.wizard.find("#btnnext");
+			oThis.nextBt = new FwBase.Wtf.View.Controls["Button"](nextBtContainer, {text : 'Next', style : 'primary'}, "btnnext");
+			oThis.nextBt.on('click', function(){
+				oThis.next();
+			});
+			
+			var finishBtContainer = oThis.wizard.find("#btnfinish");
+			oThis.finishBt = new FwBase.Wtf.View.Controls["Button"](finishBtContainer, {text : 'Finish'}, "btnfinish");
+			
+			var closeBtContainer = oThis.wizard.find("#btnclose");
+			oThis.closeBt = new FwBase.Wtf.View.Controls["Button"](closeBtContainer, {text : 'Close'}, "btnclose");
 		},
-		
+		previous : function() {
+			var eventCtx = {};
+			this.trigger("previous", {source : this, eventCtx : eventCtx});
+			if(eventCtx.stop){
+				return;
+			}
+			this.wizardObj.previous();
+		},
+		next : function() {
+			var eventCtx = {};
+			this.trigger("next", {source : this, eventCtx : eventCtx});
+			if(eventCtx.stop){
+				return;
+			}
+			this.wizardObj.next();
+		},
 		fixpages : function() {
 			for(var i = 0; i < this.metadata.items.length; i ++){
 				var item = this.metadata.items[i];
-				var itemDiv = this.wizard.children("#" + item.id);
+				var itemDiv = this.wizard.find("#" + item.id);
+				itemDiv.addClass("tab-pane");
+				if(i == 0)
+					itemDiv.addClass("active");
 				if(itemDiv.length > 0)
 					continue;
 			}
 		},
-		insertPage : function(itemMetadata, index){
-			var trueIndex = index;
-			if(typeof itemMetadata != 'number')
-				this.metadata.items.splice(index, 0, itemMetadata);
-			else
-				trueIndex = itemMetadata;
-			var md = this.metadata.items[trueIndex];
-			this.wizard.children()[trueIndex].after('<div id="' + md.id + '" wtftype="tabitem"></div>');
-		},
-		itemContent : function(id, content) {
-			if(arguments.length == 1)
-				return this.wizard.children("#" + id).html();
-			this.wizard.children("#" + id).html(content);
-		},
-		active : function(item) {
-			if(typeof item == 'integer'){
-				this.wizards('option', 'active', item);
-			}
-			else{
-				var index = this.itemIndex(item);
-				this.wizards('option', 'active', index);
-			}
-		},
-		itemIndex : function(item){
-			
-		},
-		reInit : function(meta) {
-			if(this.slider)
-				this.slider.slider('destroy');
-			for(var i in meta){
-				this.metadata[i] = meta[i];
-			}
-			if(this.metadata.values.length == 1)
-				this.metadata.range = false;
-			this.postInit();
-		},
-		enable : function() {
-			if(arguments.length == 0)
-				return true;
-		},
-		values : function() {
-			if(arguments.length == 0)
-				return this.slider.slider("values");
-			this.slider.slider("values", arguments[0]);
-		}
 	});
 	return FwBase.Wtf.View.Controls.Wizard;
 });
