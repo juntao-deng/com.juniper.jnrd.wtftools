@@ -1,5 +1,11 @@
 <script type="text/template" id="sys_atom_controls_button">
 	<button id="button" type="button" class="{{= cssclass}}">
+		{{if(icon != null && icon != ""){
+		}}
+			<i class="{{= icon}}"></i>
+		{{
+			}
+		}}
 		{{= text}}
 	</button>
 </script>

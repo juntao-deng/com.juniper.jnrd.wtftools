@@ -1,4 +1,4 @@
-define(function(){
+define(["./storage"], function(){
 	FwBase.Wtf.Client.restServices["homeinfos"] = {
 		GET_homeinfos : function(params) {
 			return {

@@ -22,7 +22,7 @@ define(["base/base"], function(base){
 				});
 			},
 			makeDefault : function(){
-				this.setDefault({style : "", text : "Button"});
+				this.setDefault({icon: null, style : "", text : "Button"});
 				this.metadata.cssclass = "btn btn-" + this.metadata.style;
 			}
 		}

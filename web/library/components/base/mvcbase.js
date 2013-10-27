@@ -6,7 +6,7 @@ define(function(){
 	 FwBase.Wtf.View.Controls = {};
 	 
 	 
-	 FwBase.Wtf.Model = function(metadata){
+	 window.Model = FwBase.Wtf.Model = function(metadata){
 		if(metadata == null)
 			metadata = {};
 	 	this.metadata = this.makeDefault(metadata);
@@ -214,7 +214,7 @@ define(function(){
 	 		var success = arguments[2].success;
 	 		arguments[2].success = function() {
 	 			var respObj = arguments[0];
-	 			if(typeof respObj.totalRecords == 'undefined')
+	 			if(respObj == null || typeof respObj.totalRecords == 'undefined')
 	 				success.apply(this, arguments);
 	 			else{
 	 				arguments[0] = respObj.records;
@@ -730,12 +730,18 @@ define(function(){
   	 		if(typeof model == "string" && arguments.length == 1)
   	 			return this.modelMap[model];
   	 		else if(typeof model == "string"){
-  	 			arguments[1].app = this;
-  	 			this.modelMap[model] = arguments[1];
+  	 			var obj = arguments[1];
+  	 			if(!(obj instanceof Model))
+  	 				obj = new Model(obj);
+  	 			obj.app = this;
+  	 			this.modelMap[model] = obj;
   	 		}
   	 		else{
-  	 			model.app = this;
-  	 			this.modelMap[model.id] = model;
+  	 			var obj = model;
+  	 			if(!(obj instanceof Model))
+  	 				obj = new Model(obj);
+  	 			obj.app = this;
+  	 			this.modelMap[model.id] = obj;
   	 		}
   	 	},
   	 	

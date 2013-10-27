@@ -7,9 +7,10 @@ define(["base/base"], function(base){
 		template: _.template($('#sys_atom_controls_form').html()),
 		postInit : function(){
 			var oThis = this;
-			requireComponent(["input_base", "input"], function(){
+			requireComponent(["input_base", "input", "input_ip"], function(){
 				for(var i = 0; i < oThis.metadata.elements.length; i ++){
 					var elemeta = oThis.metadata.elements[i];
+					elemeta.labelWidth = oThis.metadata.labelWidth;
 					var container = oThis.el.find(".formelement#" + elemeta.name);
 					oThis.elements.push(new FwBase.Wtf.View.Controls[Util.capitalize(elemeta.type)](container, elemeta, elemeta.name));
 				}
