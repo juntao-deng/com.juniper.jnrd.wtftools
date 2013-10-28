@@ -19,11 +19,11 @@ INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.111'
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.112','011','Design Test','Y','wtf/designtest');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.113','011','Images','Y','wtf/imagetest');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Landing Page','Y','wtf/landingpage');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Landing Page Tree','Y','wtf/landingpagetree');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Input Components','Y','wtf/inputtest');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Tab Layout','Y','wtf/tabtest');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Forms','Y','wtf/formtest');
-INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.114','011','Wizard Form','Y','wtf/wizardform');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.115','011','Landing Page Tree','Y','wtf/landingpagetree');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.116','011','Input Components','Y','wtf/inputtest');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.117','011','Tab Layout','Y','wtf/tabtest');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.118','011','Forms','Y','wtf/formtest');
+INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('0.119','011','Wizard Form','Y','wtf/wizardform');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('1.010','020','Device Management','Y','rest/devicemgr');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('1.020','020','Device Discovery','Y','rest/devicediscovery');
 INSERT INTO `wtf_navitem` (`id`,`groupId`,`name`,`target`,`url`) VALUES ('1.030','020','Specify Probes','Y','rest/specifyprobes');

@@ -6,8 +6,7 @@ wdefine(function(){
 		                                {name : "button", value : "button"},
 									    {name : "image", value : "image"},
 									    {name : "menu", value : "menu"},
-									    {name : "slider", value : "slider"},
-									    {name : "wizard", value : "wizard"}
+									    {name : "slider", value : "slider"}
 									    ]},
 		    {label: 'Container', options:[
 		                                {name : "tab", value : "tab"},

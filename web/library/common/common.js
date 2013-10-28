@@ -24,6 +24,11 @@ if(window.contextMappings){
 				css : window.frameworkPath + "ext-lib/requirejs/css",
 				templ : window.frameworkPath + "ext-lib/requirejs/templ",
 				text : window.frameworkPath + "ext-lib/requirejs/text",
+				storage : window.frameworkPath + 'rest/storage',
+				flot: window.frameworkPath + 'ext-lib/flot/jquery.flot',
+		    	flotpie: window.frameworkPath + 'ext-lib/flot/jquery.flot.pie',
+		    	flotcategories: window.frameworkPath + 'ext-lib/flot/jquery.flot.categories',
+		    	inputmask : window.frameworkPath + 'ext-lib/inputmask/jquery.inputmask.bundle'
 			}
 		});
 		window.requirelibs[i] = requireUtil;
@@ -51,7 +56,8 @@ window.globalRequireConfig = {
     	flot: '../../ext-lib/flot/jquery.flot',
     	flotpie: '../../ext-lib/flot/jquery.flot.pie',
     	flotcategories: '../../ext-lib/flot/jquery.flot.categories',
-    	inputmask : '../../ext-lib/inputmask/jquery.inputmask.bundle'
+    	inputmask : '../../ext-lib/inputmask/jquery.inputmask.bundle',
+    	storage : '../../rest/storage'
     }
 };
 

@@ -1,6 +1,6 @@
-define(["./storage"], function(){
+define(["storage"], function(){
 	FwBase.Wtf.Client.restServices["homeinfos"] = {
-		GET_homeinfos : function(params) {
+		GET_root : function(params) {
 			return {
 				"navList":[{"id":"010","code":"010","name":"Dashboard","icon":"icon-dashboard","url":"","collapse":"Y"},
 				           {"id":"011","code":"011","name":"Samples","icon":"icon-dashboard","url":"","collapse":null},

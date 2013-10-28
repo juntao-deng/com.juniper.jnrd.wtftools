@@ -1,5 +1,5 @@
-define(["./storage"], function(){
-	var serviceName = "securitystores";
+define(["storage"], function(){
+	var serviceName = "demosecuritystores";
 	FwBase.Wtf.Client.restServices[serviceName] = {
 		GET_root : function(params) {
 			if(Storage.get(serviceName) != null){

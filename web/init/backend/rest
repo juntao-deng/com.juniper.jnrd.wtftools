@@ -59,4 +59,10 @@ public class #ENTITY_NAME#RestService {
 	public void delete#ENTITY_NAME#(@PathParam("id") Integer id){
 		service.delete#ENTITY_NAME#(id);
 	}
+	
+	@POST
+	@Path("/action/{actionseg}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void processAction(@PathParam("actionseg") PathSegment seg){
+	}
 }

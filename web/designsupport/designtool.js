@@ -128,7 +128,7 @@ define(function(){
 				FwBase.Wtf.Design.DesignSupport.currParent.html("");
 				FwBase.Wtf.Design.DesignSupport.syncHtml();
 			},
-			editComponentAttr : function() {
+			editComponentAttr : function(obj) {
 				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
 				var url = window.frameCtx + "/../designsupport/compattr/" + type;
 				var height = 400;
@@ -136,6 +136,7 @@ define(function(){
 //				if(type == 'grid')
 //					width = 900;
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:width, height: height});
+				obj.eventCtx.stop = true;
 			},
 			editModel : function(){
 				var url = window.frameCtx + "/../designsupport/model";
@@ -176,12 +177,9 @@ define(function(){
 			},
 			
 			fireInput : function(str) {
-				alert(str);
 				var json = $.evalJSON(str);
-				alert(json);
 				var eventId = json['eventId'];
 				var callback = FwBase.Wtf.Design.DesignSupport.eventPool[eventId];
-				alert(callback);
 				if(callback){
 					FwBase.Wtf.Design.DesignSupport.eventPool[eventId] = null;
 					callback(json);

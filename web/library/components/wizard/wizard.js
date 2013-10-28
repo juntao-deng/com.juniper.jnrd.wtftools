@@ -7,7 +7,7 @@ define(["base/base", "./wizardctrl", "css!./wizardctrl"], function(base){
 			return _.template($('#sys_atom_controls_wizard').html());
 		},
 		mockMetadata : function() {
-			this.setDefault({title:'Form Wizard' , activeItem: 'step1', items: [{id:'step1', text : 'Step 1, Do Something'}, {id:'step2', text : 'Do something again'}, {id:'step3', text : 'The last thing to do'}]});
+			this.setDefault({title:'Form Wizard' , activeItem: 'step1', items: [{id:'step1', text : 'Step 1, Do Something'}, {id:'step2', text : 'Do something again'}]});
 		},
 		makeDefault : function(){
 			this.setDefault({close : false, finish : true});
