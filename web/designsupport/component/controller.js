@@ -19,11 +19,18 @@ wdefine(function(){
 	
 	function insertComponent(id, type){
 		var str = null;
-		if(type == 'tab' || type == 'card' || type == 'wizard'){
+		if(type == 'tab' || type == 'card'){
 			str = '<div id="' + id + '" wtftype="' + type + '">' +
 					'<div id="item1"><div wtftype="container" style="min-height:200px"></div></div>' + 
 					'<div id="item2"><div wtftype="container" style="min-height:200px"></div></div>' + 	
 			      '</div>';
+		}
+		else if(type == 'wizard'){
+			str = '<div id="' + id + '" wtftype="' + type + '">' +
+			'<div id="step1"><div wtftype="container" style="min-height:200px"></div></div>' + 
+			'<div id="step2"><div wtftype="container" style="min-height:200px"></div></div>' + 
+			'<div id="step3"><div wtftype="container" style="min-height:200px"></div></div>' + 	
+	      '</div>';
 		}
 		else
 			str = '<div id="' + id + '" wtftype="' + type + '"></div>';

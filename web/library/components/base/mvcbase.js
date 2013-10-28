@@ -198,6 +198,29 @@ define(function(){
 	 		this.store = store;
 	 		this.dataset = dataset;
 	 	},
+	 	action : function(actionName, options){
+	 		var url = this.dataset.metadata.url;
+	 		var type = "create";
+	 		this.url = url + "/action/" + actionName;
+	 		
+//	 		var success = arguments[2].success;
+//	 		arguments[2].success = function() {
+//	 			var respObj = arguments[0];
+//	 			if(respObj == null || typeof respObj.totalRecords == 'undefined')
+//	 				success.apply(this, arguments);
+//	 			else{
+//	 				arguments[0] = respObj.records;
+//	 				success.apply(this, arguments);
+//	 			}
+//	 		}
+	 		
+	 		if(window.clientMode){
+	 			this.syncFromClient.call(this, type, this, options);
+	 		}
+	 		else{
+	 			Backbone.sync.call(this, type, this, options);
+	 		}
+	 	},
 	 	sync : function() {
 	 		var url = this.dataset.metadata.url;
 	 		var type = methodMap[arguments[0]];
@@ -279,12 +302,13 @@ define(function(){
 	 			return;
 	 		}
 	 		var method = null;
-	 		var params = null;
+	 		var params = [];
 	 		if(segs[3] == 'ctx'){
 	 			method = "root";
 	 		}
 	 		else if(segs[3] == 'action'){
-	 			method = "action_" + segs[4];
+	 			method = "action";
+	 			params.push(segs[4]);
 	 		}
 	 		else if(segs[4] != null){
 	 		}

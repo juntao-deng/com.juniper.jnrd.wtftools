@@ -12,6 +12,7 @@ wdefine(function(){
 		    {label: 'Container', options:[
 		                                {name : "tab", value : "tab"},
 									    {name : "card", value : "card"},
+									    {name : "wizard", value : "wizard"}
 									    ]},
 									    
 		    {label: 'Input', options:[

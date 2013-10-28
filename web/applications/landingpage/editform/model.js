@@ -10,10 +10,10 @@ wdefine(function(){
 	                                                			     {name: 'password', label: 'Password : ', nextrow : false, rows : 1, type:'input'}
 	                                                			]});
 	
-	$app.model("iprangemodel", {url : "ipranges"});
+	$app.model("iprangemodel", {url : "demoipranges"});
 	$app.metadata("ipthumbnails", {model: 'iprangemodel'});
 	
-	$app.model("secmodel", {url : "securitystores"});
+	$app.model("secmodel", {url : "demosecuritystores"});
 	$app.metadata("secthumbnails", {model: 'secmodel'});
 	
 });

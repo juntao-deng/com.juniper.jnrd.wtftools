@@ -1,5 +1,6 @@
 package net.juniper.wtf.core.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -10,7 +11,8 @@ public class PageResult<T> {
 	private Integer pageIndex;
 	private List<T> records;
 	public PageResult(Page<T> page){
-		this.records = page.getContent();
+		this.records = new ArrayList<T>();
+		this.records.addAll(page.getContent());
 		this.pageSize = page.getSize();
 		this.totalRecords = page.getTotalElements();
 		this.pageIndex = page.getNumber();

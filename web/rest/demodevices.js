@@ -3,7 +3,7 @@ define(["./storage"], function(){
 	FwBase.Wtf.Client.restServices[serviceName] = {
 		GET_root : function(params) {
 			if(Storage.get(serviceName) != null){
-				return Storage.get(serviceName);
+				return $.evalJSON(Storage.get(serviceName));
 			}
 			return null;
 		},
@@ -37,8 +37,11 @@ define(["./storage"], function(){
 		},
 		PUT_root : function(obj) {
 		},
-		POST_action_name : function(action){
-			
+		POST_action : function(action){
+			var list = [];
+			for(var i = 0; i < 10; i ++)
+				list.push({id: i, name:'name' + i, address: 'address_' + i});
+			Storage.add(serviceName, $.toJSON(list));
 		}
 	};
 });

@@ -10,7 +10,7 @@ define(["base/base", "./wizardctrl", "css!./wizardctrl"], function(base){
 			this.setDefault({title:'Form Wizard' , activeItem: 'step1', items: [{id:'step1', text : 'Step 1, Do Something'}, {id:'step2', text : 'Do something again'}, {id:'step3', text : 'The last thing to do'}]});
 		},
 		makeDefault : function(){
-			this.setDefault({close : false, finish : false});
+			this.setDefault({close : false, finish : true});
 		},
 		
 		postInit : function() {
@@ -34,6 +34,9 @@ define(["base/base", "./wizardctrl", "css!./wizardctrl"], function(base){
 			
 			var finishBtContainer = oThis.wizard.find("#btnfinish");
 			oThis.finishBt = new FwBase.Wtf.View.Controls["Button"](finishBtContainer, {text : 'Finish'}, "btnfinish");
+			oThis.finishBt.on('click', function(){
+				oThis.finish();
+			});
 			
 			var closeBtContainer = oThis.wizard.find("#btnclose");
 			oThis.closeBt = new FwBase.Wtf.View.Controls["Button"](closeBtContainer, {text : 'Close'}, "btnclose");
@@ -53,6 +56,13 @@ define(["base/base", "./wizardctrl", "css!./wizardctrl"], function(base){
 				return;
 			}
 			this.wizardObj.next();
+		},
+		finish : function() {
+			var eventCtx = {};
+			this.trigger("finish", {source : this, eventCtx : eventCtx});
+			if(eventCtx.stop){
+				return;
+			}
 		},
 		fixpages : function() {
 			for(var i = 0; i < this.metadata.items.length; i ++){
