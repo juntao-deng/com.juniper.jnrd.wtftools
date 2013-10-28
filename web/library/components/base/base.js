@@ -17,12 +17,12 @@ define(["base/listener"], function(){
 				FwBase.Wtf.View.Controls.BaseControl.instances[ct] = 0;
 			}
 			this.instance = (FwBase.Wtf.View.Controls.BaseControl.instances[ct] ++);
-			this.setDefault({instanceId: this.instance});
+//			this.setDefault({instanceId: this.instance});
 			this.makeDefault();
-			this.setDefault({enable : true, visible : true, compId: this.id});
+			this.setDefault({enable : true, visible : true});
 			if(this.template == null)
 				this.template = this.templateInit();
-			var childHtml = this.template(this.metadata);
+			var childHtml = this.template($.extend(null, this.metadata, {instanceId: this.instance, compId: this.id}));
 			this.el.append(childHtml);
 			this.postInit();
 			this.visibleAttr = this.metadata.visible;

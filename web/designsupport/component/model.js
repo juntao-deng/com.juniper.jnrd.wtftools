@@ -42,6 +42,7 @@ wdefine(function(){
 		                                {name : "grid", value : "grid"},
 									    {name : "tree", value : "tree"},
 									    {name : "form", value : "form"},
+									    {name : "thumbnails", value : "thumbnails"},
 									    {name : "chart_bar", value : "chart_bar"},
 									    {name : "chart_linear", value : "chart_linear"},
 									    {name : "chart_pie", value : "chart_pie"}

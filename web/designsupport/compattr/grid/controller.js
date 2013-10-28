@@ -30,6 +30,7 @@ wdefine(function(){
 			model.page().reset();
 			model.page().add(columnInfos);
 		}
+		$app.attr("restservice", infos.restservice);
 		if(infos.generateClass != null){
 			$app.attr('generateClass', infos.generateClass);
 			alert("The restful service for class '" + infos.generateClass + "' doesn't exist, it will be created after you click the 'Save Changes' Button");
@@ -65,7 +66,7 @@ wdefine(function(){
 			columns[i] = rows[i].toJSON();
 		}
 		
-		var md = {'columns': columns, editable : editableattr};
+		var md = {model : $app.attr('restservice') + "_model", 'columns': columns, editable : editableattr};
 		
 		var controller = null;
 		var rest = {generateClass: app.attr('generateClass')};

@@ -15,12 +15,23 @@ define(["base/base"], function(base){
 					this.listenTo(this.model, "change", this.changeRow);
 				}
 				this.thumbnails = this.el.children('#thumbnails');
+				
+				if(this.metadata.mock){
+					this.doAddRow({title : 'Thumbnail1', value : 'Thumbnail1'});
+					this.doAddRow({title : 'Thumbnail2', value : 'Thumbnail2'});
+				}
+			},
+			mockMetadata : function(){
+				this.setDefault({mock : true});
 			},
 			makeDefault : function(){
 				this.setDefault({binding: {id: 'id', title : null, value : 'value'}});
 			},
 			addRow : function(obj) {
 				var row = obj.row.toJSON();
+				this.doAddRow(row);
+			},
+			doAddRow : function(row) {
 				var value = row[this.metadata.binding.value];
 				//just for the demo
 				if(value == null)

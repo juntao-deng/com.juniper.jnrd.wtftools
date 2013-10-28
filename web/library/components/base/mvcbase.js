@@ -750,22 +750,24 @@ define(function(){
   	 			view.destroy();
   	 	},
   	 	
-  	 	model : function(model){
-  	 		if(typeof model == "string" && arguments.length == 1)
-  	 			return this.modelMap[model];
-  	 		else if(typeof model == "string"){
+  	 	model : function(){
+  	 		if(arguments.length == 1){
+  	 			if(arguments[0] == null)
+  	 				return null;
+  	 			if(typeof arguments[0] == "string")
+  	 				return this.modelMap[arguments[0]];
+  	 			var obj = arguments[0];
+  	 			if(!(obj instanceof Model))
+  	 				obj = new Model(obj);
+  	 			obj.app = this;
+  	 			this.modelMap[arguments[0].id] = obj;
+  	 		}
+  	 		else if(arguments.length == 2){
   	 			var obj = arguments[1];
   	 			if(!(obj instanceof Model))
   	 				obj = new Model(obj);
   	 			obj.app = this;
-  	 			this.modelMap[model] = obj;
-  	 		}
-  	 		else{
-  	 			var obj = model;
-  	 			if(!(obj instanceof Model))
-  	 				obj = new Model(obj);
-  	 			obj.app = this;
-  	 			this.modelMap[model.id] = obj;
+  	 			this.modelMap[arguments[0]] = obj;
   	 		}
   	 	},
   	 	
@@ -800,6 +802,8 @@ define(function(){
   	 	 * will cause current dialog be closed
   	 	 */
   	 	close : function() {
+  	 		if($app.parent)
+  	 			AppUtil.current($app.parent);
   	 		FwBase.Wtf.Application.closeDialog();
   	 	}
   	 });
