@@ -199,6 +199,8 @@ define(function(){
 	 		this.dataset = dataset;
 	 	},
 	 	action : function(actionName, options){
+	 		if(options == null)
+	 			options = {};
 	 		var url = this.dataset.metadata.url;
 	 		var type = "create";
 	 		this.url = url + "/action/" + actionName;
@@ -802,8 +804,10 @@ define(function(){
   	 	 * will cause current dialog be closed
   	 	 */
   	 	close : function() {
-  	 		if($app.parent)
+  	 		if($app.parent){
+  	 			$app = $app.parent;
   	 			AppUtil.current($app.parent);
+  	 		}
   	 		FwBase.Wtf.Application.closeDialog();
   	 	}
   	 });

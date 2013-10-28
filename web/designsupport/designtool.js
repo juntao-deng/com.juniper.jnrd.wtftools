@@ -77,13 +77,13 @@ define(function(){
 					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
 						if(obj.trigger.id == "addlayout")
-							FwBase.Wtf.Design.DesignSupport.addLayout();
+							FwBase.Wtf.Design.DesignSupport.addLayout(obj);
 						else if(obj.trigger.id == "addtemplate")
-							FwBase.Wtf.Design.DesignSupport.addTemplate();
+							FwBase.Wtf.Design.DesignSupport.addTemplate(obj);
 						else if(obj.trigger.id == "addcomponent")
-							FwBase.Wtf.Design.DesignSupport.addComponent();
+							FwBase.Wtf.Design.DesignSupport.addComponent(obj);
 						else if(obj.trigger.id == "clear")
-							FwBase.Wtf.Design.DesignSupport.clearContent();
+							FwBase.Wtf.Design.DesignSupport.clearContent(obj);
 					});
 					return menu;
 				}
@@ -102,7 +102,7 @@ define(function(){
 					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
 						if(obj.trigger.id == "edit"){
-							FwBase.Wtf.Design.DesignSupport.editComponentAttr();
+							FwBase.Wtf.Design.DesignSupport.editComponentAttr(obj);
 						}
 					});
 					return menu;
