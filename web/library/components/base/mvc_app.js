@@ -5,6 +5,7 @@ define(function(){
   	 	 this.modelMap = {};
   	 	 this.componentsMap = {};
   	 	 this.metadataMap = {};
+  	 	 this.widgetMap = {};
   	 	 this.attrs = {};
   	 };
   	 
@@ -145,6 +146,9 @@ define(function(){
 	 		return AppUtil._controlMap[id];
 	 	},
 	 	repaint : function(callbacks) {
+	 		if(callbacks == null || typeof callbacks == "function"){
+	 			callbacks = {oriCallback: callbacks};
+	 		}
 //	 		var func = function(){
 //	 			AppUtil.parseHtml(callbacks);
 //	 		};
@@ -184,23 +188,32 @@ define(function(){
 					controllerArr.push(rqhtml + id + "/model");
 				}
 				requireUtil(htmlArr, function(){
+					var containers = [];
 					for(var j = 0; j < arguments.length; j ++){
 						var html = arguments[j];
 						var container = groups[i][j].container;
 						container.html(html);
+						var id = groups[i][j].id;
+						var widget = new FwBase.Wtf.Widget(id);
+						$app.widget(widget);
+						container.ctx = widget;
+						containers.push(container);
 					}
 					requireUtil(modelJsArr, function(){
-						for(var m = 0; m < arguments.length; m ++){
-							if(arguments[m] != null)
-								arguments[m].exec();
+						for(var j = 0; j < arguments.length; j ++){
+							if(arguments[j] != null)
+								arguments[j].exec();
 						}
-						
-						requireUtil(controllerArr, function() {
-							for(var m = 0; m < arguments.length; m ++){
-								if(arguments[m] != null)
-									arguments[m].exec();
-							}
-						});
+						var widgetCallback = function(){
+							requireUtil(controllerArr, function() {
+								for(var j = 0; j < arguments.length; j ++){
+									if(arguments[j] != null)
+										arguments[j].exec();
+								}
+							});
+						};
+						containers.push($(document.body));
+						AppUtil.parseHtml(containers, {widgetCallback : widgetCallback});
 					});
 				});
 			}
@@ -218,6 +231,10 @@ define(function(){
 	 			if(widgetId == null || widgetId == "")
 	 				return;
 	 			var ids = widgetId.split("/");
+	 			if(ids.length == 1){
+	 				ids[1] = ids[0];
+	 				ids[0] = window.frameCtx;
+	 			}
 	 			if(groups[ids[0]] == null){
 	 				groups[ids[0]] = [];
 	 			}
@@ -232,10 +249,7 @@ define(function(){
 	 		var requireControllerList = [];
 	 		var requireContainer = [];
 	 		AppUtil.detectTemplate(requireList, requireModelList, requireControllerList, requireContainer);
-//	 		if(requireList.length > 0)
 	 		AppUtil.doParseTemplate(requireList, requireModelList, requireControllerList, requireContainer, callbacks);
-//	 		else
-//	 			AppUtil.parseHtml(callbacks);
 	 	},
 	 	
 	 	doParseTemplate : function(requireList, requireModelList, requireControllerList, requireContainer, callbacks){
@@ -274,7 +288,8 @@ define(function(){
 						});
 					};
 					callbacks.templateCallback = templateCallback;
-					AppUtil.parseHtml(callbacks);
+					requireContainer.push($(document.body));
+					AppUtil.parseHtml(requireContainer, callbacks);
 					AppUtil.parseWidget();
 				});
 			});
@@ -296,7 +311,7 @@ define(function(){
 	 			requireContainer.push($(this));
 	 		});
 	 	},
-	 	parseHtml : function(callbacks) {
+	 	parseHtml : function(containers, callbacks) {
 	 		var typeList = [];
 //	 		var requireList = [];
 //	 		var requireHtmlList = [];
@@ -310,50 +325,55 @@ define(function(){
 	 			if(wtfType.startWith('input')){
 	 				typeList.push("input_base");
 	 			}
-	 			typeList.push(wtfType);
+	 			if(!_.contains(typeList, wtfType))
+	 				typeList.push(wtfType);
 //	 			requireList.push(wtfType + "/" + wtfType);
 //	 			requireHtmlList.push(prefix + "!" + wtfType + "/" + wtfType + ".html");
 	 		});
  			requireComponent(typeList, function(){
-				$("[wtftype]").each(function(){
-					if($(this).attr('wtfdone') != null)
-						return;
-					var wtfType = $(this).attr('wtftype');
-					if(wtfType == 'container' || wtfType == 'widget')
- 						return;
-					$(this).attr('wtfdone', 'done');
-					var id = $(this).attr("id");
-					if(id == null){
-						alert("id can not be null for element with wtftype:" + wtfType);
-						return;
-					}
-					var objMeta = AppUtil.current().metadata(id);
-					var attMeta = null;
-					var metadataStr = $(this).attr("wtfmetadata");
- 					if(metadataStr != null && metadataStr != ""){
-						try{
-							eval("attMeta = " + metadataStr);
+				for(var i = 0; i < containers.length; i ++){
+					var container = containers[i];
+					container.find("[wtftype]").each(function(){
+						if($(this).attr('wtfdone') != null)
+							return;
+						var wtfType = $(this).attr('wtftype');
+						if(wtfType == 'container' || wtfType == 'widget')
+	 						return;
+						$(this).attr('wtfdone', 'done');
+						var id = $(this).attr("id");
+						if(id == null){
+							alert("id can not be null for element with wtftype:" + wtfType);
+							return;
 						}
-						catch(error){
-							alert("error while parsing wtfmeta:" + metadataStr);
+						var objMeta = AppUtil.current().metadata(id);
+						var attMeta = null;
+						var metadataStr = $(this).attr("wtfmetadata");
+	 					if(metadataStr != null && metadataStr != ""){
+							try{
+								eval("attMeta = " + metadataStr);
+							}
+							catch(error){
+								alert("error while parsing wtfmeta:" + metadataStr);
+							}
+					    }
+					    if(attMeta != null){
+					    	objMeta = AppUtil.mergeMetadata(objMeta, attMeta);
+					    }
+					    if(objMeta == null)
+	 						objMeta = window.globalEmptyObj;
+						var capStr = FwBase.Wtf.Lang.Utils.capitalize(wtfType);
+						var ctrl = new FwBase.Wtf.View.Controls[capStr]($(this), objMeta, id);
+						if(container.ctx){
+							var ctx = container.ctx;
+							container.ctx = null;
+							ctx.component(ctrl);
 						}
-				    }
-				    if(attMeta != null){
-				    	objMeta = AppUtil.mergeMetadata(objMeta, attMeta);
-				    }
-				    if(objMeta == null)
- 						objMeta = window.globalEmptyObj;
-					var capStr = FwBase.Wtf.Lang.Utils.capitalize(wtfType);
-					var ctrl = new FwBase.Wtf.View.Controls[capStr]($(this), objMeta, id);
-					$app.component(ctrl);
-				});
-//				var app = AppUtil.current();
-//				app.component(ctrl);
-//				var tempCallback = $app.tempCallback;
-//				if(tempCallback != null){
-//					$app.tempCallback = null;
-//					tempCallback.apply($app);
-//				}
+						else
+							$app.component(ctrl);
+					});
+				}
+				if(callbacks.widgetCallback)
+					callbacks.widgetCallback();
 				if(callbacks.templateCallback)
 					callbacks.templateCallback();
 				if(callbacks.appCallback)
@@ -433,6 +453,12 @@ define(function(){
   	 		component.app = this;
   	 		this.componentsMap[component.id] = component;
   	 	},
+  	 	widget : function(widget){
+  	 		if(typeof widget == "string")
+  	 			return this.widgetMap[widget];
+  	 		widget.app = this;
+  	 		this.widgetMap[widget.id] = widget;
+  	 	},
   	 	metadata : function(metadata){
   	 		if(typeof metadata == "string" && arguments.length == 1)
   	 			return this.metadataMap[metadata];
@@ -448,7 +474,7 @@ define(function(){
   	 	close : function() {
   	 		if($app.parent){
   	 			$app = $app.parent;
-  	 			AppUtil.current($app.parent);
+  	 			AppUtil.current($app);
   	 		}
   	 		AppUtil.closeDialog();
   	 	}

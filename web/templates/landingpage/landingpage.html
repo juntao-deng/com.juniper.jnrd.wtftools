@@ -3,20 +3,16 @@
 		<div id="top_menu" wtftype="menu"></div>
 	</div>
 	<div class="span5">
-		<div class="row-fluid">
-			<div class="span2 btn-toolbar">
-				<div id="filterlabel" wtftype="label" wtfmetadata="{text: 'Filtered by:'}"></div>
-			</div>
-			<div class="span4">
-				<div id="queryplan" wtftype="menu"></div>
-			</div>
-			<div class="span1">
-			</div>
-			<div class="span5 btn-toolbar">
-				<div id="search" wtftype="input_search"></div>
-			</div>
-		</div>
+		<div id="filterwidget" wtftype="widget" wtfmetadata="quickfilter"></div>
 	</div>
 </div>
-<div id="main_grid" wtftype="grid">
+<div class="row-fluid">
+	<div style="position:absolute;width:200px">
+		<div id="tags_tree" wtftype="widget" wtfmetadata="tagstree">
+		</div>
+	</div>
+	<div style="margin-left:210px;">
+		<div id="main_grid" wtftype="grid">
+		</div>
+	</div>
 </div>

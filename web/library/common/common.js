@@ -56,7 +56,8 @@ function getSysArray(prefix){
     	mvc_base : prefix + 'library/components/base/mvc_base',
     	mvc_app : prefix + 'library/components/base/mvc_app',
     	mvc_view : prefix + 'library/components/base/mvc_view',
-    	mvc_model : prefix + 'library/components/base/mvc_model'
+    	mvc_model : prefix + 'library/components/base/mvc_model',
+    	mvc_widget : prefix + 'library/components/base/mvc_widget'
     }
 }
 
