@@ -20,16 +20,7 @@ if(window.contextMappings){
 		requireUtil = require.config({
 			context : 'context' + i,
 			baseUrl: window.contextMappings[i],
-			paths : {
-				css : window.frameworkPath + "ext-lib/requirejs/css",
-				templ : window.frameworkPath + "ext-lib/requirejs/templ",
-				text : window.frameworkPath + "ext-lib/requirejs/text",
-				storage : window.frameworkPath + 'rest/storage',
-				flot: window.frameworkPath + 'ext-lib/flot/jquery.flot',
-		    	flotpie: window.frameworkPath + 'ext-lib/flot/jquery.flot.pie',
-		    	flotcategories: window.frameworkPath + 'ext-lib/flot/jquery.flot.categories',
-		    	inputmask : window.frameworkPath + 'ext-lib/inputmask/jquery.inputmask.bundle'
-			}
+			paths : getSysArray(window.frameworkPath)
 		});
 		window.requirelibs[i] = requireUtil;
 		window.restlibs[i] = window.contextMappings[i] + "rest/";
@@ -39,27 +30,35 @@ if(window.contextMappings){
 
 window.globalRequireConfig = {
     baseUrl: window.frameworkPath + 'library/components',
-    paths : {
-    	text : '../../ext-lib/requirejs/text',
-    	html : '../../ext-lib/requirejs/html',
-    	css : '../../ext-lib/requirejs/css',
-    	js : '../../ext-lib/requirejs/js',
-    	templ : '../../ext-lib/requirejs/templ',
-    	jquery : '../../ext-lib/jquery/jquery-1.7.2',
-    	jqueryjson : '../../ext-lib/jquery/jquery-json-2.4',
-    	underscore: '../../ext-lib/underscore/underscore',
-    	backbone: '../../ext-lib/backbone/backbone',
-    	bootstrap: '../../ext-lib/bootstrap/bootstrap',
-    	fontawesome: '../../ext-lib/font-awesome/css/font-awesome',
-    	jqueryui: '../../ext-lib/jquery/jquery-ui',
-    	jqueryuibootstrap: '../../ext-lib/jquery/jquery-ui-bootstrap',
-    	flot: '../../ext-lib/flot/jquery.flot',
-    	flotpie: '../../ext-lib/flot/jquery.flot.pie',
-    	flotcategories: '../../ext-lib/flot/jquery.flot.categories',
-    	inputmask : '../../ext-lib/inputmask/jquery.inputmask.bundle',
-    	storage : '../../rest/storage'
-    }
+    paths : getSysArray("../../")
 };
+
+function getSysArray(prefix){
+	return {
+    	text : prefix + 'ext-lib/requirejs/text',
+    	html : prefix + 'ext-lib/requirejs/html',
+    	css : prefix + 'ext-lib/requirejs/css',
+    	js : prefix + 'ext-lib/requirejs/js',
+    	templ : prefix + 'ext-lib/requirejs/templ',
+    	jquery : prefix + 'ext-lib/jquery/jquery-1.7.2',
+    	jqueryjson : prefix + 'ext-lib/jquery/jquery-json-2.4',
+    	underscore: prefix + 'ext-lib/underscore/underscore',
+    	backbone: prefix + 'ext-lib/backbone/backbone',
+    	bootstrap: prefix + 'ext-lib/bootstrap/bootstrap',
+    	fontawesome: prefix + 'ext-lib/font-awesome/css/font-awesome',
+    	jqueryui: prefix + 'ext-lib/jquery/jquery-ui',
+    	jqueryuibootstrap: prefix + 'ext-lib/jquery/jquery-ui-bootstrap',
+    	flot: prefix + 'ext-lib/flot/jquery.flot',
+    	flotpie: prefix + 'ext-lib/flot/jquery.flot.pie',
+    	flotcategories: prefix + 'ext-lib/flot/jquery.flot.categories',
+    	inputmask : prefix + 'ext-lib/inputmask/jquery.inputmask.bundle',
+    	storage : prefix + 'rest/storage',
+    	mvc_base : prefix + 'library/components/base/mvc_base',
+    	mvc_app : prefix + 'library/components/base/mvc_app',
+    	mvc_view : prefix + 'library/components/base/mvc_view',
+    	mvc_model : prefix + 'library/components/base/mvc_model'
+    }
+}
 
 requirejs.config(window.globalRequireConfig);
 

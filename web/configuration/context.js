@@ -27,14 +27,21 @@ var req = document.createElement("script");
 req.src = window.frameworkPath + "ext-lib/requirejs/require.js";
 document.body.appendChild(req);
 
-
+var ready = false;
 req.onreadystatechange = function(){
 	if(req.readyState == "loaded" || req.readyState == "complete"){
-		sys_loadCommon();
+		if(!ready){
+			ready = true;
+			sys_loadCommon();
+		}
 	} 
 };
+
 req.onload = function(){
-	sys_loadCommon();
+	if(!ready){
+		ready = true;
+		sys_loadCommon();
+	}
 };
 req.onerror = function(){
 	alert('Not Found (404): require');
