@@ -1,4 +1,4 @@
-define(function(){
+define(["../uipattern/buttonmanager"], function(){
 	 window.AppUtil = FwBase.Wtf.Application = function(id){
   		 this.id = id;
   		 this.viewMap = {};
@@ -84,6 +84,7 @@ define(function(){
 				app.webroot = pathInfo[0];
 				if(options)
 					app.parent = options.parent;
+				app.dialog = options.dialog;
 				AppUtil.current(app);
 				window.$app = app;
 				//load contents and at last execute the app logic
@@ -133,9 +134,12 @@ define(function(){
 	 	navigateToDialog : function(url, reqData, options){
 	 		requireComponent(['dialog'], function(){
 		 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
-		 		dialog.update(options);
+		 		dialog.visible(true, options);
 		 		var container = dialog.bodyContainer();
-		 		AppUtil.doNavigateTo(url, reqData, {callback : lazyDialog, parent : $app}, container);
+		 		dialog.once("close", function(){
+		 			$app.clean();
+		 		});
+		 		AppUtil.doNavigateTo(url, reqData, {/*callback : lazyDialog, */parent : $app, dialog: dialog}, container);
 	 		});
 	 	},
 	 	closeDialog : function() {
@@ -161,14 +165,18 @@ define(function(){
 	 		AppUtil.parseTemplate(callbacks);
 	 	},
 	 	
-	 	parseWidget : function(callback){
+	 	parseWidget : function(callbacks){
 	 		var groups = [];
 	 		var hasWidget = AppUtil.detectWidget(groups);
 	 		if(hasWidget)
-	 			AppUtil.doParseWidget(groups);
+	 			AppUtil.doParseWidget(groups, callbacks);
+	 		else
+	 			AppUtil.parseHtml([], callbacks);
 	 	},
 	 	
-	 	doParseWidget : function(groups){
+	 	doParseWidget : function(groups, callbacks){
+	 		if(callbacks == null)
+	 			callbacks = {};
 			var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
 			prefix += "!";
 			var rqhtml = "../widgets/";
@@ -185,7 +193,7 @@ define(function(){
 					var id = groups[i][j].id;
 					htmlArr.push(prefix + rqhtml + id + "/" + id + ".html");
 					modelJsArr.push(rqhtml + id + "/model");
-					controllerArr.push(rqhtml + id + "/model");
+					controllerArr.push(rqhtml + id + "/controller");
 				}
 				requireUtil(htmlArr, function(){
 					var containers = [];
@@ -201,19 +209,26 @@ define(function(){
 					}
 					requireUtil(modelJsArr, function(){
 						for(var j = 0; j < arguments.length; j ++){
-							if(arguments[j] != null)
+							if(arguments[j] != null){
+								var id = groups[i][j].id;
+								window.$widget = $app.widget(id);
 								arguments[j].exec();
+							}
 						}
 						var widgetCallback = function(){
 							requireUtil(controllerArr, function() {
 								for(var j = 0; j < arguments.length; j ++){
-									if(arguments[j] != null)
+									if(arguments[j] != null){
+										var id = groups[i][j].id;
+										window.$widget = $app.widget(id);
 										arguments[j].exec();
+									}
 								}
 							});
 						};
-						containers.push($(document.body));
-						AppUtil.parseHtml(containers, {widgetCallback : widgetCallback});
+//						containers.push($(document.body));
+						callbacks.widgetCallback = widgetCallback;
+						AppUtil.parseHtml(containers, callbacks);
 					});
 				});
 			}
@@ -287,10 +302,14 @@ define(function(){
 							}
 						});
 					};
+					
+					var parseWidgetCallback = function(){
+						AppUtil.parseWidget(callbacks);
+					};
 					callbacks.templateCallback = templateCallback;
 					requireContainer.push($(document.body));
-					AppUtil.parseHtml(requireContainer, callbacks);
-					AppUtil.parseWidget();
+					AppUtil.parseHtml(requireContainer, {oriCallback: parseWidgetCallback});
+					
 				});
 			});
 	 	},
@@ -345,7 +364,15 @@ define(function(){
 							alert("id can not be null for element with wtftype:" + wtfType);
 							return;
 						}
-						var objMeta = AppUtil.current().metadata(id);
+						var ctx = null;
+						if(container.ctx){
+							ctx = container.ctx;
+							container.ctx = null;
+						}
+						else
+							ctx = $app;
+						
+						var objMeta = ctx.metadata(id);
 						var attMeta = null;
 						var metadataStr = $(this).attr("wtfmetadata");
 	 					if(metadataStr != null && metadataStr != ""){
@@ -363,13 +390,7 @@ define(function(){
 	 						objMeta = window.globalEmptyObj;
 						var capStr = FwBase.Wtf.Lang.Utils.capitalize(wtfType);
 						var ctrl = new FwBase.Wtf.View.Controls[capStr]($(this), objMeta, id);
-						if(container.ctx){
-							var ctx = container.ctx;
-							container.ctx = null;
-							ctx.component(ctrl);
-						}
-						else
-							$app.component(ctrl);
+						ctx.component(ctrl);
 					});
 				}
 				if(callbacks.widgetCallback)
@@ -423,14 +444,14 @@ define(function(){
   	 			var obj = arguments[0];
   	 			if(!(obj instanceof Model))
   	 				obj = new Model(obj);
-  	 			obj.app = this;
+  	 			obj.ctx = this;
   	 			this.modelMap[arguments[0].id] = obj;
   	 		}
   	 		else if(arguments.length == 2){
   	 			var obj = arguments[1];
   	 			if(!(obj instanceof Model))
   	 				obj = new Model(obj);
-  	 			obj.app = this;
+  	 			obj.ctx = this;
   	 			this.modelMap[arguments[0]] = obj;
   	 		}
   	 	},
@@ -447,41 +468,82 @@ define(function(){
   	 		if(model)
   	 			model.destroy();
   	 	},
-  	 	component : function(component){
-  	 		if(typeof component == "string")
-  	 			return this.componentsMap[component];
-  	 		component.app = this;
-  	 		this.componentsMap[component.id] = component;
+  	 	component : function(){
+  	 		if(arguments.length == 1){
+  	 			if(arguments[0] == null)
+  	 				return null;
+  	 			if(typeof arguments[0] == "string")
+  	 				return this.componentsMap[arguments[0]];
+  	 			if(arguments[0].stateful)
+  	 				this.installButtonManager();
+  	 			arguments[0].ctx = this;
+  	 			this.componentsMap[arguments[0].id] = arguments[0];
+  	 		}
+  	 		else if(arguments.length == 2){
+  	 			var obj = arguments[1];
+  	 			obj.ctx = this;
+  	 			if(obj.stateful)
+  	 				this.installButtonManager();
+  	 			this.componentsMap[arguments[0]] = obj;
+  	 		}
+  	 	},
+  	 	installButtonManager: function(){
+  	 		if(this.buttonManager == null){
+  	 			this.buttonManager = new FwBase.Wtf.View.ButtonStateManager();
+  	 		}
   	 	},
   	 	widget : function(widget){
-  	 		if(typeof widget == "string")
-  	 			return this.widgetMap[widget];
-  	 		widget.app = this;
-  	 		this.widgetMap[widget.id] = widget;
+  	 		if(arguments.length == 1){
+  	 			if(arguments[0] == null)
+  	 				return null;
+  	 			if(typeof arguments[0] == "string")
+  	 				return this.widgetMap[arguments[0]];
+  	 			arguments[0].ctx = this;
+  	 			this.widgetMap[arguments[0].id] = arguments[0];
+  	 		}
+  	 		else if(arguments.length == 2){
+  	 			var obj = arguments[1];
+  	 			obj.ctx = this;
+  	 			this.widgetMap[arguments[0]] = obj;
+  	 		}
   	 	},
   	 	metadata : function(metadata){
-  	 		if(typeof metadata == "string" && arguments.length == 1)
-  	 			return this.metadataMap[metadata];
-  	 		else if(typeof metadata == "string"){
-  	 			this.metadataMap[metadata] = arguments[1];
+  	 		if(arguments.length == 1){
+  	 			if(arguments[0] == null)
+  	 				return null;
+  	 			if(typeof arguments[0] == "string")
+  	 				return this.metadataMap[arguments[0]];
+  	 			this.metadataMap[arguments[0].id] = arguments[0];
   	 		}
-  	 		else
-  	 			this.metadataMap[metadata.id] = metadata;
+  	 		else if(arguments.length == 2){
+  	 			var obj = arguments[1];
+  	 			this.metadataMap[arguments[0]] = obj;
+  	 		}
   	 	},
   	 	/**
   	 	 * will cause current dialog be closed
   	 	 */
   	 	close : function() {
+  	 		if($app.dialog)
+  	 			$app.dialog.close();
+  	 		else
+  	 			this.clean();
+  	 	},
+  	 	/*private*/
+  	 	clean : function() {
+  	 		$app.dialog = null;
   	 		if($app.parent){
   	 			$app = $app.parent;
   	 			AppUtil.current($app);
   	 		}
-  	 		AppUtil.closeDialog();
   	 	}
   	 });
   	 
   	 function lazyDialog(){
-  		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
+  		var dialog = $app.dialog;
  		dialog.visible(true);
+ 		dialog.once("close", function(){
+ 			$app.clean();
+ 		});
   	 }
 });

@@ -818,14 +818,15 @@ var requirejs, require, define;
 
             load: function () {
                 var url = this.map.url;
-
+                if(window.ClientMode_Postfix){
+                	url += "?r=" + window.ClientMode_Postfix;
+                }
                 //Regular dependency.
                 if (!urlFetched[url]) {
                     urlFetched[url] = true;
                     context.load(this.map.id, url);
                 }
             },
-
             /**
              * Checks if the module is ready to define itself, and if so,
              * define it.

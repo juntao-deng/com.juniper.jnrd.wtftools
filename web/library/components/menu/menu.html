@@ -58,10 +58,17 @@
 					
 					else{}}
 						<li id="{{= menu.id}}" class="{{= cssclass}} {{=menu.disabled? 'disabled' : ''}} {{= lastStr}}" id="{{= menu.id}}" wtfinnertype="wtfitem">
-							{{if(menu.icon && menu.icon != null){}}
-								<i class="{{= menu.icon}}"></i>
-							{{}}}
+							{{if(buttonMode == 0 || buttonMode == 1){
+								if(menu.icon && menu.icon != null){}}
+									<i class="{{= menu.icon}}"></i>
+								{{}
+							}
+							if(buttonMode != 1){
+							}}
 							{{= menu.name}}
+							{{
+								}
+							}}
 						</li>
 					{{}
 				});

@@ -19,6 +19,14 @@ wdefine(function(){
 		var event = {action: 'entity'};
 		FwBase.Wtf.Design.DesignSupport.interactWithEclipse(event, callbackForEntity);
 	});
+	
+	$app.component('columnmenu').on("click", function(options){
+		var id = options.trigger.id;
+		if(id == "add"){
+			var url = window.frameCtx + "/../designsupport/compattr/grid/columnedit";
+			AppUtil.navigateToDialog(url, null, {title: 'Column Attributes'});
+		}
+	});
 	function callbackForEntity(infos) {
 		if(infos.errormsg){
 			alert(infos.errormsg);
@@ -52,7 +60,7 @@ wdefine(function(){
 	
 	var okbt = $app.component("okbt");
 	okbt.on('click', function(){
-		var app = this.app;
+		var app = this.ctx;
 		var idattr = app.component('idattr').value();
 		var editableattr = app.component('editableattr').checked();
 		var model = app.model('columnsModel');
@@ -77,4 +85,5 @@ wdefine(function(){
 	function updateComponent(id, md, controller, rest){
 		FwBase.Wtf.Design.DesignSupport.syncAppFiles(id, md, controller, rest);
 	}
+	
 });

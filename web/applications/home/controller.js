@@ -6,7 +6,7 @@ wdefine(function(){
 	homeModel.on("add", function(){
 		var row = this.page().at(0);
 		var navList = row.get("navList");
-		var sidenav = this.app.component("homesidenav");
+		var sidenav = this.ctx.component("homesidenav");
 		for(var i = 0; i < navList.length; i ++){
 			sidenav.addItem(navList[i]);
 		}

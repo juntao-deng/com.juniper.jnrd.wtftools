@@ -7,10 +7,5 @@
 	<classpathentry kind="con" path="net.juniper.wtf.library.container/Middleware_Library"/>
 	<classpathentry kind="con" path="net.juniper.wtf.library.container/Product_Common"/>
 	<classpathentry kind="con" path="net.juniper.wtf.library.container/ThdParty_Library"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/servlet-api.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

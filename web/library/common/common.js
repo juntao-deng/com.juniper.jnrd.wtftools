@@ -63,20 +63,22 @@ function getSysArray(prefix){
 
 requirejs.config(window.globalRequireConfig);
 
-var requireArr = ['jquery', 'underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
-requirejs(requireArr,
-	function   ($, underscore, backbone, bootstrap) {
-		var arr = [];
-		if(window.extendArr)
-			arr = arr.concat(window.extendArr);
-		if($.browser.msie && $.browser.version < 9)
-			arr.push("../iepatch/html5", "../../ext-lib/flot/excanvas", "css!../iepatch/patchie8");
-		if(arr.length > 0)
-			requirejs(arr, commonCallback);
-		else
-			commonCallback();
-	}
-);
+requirejs(['jquery'], function(){
+	var requireArr = ['underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
+	requirejs(requireArr, function() {
+			var arr = [];
+			if(window.extendArr)
+				arr = arr.concat(window.extendArr);
+			if($.browser.msie && $.browser.version < 9)
+				arr.push("../iepatch/html5", "../../ext-lib/flot/excanvas", "css!../iepatch/patchie8");
+			if(arr.length > 0)
+				requirejs(arr, commonCallback);
+			else
+				commonCallback();
+		}
+	);
+});
+
 
 function requireComponent(typeList, func){
 	if(typeList.length == 0){

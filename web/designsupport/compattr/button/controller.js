@@ -10,17 +10,17 @@ wdefine(function(){
 	});
 	var okbt = $app.component("okbt");
 	okbt.on('click', function(){
-		var idattr = this.app.component('idattr').value();
-		var textattr = this.app.component('textattr').value();
-		var enableattr = this.app.component('enableattr').checked();
-		var styleattr = this.app.component('styleattr').value();
+		var idattr = this.ctx.component('idattr').value();
+		var textattr = this.ctx.component('textattr').value();
+		var enableattr = this.ctx.component('enableattr').checked();
+		var styleattr = this.ctx.component('styleattr').value();
 		
 		var md = {text : textattr, enable : enableattr, style: styleattr};
 		
 		var controller = null;
 		var rest = null;
 		updateComponent(idattr, md, controller, rest);
-		this.app.close();
+		this.ctx.close();
 	});
 	
 	function updateComponent(id, md, controller, rest){

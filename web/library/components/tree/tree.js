@@ -52,12 +52,19 @@ define(["base/base", "./ztree.core", "css!./ztree"], function(base, treectrl){
 	$.extend(FwBase.Wtf.View.Controls.Tree.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, {
 		template: _.template($('#sys_atom_controls_tree').html()),
 		postInit: function() {
+			this.model = this.ctx.model(this.metadata.model);
+			if(this.model){
+				this.listenTo(this.model, "clear", this.clearPage);
+				this.listenTo(this.model, "add", this.addRow);
+				this.listenTo(this.model, "remove", this.deleteRow);
+				this.listenTo(this.model, "change", this.changeRow);
+			}
 			var settings = buildSettings(this.metadata);
 			var datas = this.metadata.data;
 			$.fn.zTree.init(this.el.children("#tree"), settings, datas);
 		},
 		makeDefault : function() {
-			this.setDefault({data : [{ name:"ROOT", open:false}]});
+			this.setDefault({editable : false});
 		},
 		mockMetadata : function() {
 			this.setDefault({data : datas});

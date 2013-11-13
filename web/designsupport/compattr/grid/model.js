@@ -1,15 +1,12 @@
 wdefine(function(){
-//	var columnsModel = {id : 'columnsModel'};
-//	$app.model('columnsModel', columnsModel);
-	$app.metadata({id: 'columnsgrid', 
-				columns: [
+	$app.metadata('columnsgrid', {columns: [
 			        {text: 'Name', name:'name', width:80},
 			        {text: 'Text', name:'text', width: 80},
 			        {text: 'Visible', name:'visible',width:90},
 			        {text: 'Type', name:'type', width:80},        
 			        {text: 'Sortable', name:'sortable', width:80}
 				],
-				editable : true,
+				editable : false,
 				height: '195',
 				multiselect : false,
 				autowidth : true,
@@ -19,5 +16,9 @@ wdefine(function(){
 				model : 'columnsModel'
 			}
 	);
-	/*== For Designer End ==*/
+	
+	$app.metadata('columnmenu', {handler: null, buttonMode: 1, groups : [
+					{menus : [{id:'add',name:'Add', icon:'icon-plus'}, {id:'edit',name:'Edit', icon: 'icon-edit'}, {id:'del',name:'Delete', icon: ' icon-minus'}]},
+					{menus : [{id:'up',name:'Up', icon: 'icon-arrow-up'}, {id:'down', name:'Down', icon: 'icon-arrow-down'}]}]});
+	this.metadata.groups = groups;
 });

@@ -2501,6 +2501,18 @@ $.fn.jqGrid = function( pin ) {
 
 		if(ts.p.autowidth===true) {
 			var pw = $(eg).innerWidth();
+			//fix the hidden problem
+			if(pw == 0){
+				var p = $(eg).parent();
+				while(p[0] != document.body){
+					if(p.css('display') != 'none')
+						pw = p.innerWidth();
+					if(pw == 0)
+						p = p.parent();
+					else
+						 break;
+				}
+			}
 			ts.p.width = pw > 0?  pw: 'nw';
 		}
 		setColWidth();

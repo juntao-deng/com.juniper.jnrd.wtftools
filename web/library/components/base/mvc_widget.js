@@ -1,4 +1,4 @@
-define(function(){
+define(["mvc_app"], function(){
 	FwBase.Wtf.Widget = function(id){
 		FwBase.Wtf.Application.call(this, id);
 	};

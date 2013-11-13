@@ -1,8 +1,9 @@
 define(["base/listener"], function(){
-	FwBase.Wtf.View.Controls.BaseControl = function(parentContainer, metadata, id){
+	FwBase.Wtf.View.Controls.BaseControl = function(parentContainer, metadata, id, ctx){
 		this.el = parentContainer;
 		this.id = id;
 		this.metadata = metadata;
+		this.ctx = (ctx == null ? $app : ctx);
 		this.create();
 	};
 	FwBase.Wtf.View.Controls.BaseControl.instances = {};
@@ -10,6 +11,9 @@ define(["base/listener"], function(){
 		create : function(){
 			if(this.metadata == null || this.metadata === window.globalEmptyObj){
 				this.metadata = {};
+				this.mockMetadata();
+			}
+			else if(this.metadata.mock){
 				this.mockMetadata();
 			}
 			var ct = this.type();

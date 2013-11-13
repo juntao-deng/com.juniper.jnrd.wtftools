@@ -1,6 +1,7 @@
 define(["base/base", "../../uipattern/cruduihandler"], function(base){	
 	FwBase.Wtf.View.Controls.Menu = function(){
 		this.menuitems = [];
+		this.stateful = true;
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
 	$.extend(FwBase.Wtf.View.Controls.Menu.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, 
@@ -45,9 +46,12 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 				this.metadata.groups = groups;
 			},
 			makeDefault : function(){
-				this.setDefault({style: "inverse"});
+				this.setDefault({style: "inverse", buttonMode: FwBase.Wtf.Global.Configuration.buttonMode});
 				this.setDefault({handler : FwBase.Wtf.UIPattern.Handler.CrudUIHandler});
-				this.metadata.cssclass = "btn btn-" + this.metadata.style;
+				if(this.metadata.style == "")
+					this.metadata.cssclass = "btn";
+				else
+					this.metadata.cssclass = "btn btn-" + this.metadata.style;
 			},
 			createMenuItem : function(pre, itemmetadata) {
 				var menuitem = new FwBase.Wtf.View.Controls.MenuItem(this, itemmetadata, this.el, pre);

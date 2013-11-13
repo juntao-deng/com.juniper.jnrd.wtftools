@@ -17,7 +17,7 @@ define(["base/base"], function(base){
 			postInit : function(){
 				this.el.addClass("inline");
 				var oThis = this;
-				this.el.children("#button").click(function(){
+				this.el.find("#button").click(function(){
 					oThis.trigger("click", {source : oThis});
 				});
 			},

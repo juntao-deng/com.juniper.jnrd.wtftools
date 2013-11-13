@@ -51,4 +51,4 @@ define(function(){
 			this.manager.stateCallBack.call(this.manager, this.comp, state);
 		}
 	});
-};
+});

@@ -1,11 +1,25 @@
-<div class="control-group">
-	<label class="control-label">Checkbox</label>
-	<div class="controls">
-		<label class="checkbox line">
-		<input type="checkbox" value="" /> Checkbox 1
-		</label>
-		<label class="checkbox line">
-		<input type="checkbox" value="" /> Checkbox 2
-		</label>
+<script type="text/template" id="sys_atom_controls_input_checkboxgroup">
+	<div id="input_radiogroup" class="form-inline control-group">
+		{{if(labelWidth != 0){}}
+			<label class="control-label" style="float:left;width:{{= labelWidth}}px">{{= label}}</label>
+		{{}}}
+		<div class="controls" style="margin-left:{{= (labelWidth != 0)? (labelWidth + 10) : 0}}px">
+			{{if(required){}}
+			<span class="required">*</span>
+			{{}
+				if(options && options.length > 0){
+					for(var i = 0; i < options.length; i ++){
+			}}
+					<label class="checkbox{{= line? ' line' : ''}}">
+						<input type="checkbox" name="{{= compId}}" value="{{= options[i].value}}" />
+						{{= options[i].name}}
+					</label>
+			{{
+					}
+				}
+			if(typeof hint != 'undefined'){}}
+				<span class="help-inline">{{= hint}}</span>
+		    {{}}}
+		</div>
 	</div>
-</div>
+</script>

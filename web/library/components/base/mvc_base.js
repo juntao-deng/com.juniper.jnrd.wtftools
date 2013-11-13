@@ -1,6 +1,10 @@
 define(function(){
 	 FwBase = {};
 	 FwBase.Wtf = {};
+	 FwBase.Wtf.Global = {};
+	 FwBase.Wtf.Global.Configuration = {
+		buttonMode: 0 // 0 all, 1 icon only, 2 text only  	 
+	 };
 	 FwBase.Wtf.Client = {};
 	 FwBase.Wtf.Client.restServices = {};
 	 FwBase.Wtf.Client.mockAjax = function(options){

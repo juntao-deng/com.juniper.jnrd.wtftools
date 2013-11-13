@@ -11,7 +11,7 @@ define(function(){
 		}
 		return false;
 	}
-	FwBase.Wtf.Design.DesignSupport = {
+	window.DesignSupport = FwBase.Wtf.Design.DesignSupport = {
 			designable : function() {
 				$('#design_container').find("[wtftype]").each(function(){
 					if($(this).attr("designable") == 'done')
@@ -67,6 +67,7 @@ define(function(){
 					                                	menus : [{id:'addlayout',name:'Add Layout', icon: 'icon-edit'}, 
 					                                	         {id:'addtemplate',name:'Add Templates', icon: 'icon-edit'}, 
 					                                	         {id:'addcomponent',name:'Add Components', icon: 'icon-edit'},
+					                                	         {id:'addwidget',name:'Add Widgets', icon: 'icon-edit'}, 
 					                                	         {id:'clear',name:'Clear Content', icon: 'icon-edit'}
 					                                	         ]}
 					                                ]
@@ -82,6 +83,8 @@ define(function(){
 							FwBase.Wtf.Design.DesignSupport.addTemplate(obj);
 						else if(obj.trigger.id == "addcomponent")
 							FwBase.Wtf.Design.DesignSupport.addComponent(obj);
+						else if(obj.trigger.id == "addwidget")
+							FwBase.Wtf.Design.DesignSupport.addWidget(obj);
 						else if(obj.trigger.id == "clear")
 							FwBase.Wtf.Design.DesignSupport.clearContent(obj);
 					});
@@ -113,16 +116,19 @@ define(function(){
 //			},
 			addLayout : function() {
 				var url = window.frameCtx + "/../designsupport/layout";
-				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:700, height: 400});
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:700, height: 400, title : 'Add Layout'});
 			},
 			addTemplate : function() {
 				var url = window.frameCtx + "/../designsupport/template";
-				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400, title : 'Add Template'});
 			},
-			
+			addWidget : function() {
+				var url = window.frameCtx + "/../designsupport/widget";
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400, title : 'Add Widget'});
+			},
 			addComponent : function() {
 				var url = window.frameCtx + "/../designsupport/component";
-				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400});
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 400, title : 'Add Component'});
 			},
 			clearContent : function() {
 				FwBase.Wtf.Design.DesignSupport.currParent.html("");
@@ -131,11 +137,11 @@ define(function(){
 			editComponentAttr : function(obj) {
 				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
 				var url = window.frameCtx + "/../designsupport/compattr/" + type;
-				var height = 400;
+				var height = 420;
 				var width = 800;
-//				if(type == 'grid')
-//					width = 900;
-				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:width, height: height});
+				if(type == 'grid')
+					height = 500;
+				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:width, height: height, title : FwBase.Wtf.Lang.Utils.capitalize(type) + ' Attributes'});
 				obj.eventCtx.stop = true;
 			},
 			editModel : function(){

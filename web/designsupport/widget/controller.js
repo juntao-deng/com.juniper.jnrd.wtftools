@@ -1,15 +1,15 @@
 wdefine(function(){
 	var okbt = $app.component("okbt");
 	okbt.on('click', function(){
-		var templateinput = $app.component('templateinput');
-		insertTemplate(templateinput.value());
-		$app.close();
-		FwBase.Wtf.Application.repaint(FwBase.Wtf.Design.DesignSupport.designable);
+		var widgetinput = this.ctx.component('widgetinput');
+		insertWidget(widgetinput.value());
+		this.ctx.close();
+		AppUtil.repaint(FwBase.Wtf.Design.DesignSupport.designable);
 		FwBase.Wtf.Design.DesignSupport.syncHtml();
 	});
 	
-	function insertTemplate(tplId){
-		var str = '<div wtftype="template" wtfmetadata="' + tplId + '"></div>';
+	function insertWidget(tplId){
+		var str = '<div wtftype="widget" wtfmetadata="' + tplId + '"></div>';
 		FwBase.Wtf.Design.DesignSupport.currParent.html(str);
 	}
 });

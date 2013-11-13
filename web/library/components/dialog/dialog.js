@@ -3,50 +3,44 @@ define(["base/base"], function(base){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
 	
-	FwBase.Wtf.View.Controls.Dialog.closeDialog = function() {
-		if(FwBase.Wtf.View.Controls.Dialog.dialogs == null)
-			FwBase.Wtf.View.Controls.Dialog.dialogs = [];
-		var lastDialog = null;
-		for(var i = 0; i < FwBase.Wtf.View.Controls.Dialog.dialogs.length; i ++){
-			if(FwBase.Wtf.View.Controls.Dialog.dialogs[i].visible())
-				lastDialog = FwBase.Wtf.View.Controls.Dialog.dialogs[i];
-			else
-				break;
-		}
-		if(lastDialog)
-			lastDialog.visible(false);
-	};
-	FwBase.Wtf.View.Controls.Dialog.showDialog = function(modal, options) {
-		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog(modal);
-		if(options){
-			if(options.width){
-				dialog.width(options.width);
-			}
-			if(options.height){
-				dialog.height(options.height);
-			}
-		}
-		dialog.visible(true);
-		return dialog;
-	};
+//	FwBase.Wtf.View.Controls.Dialog.closeDialog = function() {
+//		if(FwBase.Wtf.View.Controls.Dialog.dialogs == null)
+//			FwBase.Wtf.View.Controls.Dialog.dialogs = [];
+//		var lastDialog = null;
+//		for(var i = 0; i < FwBase.Wtf.View.Controls.Dialog.dialogs.length; i ++){
+//			if(FwBase.Wtf.View.Controls.Dialog.dialogs[i].visible())
+//				lastDialog = FwBase.Wtf.View.Controls.Dialog.dialogs[i];
+//			else
+//				break;
+//		}
+//		if(lastDialog)
+//			lastDialog.visible(false);
+//	};
+//	FwBase.Wtf.View.Controls.Dialog.showDialog = function(modal, options) {
+//		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog(modal);
+//		if(options){
+//			if(options.width){
+//				dialog.width(options.width);
+//			}
+//			if(options.height){
+//				dialog.height(options.height);
+//			}
+//		}
+//		if(options.title)
+//			dialog.title(options.title);
+//		else
+//			dialog.title(title);
+//		dialog.visible(true);
+//		return dialog;
+//	};
 	FwBase.Wtf.View.Controls.Dialog.index = 0;
-	FwBase.Wtf.View.Controls.Dialog.getDialog = function(modal) {
-		if(!modal)
-			modal = true;
-		if(FwBase.Wtf.View.Controls.Dialog.dialogs == null)
-			FwBase.Wtf.View.Controls.Dialog.dialogs = [];
-		var dialog = null;
-		for(var i = 0; i < FwBase.Wtf.View.Controls.Dialog.dialogs.length; i ++){
-			if(!FwBase.Wtf.View.Controls.Dialog.dialogs[i].visible()){
-				dialog = FwBase.Wtf.View.Controls.Dialog.dialogs[i];
-				break;
-			}
-		}
-		//all dialogs used,create new one
-		if(dialog == null){
-			dialog = new FwBase.Wtf.View.Controls.Dialog($(document.body), {modal : modal}, "" + (FwBase.Wtf.View.Controls.Dialog.index ++));
-			FwBase.Wtf.View.Controls.Dialog.dialogs.push(dialog);
-		}
+	FwBase.Wtf.View.Controls.Dialog.getDialog = function(options) {
+		options = options || {};
+		if(options.modal == null)
+			options.modal = true;
+		
+		var dialog = new FwBase.Wtf.View.Controls.Dialog($(document.body), {modal : options.modal}, "" + (FwBase.Wtf.View.Controls.Dialog.index ++));
+		dialog.update(options);
 		return dialog;
 	};
 	$.extend(FwBase.Wtf.View.Controls.Dialog.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, 
@@ -60,27 +54,30 @@ define(["base/base"], function(base){
 					var footer = this.find('.modal-footer');
 					body.outerHeight(this.height() - head.outerHeight() - footer.outerHeight());
 				};
+				this.dialog[0].oThis = this;
+				this.dialog.dialog({autoOpen: false, modal: true, draggable: true, width: 600, height: 300, beforeClose: innerBeforeClose, close: innerClose, resizeStop : innerResize});
 			},
 			makeDefault : function(){
 				this.setDefault({visible : false});
 			},
 			visible : function() {
 				if(arguments.length == 0)
-					return this.dialog.css('display') != 'none';
+					return this.visibleAttr;
 				if(arguments[0]){
 					var options = arguments[1];
 					if(options){
-						if(options.width){
-							this.width(options.width);
-						}
-						if(options.height){
-							this.height(options.height);
-						}
+						this.update(options);
 					}
-					this.dialog.modal();
+					if(!this.visibleAttr){
+						this.dialog.dialog("open");
+						this.visibleAttr = true;
+					}
 				}
 				else{
-					this.dialog.modal('hide');
+					if(this.visibleAttr){
+						this.dialog.dialog('close');
+						this.visibleAttr = false;
+					}
 				}
 			},
 			/**
@@ -95,10 +92,13 @@ define(["base/base"], function(base){
 			},
 			
 			width : function(width){
-				this.dialog.css("width", width);
+				this.dialog.dialog("option", "width", width);
 			},
 			height : function(height){
-				this.dialog.css("height", height);
+				this.dialog.dialog("option", "height", height);
+			},
+			title : function(title){
+				this.dialog.dialog("option", "title", title);
 			},
 			update : function(options){
 				if(!options)
@@ -109,8 +109,29 @@ define(["base/base"], function(base){
 				if(options.height){
 					this.height(options.height);
 				}
+				if(options.title){
+					this.title(options.title);
+				}
+			},
+			close : function() {
+				var eventCtx = {};
+				this.trigger("close", {source : this, eventCtx : eventCtx});
+				this.dialog.dialog("destroy");
 			}
 		}
 	);
+	
+	function innerResize() {
+		this.oThis.dialog.notifyContentChange();
+	}
+	function innerClose() {
+		this.oThis.close();
+	}
+	function innerBeforeClose() {
+		var eventCtx = {};
+		this.oThis.trigger("beforeclose", {source : this.oThis, eventCtx : eventCtx});
+		if(eventCtx.stop)
+			return false;
+	}
 	return FwBase.Wtf.View.Controls.Dialog;
 });

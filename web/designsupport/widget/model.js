@@ -1,6 +1,6 @@
 wdefine(function(){
 	var selectMd = {
-		id : 'templateinput', 
+		id : 'widgetinput', 
 		options : [
 		     {name : "navmenu", value : "navmenu"},
 		     {name : "navtree", value : "navtree"},

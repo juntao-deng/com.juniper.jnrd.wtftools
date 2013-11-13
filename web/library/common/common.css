@@ -298,3 +298,51 @@ Choosen plugin css changes
 .ui-corner-br {
 	border-bottom-right-radius: 0px/*{cornerRadius}*/;
 }
+
+.btn-toolbar {
+  font-size: 12px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.modal-footer {
+  padding: 6px 15px 4px;
+  background-color:#fff;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+	margin: -15px 12px 0 -20px;
+}
+
+.required {
+  color: #e02222;
+  font-size: 12px;
+  padding-left: 2px;
+}
+
+
+.controls > .radio .checker,
+.controls > .checkbox .checker {
+  margin-right: 2px !important;
+}
+
+.controls > .radio,
+.controls > .checkbox {
+  display: inline-block;
+  padding: 0 !important;
+  margin: 0 !important;
+  margin-top: 8px !important;
+  margin-right: 15px !important;
+}
+
+.controls > .radio.line,
+.controls > .checkbox.line {
+  display: block;
+  padding: 0 !important;
+  margin: 0 !important;
+  margin-top: 5px !important;
+}
+
+.controls .inline {
+  margin-top: 8px; 
+}

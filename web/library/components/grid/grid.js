@@ -6,7 +6,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 		{
 			template: _.template($('#sys_atom_controls_grid').html()),
 			postInit : function(){
-				this.model = $app.model(this.metadata.model);
+				this.model = this.ctx.model(this.metadata.model);
 				if(this.model){
 					this.listenTo(this.model, "clear", this.clearPage);
 					this.listenTo(this.model, "add", this.addRow);

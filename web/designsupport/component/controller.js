@@ -1,18 +1,19 @@
 wdefine(function(){
 	var okbt = $app.component("okbt");
 	okbt.on('click', function(){
-		var compInput = $app.component('componentinput');
+		var app = this.ctx;
+		var compInput = app.component('componentinput');
 		if(compInput.value() == null || $.trim(compInput.value()) == ""){
 			alert("Please select a component.");
 			return;
 		}
-		var compId = $app.component('componentid');
+		var compId = app.component('componentid');
 		if(compId.value() == null || $.trim(compId.value()) == ""){
 			alert("Please input an id for the component.");
 			return;
 		}
 		insertComponent(compId.value(), compInput.value());
-		$app.close();
+		app.close();
 		FwBase.Wtf.Application.repaint(FwBase.Wtf.Design.DesignSupport.designable);
 		FwBase.Wtf.Design.DesignSupport.syncHtml();
 	});

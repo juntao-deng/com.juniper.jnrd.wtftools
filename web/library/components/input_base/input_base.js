@@ -22,10 +22,10 @@ define(["base/base", "inputmask"], function(base){
 			},
 			makeDefault : function() {
 				if(this.metadata.label && this.metadata.label != ''){
-					this.setDefault({readOnly: false, labelWidth:170});
+					this.setDefault({required: false, readOnly: false, labelWidth:170});
 				}
 				else{
-					this.setDefault({readOnly: false, label:'', labelWidth: 0});
+					this.setDefault({required: false, readOnly: false, label:'', labelWidth: 0});
 				}
 				this.makeDefaultFurther();
 			},

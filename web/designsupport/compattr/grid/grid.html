@@ -1,9 +1,8 @@
-<div wtftype="template" wtfmetadata="dialogheader"><div>Grid Attributes</div></div>
 <div wtftype="template" wtfmetadata="dialogbody">
-	<div class="row-fluid">
-		<div class="span5">
-			<div id="attrtab" wtftype="tab" wtfmetadata="{items:[{id:'basicitem', text :'Basic'}, {id:'advanceditem', text :'Advance'}]}">
-				<div id="basicitem">
+	<div id="attrtab" wtftype="tab" wtfmetadata="{items:[{id:'basicitem', text :'Basic'}, {id:'advanceditem', text :'Advance'}]}">
+		<div id="basicitem">
+			<div class="row-fluid">
+				<div class="span6">
 					<div id="idattr" wtftype="input" wtfmetadata="{label : 'ID:', labelWidth: 80, readOnly : true}"></div>
 					<div id="editableattr" wtftype="input_toggle" wtfmetadata="{label: 'Editable', labelWidth: 80}"></div>
 					<div id="multiattr" wtftype="input_toggle" wtfmetadata="{label: 'Multi Sel:', labelWidth: 80}"></div>
@@ -19,18 +18,24 @@
 						<div class="span2">
 						</div>
 					</div>
-					<div id="entitybutton" wtftype="button" style="padding-left:70px;" wtfmetadata="{labelWith:80, text: 'Entity Assistant', style : 'success'}"></div>
 				</div>
-				<div id="advanceditem">
+				<div class="span6">
 					<div id="heightattr" wtftype="input_integer" wtfmetadata="{label: 'Height:', labelWidth: 80}"></div>
 					<div id="minheightattr" wtftype="input_integer" wtfmetadata="{label: 'Min Height:', labelWidth: 80}"></div>
 					<div id="pageattr" wtftype="input_toggle" wtfmetadata="{label: 'Pagination:', labelWidth: 80}"></div>
 				</div>
 			</div>
 		</div>
-		<div class="span7">
-			<div id="columnsgrid" wtftype="grid">
-			</div>	
+		<div id="advanceditem">
+			<div class="row-fluid">
+				<div class="span4">
+					<div id="entitybutton" wtftype="button" wtfmetadata="{labelWith:80, text: 'Entity Assistant', style : 'success'}"></div>
+				</div>
+				<div class="span8">
+					<div id="columnmenu" wtftype="menu"></div>
+				</div>
+			</div>
+			<div id="columnsgrid" wtftype="grid"></div>	
 		</div>
 	</div>
 </div>

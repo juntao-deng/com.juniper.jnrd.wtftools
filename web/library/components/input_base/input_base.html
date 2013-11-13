@@ -4,6 +4,9 @@
 			<label class="control-label" style="float:left;width:{{= labelWidth}}px">{{= label}}</label>
 		{{}}}
 		<div class="controls" style="margin-left:{{= (labelWidth != 0)? (labelWidth + 10) : 0}}px">
+			{{if(required){}}
+			<span class="required">*</span>
+			{{}}}
 			<input type="text" class="m-wrap" data-trigger="hover" placeholder="{{= (typeof placeHolder == 'undefined') ? "" : placeHolder}}"/>
 			{{if(typeof hint != 'undefined'){}}
 				<span class="help-inline">{{= hint}}</span>
