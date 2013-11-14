@@ -115,6 +115,22 @@ define(function(){
 					return menu;
 				}
 			},
+			eventModelWrapper: function() {
+				var eventsOptions = DesignSupport.getEventDescs();
+				$app.metadata('actionsdropdown', {label:'&nbsp;&nbsp;Select Actions:', labelWidth:120, multiple: true, width: 400, options: eventsOptions, hint:'&nbsp;&nbsp;&nbsp;&nbsp;See Controller.js'});
+			},
+			eventControllerWrapper: function() {
+				$app.component('actionsdropdown').on('choiseclick', function(options){
+					var url = window.frameCtx + "/../designsupport/behavior";
+					FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 500, title : 'Edit Behavior'});
+				});
+			},
+			getEventDescs : function() {
+				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
+				var comp = $app.parent.component(id);
+				return comp.eventDescs();
+			},
+			
 //			hideMenu : function(designItem) {
 //				designItem.find('#sys_1designmenu').remove();
 //			},

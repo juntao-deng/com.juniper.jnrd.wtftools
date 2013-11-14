@@ -11,7 +11,7 @@
 					if(options && options.length > 0){
 						for(var i = 0; i < options.length; i ++){
 				}}
-				<option value="{{= options[i].value}}">{{= options[i].name}}</option>
+				<option value="{{= options[i].value}}">{{= options[i].text}}</option>
 				{{
 						}
 					}
@@ -24,7 +24,7 @@
 								for(var j = 0; j < groups[i].options.length; j ++){
 									var option = groups[i].options[j];
 				}}
-						<option value="{{= option.value}}">{{= option.name}}</option>
+						<option value="{{= option.value}}">{{= option.text}}</option>
 				{{
 								}
 							}

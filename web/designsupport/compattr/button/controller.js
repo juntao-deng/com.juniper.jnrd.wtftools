@@ -1,4 +1,5 @@
 wdefine(function(){
+	DesignSupport.eventControllerWrapper();
 	$app.on('loaded', function(){
 		var compId = FwBase.Wtf.Design.DesignSupport.currParent.attr('id');
 		var comp = this.parent.component(compId);

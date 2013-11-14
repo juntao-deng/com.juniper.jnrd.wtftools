@@ -42,13 +42,15 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					multiSort : this.metadata.multiSort,
 					viewsortcols : [true, 'vertical', true]
 				});
-				this.model.pageSize(pageSize == null ? -1 : pageSize);
-				var oThis = this;
-				this.gridObj.bind("jqGridPageChange", function(){
-					var pageIndex = arguments[1].pageIndex;
-					var pageSize = arguments[1].pageSize;
-					oThis.model.requestPage({pageIndex: pageIndex, pageSize: pageSize, forceUpdate: true});
-				});
+				if(this.model){
+					this.model.pageSize(pageSize == null ? -1 : pageSize);
+					var oThis = this;
+					this.gridObj.bind("jqGridPageChange", function(){
+						var pageIndex = arguments[1].pageIndex;
+						var pageSize = arguments[1].pageSize;
+						oThis.model.requestPage({pageIndex: pageIndex, pageSize: pageSize, forceUpdate: true});
+					});
+				}
 				//this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
 			},
 			repaint : function(obj) {

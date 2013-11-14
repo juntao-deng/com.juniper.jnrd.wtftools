@@ -74,6 +74,19 @@ define(["base/listener"], function(){
 		},
 		destroy : function() {
 			this.el.html("");
+		},
+		/**
+		 * return all accepted events, for designer
+		 */
+		eventDescs : function() {
+			return null;
+		},
+		/**
+		 * return all public methods, for designer
+		 */
+		methodDescs : function() {
+			return [{name : 'visible', params: {type: 'boolean'}, desc: 'Set the component visible or not'},
+			        {name : 'visible', desc: "Get the component's visible state"}];
 		}
 	});
 	return FwBase.Wtf.View.Controls.BaseControl;

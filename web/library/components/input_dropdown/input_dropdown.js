@@ -17,6 +17,19 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				this.input.chosen();
 //				if(this.metadata.filter){
 //				}
+				var oThis = this;
+				if(this.metadata.multiple){
+					this.input.bind("choiseclick", function(){
+						var options = {source: oThis, value: arguments[1], eventCtx: {}};
+						oThis.trigger('choiseclick', options);
+					});
+				}
+				this.input.bind("change", function(){
+					var options = {source: oThis, value: oThis.value(), eventCtx: {}};
+					alert(oThis.value());
+					return oThis.trigger("valuechange", options);
+				});
+				
 				if(this.metadata.value != null)
 					this.value(this.metadata.value);
 			},
@@ -38,28 +51,28 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 	var datas = {
 		groups:[
 			{label:'NFC EAST', options:[
-				{value: 'Dallas Cowboys', name: 'Dallas Cowboys'},
-				{value: 'New York Giants', name: 'New York Giants'},
-				{value: 'Philadelphia Eagles', name: 'Philadelphia Eagles'},
-				{value: 'Washington Redskins', name: 'Washington Redskins'}
+				{value: 'Dallas Cowboys', text: 'Dallas Cowboys'},
+				{value: 'New York Giants', text: 'New York Giants'},
+				{value: 'Philadelphia Eagles', text: 'Philadelphia Eagles'},
+				{value: 'Washington Redskins', text: 'Washington Redskins'}
 			]},
 			{label:'NFC NORTH', options:[
-				{value: 'Chicago Bears', name: 'Chicago Bears'},
-				{value: 'Detroit Lions', name: 'Detroit Lions'},
-				{value: 'Green Bay Packers', name: 'Green Bay Packers'},
-				{value: 'Minnesota Vikings', name: 'Minnesota Vikings'}
+				{value: 'Chicago Bears', text: 'Chicago Bears'},
+				{value: 'Detroit Lions', text: 'Detroit Lions'},
+				{value: 'Green Bay Packers', text: 'Green Bay Packers'},
+				{value: 'Minnesota Vikings', text: 'Minnesota Vikings'}
 			]},
 			{label:'NFC SOUTH', options:[
-				{value: 'Atlanta Falcons', name: 'Atlanta Falcons'},
-				{value: 'Carolina Panthers', name: 'Carolina Panthers'},
-				{value: 'New Orleans Saints', name: 'New Orleans Saints'},
-				{value: 'Tampa Bay Buccaneers', name: 'Tampa Bay Buccaneers'}
+				{value: 'Atlanta Falcons', text: 'Atlanta Falcons'},
+				{value: 'Carolina Panthers', text: 'Carolina Panthers'},
+				{value: 'New Orleans Saints', text: 'New Orleans Saints'},
+				{value: 'Tampa Bay Buccaneers', text: 'Tampa Bay Buccaneers'}
 			]},
 			{label:'NFC WEST', options:[
-				{value: 'Arizona Cardinals', name: 'Arizona Cardinals'},
-				{value: 'St. Louis Rams', name: 'St. Louis Rams'},
-				{value: 'San Francisco 49ers', name: 'San Francisco 49ers'},
-				{value: 'Seattle Seahawks', name: 'Seattle Seahawks'}
+				{value: 'Arizona Cardinals', text: 'Arizona Cardinals'},
+				{value: 'St. Louis Rams', text: 'St. Louis Rams'},
+				{value: 'San Francisco 49ers', text: 'San Francisco 49ers'},
+				{value: 'Seattle Seahawks', text: 'Seattle Seahawks'}
 			]},
 		]
 	};

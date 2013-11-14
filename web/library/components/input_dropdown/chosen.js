@@ -384,8 +384,12 @@
       var choice_id, link;
       choice_id = this.container_id + "_c_" + item.array_index;
       this.choices += 1;
-      this.search_container.before('<li class="search-choice" id="' + choice_id + '"><span>' + item.html + '</span><a href="javascript:void(0)" class="search-choice-close" rel="' + item.array_index + '"></a></li>');
+      this.search_container.before('<li class="search-choice" id="' + choice_id + '"><span value="' + item.value + '">' + item.html + '</span><a href="javascript:void(0)" class="search-choice-close" rel="' + item.array_index + '"></a></li>');
       link = $('#' + choice_id).find("a").first();
+      span = $('#' + choice_id).find("span").first();
+      span.click(__bind(function(evt) {
+          return this.choice_span_click(evt);
+       	}, this));
       return link.click(__bind(function(evt) {
         return this.choice_destroy_link_click(evt);
       }, this));
@@ -395,6 +399,12 @@
       this.pending_destroy_click = true;
       return this.choice_destroy($(evt.target));
     };
+    Chosen.prototype.choice_span_click = function(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        form_field_jq.trigger('choiseclick', $(evt.target).attr('value'));
+    };
+    
     Chosen.prototype.choice_destroy = function(link) {
       this.choices -= 1;
       this.show_search_field_default();
