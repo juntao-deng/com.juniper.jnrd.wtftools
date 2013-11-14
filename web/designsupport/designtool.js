@@ -1,4 +1,5 @@
 define(function(){
+	window.designApp = $app;
 	requireComponent(['menu']);
 	window.FwBase.Wtf.Design = {};
 	/*
@@ -181,7 +182,13 @@ define(function(){
 			popDialog : function(url, reqData, options) {
 				FwBase.Wtf.Application.navigateToDialog(url, reqData, options);
 			},
-			
+			getDesignApp : function() {
+				var app = $app;
+				while(app != window.designApp){
+					app = app.parent;
+				}
+				return app;
+			},
 			//========================= for editor ======================================
 			syncAppFiles : function(id, md, controller, rest) {
 				$app.parent.component(id).reset(md);

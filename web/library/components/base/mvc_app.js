@@ -511,6 +511,11 @@ define(["../uipattern/buttonmanager"], function(){
   	 		if(comp)
   	 			comp.destroy();
   	 	},
+  	 	
+  	 	components : function() {
+  	 		return _.values(this.componentsMap);
+  	 	},
+  	 	
   	 	installButtonManager: function(){
   	 		if(this.buttonManager == null){
   	 			this.buttonManager = new FwBase.Wtf.View.ButtonStateManager();
@@ -531,6 +536,11 @@ define(["../uipattern/buttonmanager"], function(){
   	 			this.widgetMap[arguments[0]] = obj;
   	 		}
   	 	},
+  	 	
+  	 	widgets : function() {
+  	 		return _.values(this.widgetMap);
+  	 	},
+  	 	
   	 	metadata : function(metadata){
   	 		if(arguments.length == 1){
   	 			if(arguments[0] == null)

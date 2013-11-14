@@ -1,6 +1,5 @@
 wdefine(function(){
 	var selectMd = {
-		id : 'componentinput', 
 		groups : [
 		     {label: 'Normal', options:[
 		                                {text : "button", value : "button"},
@@ -50,5 +49,5 @@ wdefine(function(){
 		]
 	};
 	
-	$app.metadata(selectMd);
+	$app.metadata("componentinput", selectMd);
 });

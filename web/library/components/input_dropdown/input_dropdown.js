@@ -41,11 +41,27 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 					this.input.trigger("liszt:updated");
 				}
 			},
-			datas: function(options) {
-				this.metadata.options = options;
+			datas: function(datas) {
+				if(datas == null){
+					this.metadata.groups = null;
+					this.metadata.options = null;
+				}
+				else{
+					if(datas.groups){
+						this.metadata.options = null;
+						this.metadata.groups = datas.groups;
+					}
+					else{
+						this.metadata.groups = null;
+						if(datas instanceof Array)
+							this.metadata.options = datas;
+						else
+							this.metadata.options = datas.options;
+					}
+				}
 				var html = this.paint();
-				var gbi = html.indexOf("<optgroup>");
-				var obi = html.indexOf("<option>");
+				var gbi = html.indexOf("<optgroup");
+				var obi = html.indexOf("<option");
 				var bi = -1;
 				var result = "";
 				var fromGroup = false;
@@ -63,6 +79,7 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 						ei = html.lastIndexOf("</option>") + "</option>".length;
 					result = html.substring(bi, ei);
 				}
+				this.input.val("");
 				this.input.html(result);
 				this.input.trigger("liszt:updated");
 			}

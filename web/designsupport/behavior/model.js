@@ -6,7 +6,7 @@ wdefine(function(){
 							    ]
 				});
 	
-	$app.metadata('elementoptions',  {value: '', label: 'Choose element:', labelWidth: 120, filter: false, width: 160,
+	$app.metadata('elementoptions',  {value: '', label: 'Choose element:', labelWidth: 120, filter: false, width: 160, emptyRecord: true,
 									options:[
 									         {value: 'selector', text: 'Selector'},
 									         {value: 'navigator', text: 'Navigator'}
