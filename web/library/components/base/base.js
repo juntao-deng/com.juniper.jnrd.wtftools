@@ -27,11 +27,14 @@ define(["base/listener"], function(){
 			this.setDefault({enable : true, visible : true});
 			if(this.template == null)
 				this.template = this.templateInit();
-			var childHtml = this.template($.extend(null, this.metadata, {instanceId: this.instance, compId: this.id}));
+			var childHtml = this.paint();
 			this.el.append(childHtml);
 			this.postInit();
 			this.visibleAttr = this.metadata.visible;
 			this.enableAttr = this.metadata.enable;
+		},
+		paint : function() {
+			return this.template($.extend(null, this.metadata, {instanceId: this.instance, compId: this.id}));
 		},
 		type : function(){
 			return "comp_";

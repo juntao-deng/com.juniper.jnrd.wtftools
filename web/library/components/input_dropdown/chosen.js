@@ -402,7 +402,7 @@
     Chosen.prototype.choice_span_click = function(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        form_field_jq.trigger('choiseclick', $(evt.target).attr('value'));
+        this.form_field_jq.trigger('choiseclick', $(evt.target).attr('value'));
     };
     
     Chosen.prototype.choice_destroy = function(link) {

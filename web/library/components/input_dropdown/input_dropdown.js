@@ -26,7 +26,6 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				}
 				this.input.bind("change", function(){
 					var options = {source: oThis, value: oThis.value(), eventCtx: {}};
-					alert(oThis.value());
 					return oThis.trigger("valuechange", options);
 				});
 				
@@ -42,8 +41,30 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 					this.input.trigger("liszt:updated");
 				}
 			},
-			datas: function() {
-				alert("lazyload initialization not implemented");
+			datas: function(options) {
+				this.metadata.options = options;
+				var html = this.paint();
+				var gbi = html.indexOf("<optgroup>");
+				var obi = html.indexOf("<option>");
+				var bi = -1;
+				var result = "";
+				var fromGroup = false;
+				if(gbi > 0 && obi > 0)
+					bi = Math.min(gbi, obi);
+				else if(gbi > 0)
+					bi = gbi;
+				else if(obi > 0)
+					bi = obi;
+				if(bi > 0){
+					var ei = -1;
+					if(fromGroup)
+						ei = html.lastIndexOf("</optgroup>") + "</optgroup>".length;
+					else
+						ei = html.lastIndexOf("</option>") + "</option>".length;
+					result = html.substring(bi, ei);
+				}
+				this.input.html(result);
+				this.input.trigger("liszt:updated");
 			}
 		}
 	);
