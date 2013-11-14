@@ -40,11 +40,9 @@ define(function(){
 		
 		fireAddRow : function(){
 			var index = arguments[2].at;
-//				var row = arguments[0].collection._byId[arguments[0].cid];
 			this.trigger("add", {row : arguments[0], index : index});
 	 	},
 	 	fireDelRow : function(){
-//		 		var row = arguments[0].collection._byId[arguments[0].cid];
 	 		this.trigger("remove", {row : arguments[0]});
 	 	},
 	 	fireClear : function(argument){
@@ -97,7 +95,17 @@ define(function(){
 	 	},
 	 	filters : function() {
 	 		return null;
-	 	}
+	 	},
+	 	eventDescs : function() {
+			return [{value: 'add', text : 'Add'}, {value: 'remove', text : 'Remove'},
+			        {value: 'clear', text : 'Clear'}, {value: 'pagechange', text : 'PageChange'}
+			       ];
+		},
+		
+		methodDescs : function() {
+			return [{name : 'enable', params: {type: 'boolean'}, desc: 'Set the component enable or not'},
+			                      {name : 'enable', desc: "Get the component's enable state"}];
+		}
 	 });
 	 
 	 FwBase.Wtf.Model.Store = function(model, currentPage) {

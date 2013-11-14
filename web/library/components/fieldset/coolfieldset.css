@@ -1,5 +1,6 @@
 .coolfieldset, .coolfieldset.expanded{
-	border:1px solid #aaa;   
+	border:1px solid #aaa;
+	padding-left:10px;
 }
 
 .coolfieldset.collapsed{
@@ -8,9 +9,10 @@
 }
 
 .coolfieldset legend{
-	padding-left:13px;
+	padding-left:15px;
 	font-weight:bold;
 	cursor:pointer;
+	width:95%;
 }
 
 .coolfieldset legend, .coolfieldset.expanded legend{

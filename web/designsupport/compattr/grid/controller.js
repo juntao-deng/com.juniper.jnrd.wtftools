@@ -1,4 +1,6 @@
 wdefine(function(){
+	DesignSupport.eventControllerWrapper();
+	DesignSupport.modelControllerWrapper();
 	$app.on('loaded', function(){
 		var compId = FwBase.Wtf.Design.DesignSupport.currParent.attr('id');
 		var comp = $app.parent.component(compId);
@@ -13,11 +15,6 @@ wdefine(function(){
 		var columns = metadata.columns;
 		var model = $app.model('columnsModel');
 		model.page().add(columns);
-	});
-	
-	$app.component("entitybutton").on("click", function(){
-		var event = {action: 'entity'};
-		FwBase.Wtf.Design.DesignSupport.interactWithEclipse(event, callbackForEntity);
 	});
 	
 	$app.component('columnmenu').on("click", function(options){
@@ -44,8 +41,6 @@ wdefine(function(){
 			alert("The restful service for class '" + infos.generateClass + "' doesn't exist, it will be created after you click the 'Save Changes' Button");
 		}
 	}
-	
-	window.ccc = callbackForEntity;
 	
 //	var modelBt = $app.component("modelbt");
 //	modelBt.on('click', function(){

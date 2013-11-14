@@ -4,6 +4,7 @@ define(["base/listener"], function(){
 		this.id = id;
 		this.metadata = metadata;
 		this.ctx = (ctx == null ? $app : ctx);
+		this.dataObj = null;
 		this.create();
 	};
 	FwBase.Wtf.View.Controls.BaseControl.instances = {};
@@ -30,8 +31,12 @@ define(["base/listener"], function(){
 			var childHtml = this.paint();
 			this.el.append(childHtml);
 			this.postInit();
-			this.visibleAttr = this.metadata.visible;
-			this.enableAttr = this.metadata.enable;
+			this.visibleAttr = true;
+			this.enableAttr = true;
+			if(!this.metadata.visible)
+				this.visible(false);
+			if(!this.metadata.enable)
+				this.enable(false);
 		},
 		paint : function() {
 			return this.template($.extend(null, this.metadata, {instanceId: this.instance, compId: this.id}));
@@ -60,22 +65,37 @@ define(["base/listener"], function(){
 			}
 		},
 		
-		visible : function(visible){
-			if(this.visbile && visible)
+		visible : function(){
+			if(arguments.length == 0)
+				return this.visibleAttr;
+			if(this.visbileAttr == arguments[0])
 				return;
-			if(visible)
-				this.el.css("display", "visible");
-			else
-				this.el.css("display", "none");
-			this.visible = visible;
+			if(this.doVisible)
+				this.doVisible(arguments[0]);
+			else{
+				if(arguments[0])
+					this.el.css("display", "visible");
+				else
+					this.el.css("display", "none");
+			}
+			this.visibleAttr = arguments[0];
 		},
-		
+		enable : function(){
+			if(arguments.length == 0)
+				return this.enableAttr;
+			if(this.enableAttr == arguments[0])
+				return;
+			if(this.doEnable)
+				this.doEnable(arguments[0]);
+			this.enableAttr = arguments[0];
+		},
 		reset : function(metadata){
 			this.destroy();
 			this.metadata = metadata;
 			this.create();
 		},
 		destroy : function() {
+			this.data = null;
 			this.el.html("");
 		},
 		/**
@@ -90,6 +110,11 @@ define(["base/listener"], function(){
 		methodDescs : function() {
 			return [{name : 'visible', params: {type: 'boolean'}, desc: 'Set the component visible or not'},
 			        {name : 'visible', desc: "Get the component's visible state"}];
+		},
+		data : function() {
+			if(arguments.length == 0)
+				return this.dataObj;
+			this.dataObj = arguments[0];
 		}
 	});
 	return FwBase.Wtf.View.Controls.BaseControl;

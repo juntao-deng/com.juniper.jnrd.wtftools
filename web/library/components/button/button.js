@@ -15,14 +15,19 @@ define(["base/base"], function(base){
 		{
 			template: _.template($('#sys_atom_controls_button').html()),
 			postInit : function(){
-				this.el.addClass("inline");
+				if(!this.el.hasClass('line'))
+					this.el.addClass("inline");
 				this.button = this.el.find("#button");
 				var oThis = this;
 				this.button.click(function(){
+					if(!oThis.enable())
+						return;
 					oThis.trigger("click", {source : oThis, eventCtx: {}});
 				});
 				
 				this.button.dblclick(function(){
+					if(!oThis.enable())
+						return;
 					oThis.trigger("dbclick", {source : oThis, eventCtx: {}});
 				});
 			},
@@ -31,8 +36,11 @@ define(["base/base"], function(base){
 				this.metadata.cssclass = "btn btn-" + this.metadata.style;
 			},
 			
-			enable : function() {
-				alert("not implemented");
+			doEnable : function(enable) {
+				if(enable)
+					this.button.removeClass("disabled");
+				else
+					this.button.addClass("disabled");
 			},
 			
 			eventDescs : function() {
@@ -44,8 +52,8 @@ define(["base/base"], function(base){
 			 */
 			methodDescs : function() {
 				var methods = FwBase.Wtf.View.Controls.BaseControl.methodDescs.call(this);
-				return methods.concat[{name : 'enable', params: {type: 'boolean'}, desc: 'Set the component enable or not'},
-				                      {name : 'enable', desc: "Get the component's enable state"}];
+				return methods.concat([{name : 'enable', params: {type: 'boolean'}, desc: 'Set the component enable or not'},
+				                      {name : 'enable', desc: "Get the component's enable state"}]);
 			}
 		}
 	);

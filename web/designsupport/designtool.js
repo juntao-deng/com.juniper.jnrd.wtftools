@@ -116,9 +116,15 @@ define(function(){
 					return menu;
 				}
 			},
-			eventModelWrapper: function() {
-				var eventsOptions = DesignSupport.getEventDescs();
-				$app.metadata('actionsdropdown', {label:'&nbsp;&nbsp;Select Actions:', labelWidth:120, multiple: true, width: 400, options: eventsOptions, hint:'&nbsp;&nbsp;&nbsp;&nbsp;See Controller.js'});
+			eventModelWrapper: function(type) {
+				var eventsOptions = null;
+				if(type == null || type == "component"){
+					eventsOptions = DesignSupport.getEventDescs();
+				}
+				else if(type == "model"){
+					eventsOptions = new Model().eventDescs();
+				}
+				$app.metadata('actionsdropdown', {label:'&nbsp;&nbsp;Select Actions:', labelWidth:120, multiple: true, width: 400, options: eventsOptions, hint:'&nbsp;&nbsp;&nbsp;&nbsp;Added in Controller.js'});
 			},
 			eventControllerWrapper: function() {
 				$app.component('actionsdropdown').on('choiseclick', function(options){
@@ -126,12 +132,33 @@ define(function(){
 					FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 500, title : 'Edit Behavior'});
 				});
 			},
+			modelModelWrapper: function() {
+				var eventsOptions = DesignSupport.getEventDescs();
+				$app.metadata('modeldropdown', {label:'&nbsp;&nbsp;Select Model:', labelWidth:120, multiple: false, width: 400, options: eventsOptions});
+				$app.metadata('addmodelbt', {text: '', icon: 'icon-plus', style: 'inverse'});
+				$app.metadata('editmodelbt', {text: '', icon: 'icon-edit', style: 'inverse'});
+			},
+			
+			modelControllerWrapper: function() {
+				$app.component('modeldropdown').on('valuechange', function(options){
+				});
+				
+				$app.component('addmodelbt').on('click', function(options){
+					var url = window.frameCtx + "/../designsupport/model";
+					FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 500, title : 'Edit Model'});
+				});
+				
+				$app.component('editmodelbt').on('click', function(options){
+					var url = window.frameCtx + "/../designsupport/model";
+					var value = this.ctx.component('modeldropdown').value();
+					FwBase.Wtf.Design.DesignSupport.popDialog(url, {navid: value}, {width:800, height: 500, title : 'Edit Model'});
+				});
+			},
 			getEventDescs : function() {
 				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
 				var comp = $app.parent.component(id);
 				return comp.eventDescs();
 			},
-			
 //			hideMenu : function(designItem) {
 //				designItem.find('#sys_1designmenu').remove();
 //			},
