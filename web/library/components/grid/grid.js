@@ -12,31 +12,42 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					this.listenTo(this.model, "add", this.addRow);
 					this.listenTo(this.model, "remove", this.deleteRow);
 					this.listenTo(this.model, "change", this.changeRow);
+					this.listenTo(this.model, "pagechange", this.pageChange)
+					this.listenTo(this.model, "pagination", this.pagination)
 //					this.listenTo(this.model, "page", this.selectRow);
 //					this.listenTo(this.model, "unselect", this.unselectRow);
 					
 				}
 				this.paginationEle = this.el.children("#table_pagination_" + this.instance);
+				var pageSize = this.metadata.pagination? this.metadata.pagination.rowNum : null;
 				this.gridObj = this.el.children('#table' + this.instance).jqGrid({
 					datatype: "json",
 				    height: this.metadata.height,
 				    minHeight: this.metadata.minHeight,
-				    rowNum: this.metadata.pagination? this.metadata.pagination.rowNum : null,
+				    rowNum: pageSize,
 				    rowList: this.metadata.pagination? this.metadata.pagination.rowList : null,
 				    colNames: getColNames(this.metadata),
 				    colModel: this.metadata.columns,
 				    pager: this.metadata.pagination? this.paginationEle : null,
-				    viewrecords: false,
+				    viewrecords: true,
 				    hidegrid:false,
 				    altRows: this.metadata.altRows,
 				    multiselect: this.metadata.multiselect,
 				    emptyrecords: "No records to view",
 				    loadtext: "Loading...",
 					pgtext : "Page {0} of {1}",
+					recordtext: "Record {0} to {1}, Total: {2}",
 					autowidth: this.metadata.autowidth,
 					cellEdit : this.metadata.editable,
 					multiSort : this.metadata.multiSort,
 					viewsortcols : [true, 'vertical', true]
+				});
+				this.model.pageSize(pageSize == null ? -1 : pageSize);
+				var oThis = this;
+				this.gridObj.bind("jqGridPageChange", function(){
+					var pageIndex = arguments[1].pageIndex;
+					var pageSize = arguments[1].pageSize;
+					oThis.model.requestPage({pageIndex: pageIndex, pageSize: pageSize, forceUpdate: true});
 				});
 				//this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
 			},
@@ -47,9 +58,9 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				var row = obj.row;
 				var index = obj.index;
 				if(index == null)
-					this.gridObj.addRowData(row.cid, row.toJSON());
+					this.gridObj.addRowData(row.cid, row.toJSON(), null, null, false);
 				else
-					this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index));
+					this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index), false);
 			},
 			changeRow : function() {
 			},
@@ -68,6 +79,12 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			clearPage : function() {
 				this.gridObj.clearGridData();
 			},
+			pageChange : function(){
+				this.gridObj.clearGridData();
+			},
+			pagination : function(pagination){
+				this.gridObj.setPagination(pagination);
+			},
 			makeDefault : function() {
 				if(this.metadata.model == null){
 					this.metadata.model = this.id + "_model";
@@ -79,7 +96,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					var model = new FwBase.Wtf.Model();
 					$app.model(str, model);
 				}
-				this.setDefault({pagination: {rowNum : 15, rowList: [10, 15, 30]}, minHeight : 300, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
+				this.setDefault({pagination: {rowNum : 10, rowList: [10, 15, 30]}, minHeight : 300, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
 			},
 			mockMetadata : function() {
 				var model = new FwBase.Wtf.Model(this.id + "_model", {});

@@ -11,6 +11,7 @@ import javax.ws.rs.core.PathSegment;
 import net.juniper.space.core.locator.ServiceLocator;
 #IMPORT_ENTITY#
 #IMPORT_SERVICE#
+#IMPORT_RESTSERVICE#
 import net.juniper.wtf.core.repository.PageResult;
 import net.juniper.wtf.core.util.ParamHelper;
 
@@ -19,45 +20,45 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 @Path("/#SERVICE_NAME#")
-public class #ENTITY_NAME#RestService {
-	private #ENTITY_NAME#Service service = ServiceLocator.getService(#ENTITY_NAME#Service.class);
+public class #ENTITY_SIMPLENAME#RestService implements #REST_NAME#{
+	private #ENTITY_SIMPLENAME#Service service = ServiceLocator.getService(#ENTITY_SIMPLENAME#Service.class);
 	
 	@GET 
 	@Path("/ctx/{seg}") 
 	@Produces(MediaType.APPLICATION_JSON)
-	public PageResult<#ENTITY_NAME#> get#ENTITY_NAME#s(@PathParam("seg") PathSegment seg) {
+	public PageResult<#MO_NAME#> get#ENTITY_SIMPLENAME#s(@PathParam("seg") PathSegment seg) {
 		Pageable pagination = ParamHelper.extractPageableInfo(seg);
-		Specification<#ENTITY_NAME#> spec = ParamHelper.extractSpecification(seg, #ENTITY_NAME#.class);
-		Page<#ENTITY_NAME#> page = service.get#ENTITY_NAME#s(spec, pagination);
-		return new PageResult<#ENTITY_NAME#>(page);
+		Specification<#MO_NAME#> spec = ParamHelper.extractSpecification(seg, #MO_NAME#.class);
+		Page<#MO_NAME#> page = service.get#ENTITY_SIMPLENAME#s(spec, pagination);
+		return new PageResult<#MO_NAME#>(page);
 	}
 	
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public #ENTITY_NAME# get#ENTITY_NAME#(@PathParam("id") Integer id){
-		return service.get#ENTITY_NAME#(id);
+	public #MO_NAME# get#ENTITY_SIMPLENAME#(@PathParam("id") Integer id){
+		return service.get#ENTITY_SIMPLENAME#(id);
 	}
  
 	@PUT
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public #ENTITY_NAME# update#ENTITY_NAME#(#ENTITY_NAME# device){
-		return service.update#ENTITY_NAME#(device);
+	public #MO_NAME# update#ENTITY_SIMPLENAME#(#MO_NAME# device){
+		return service.update#ENTITY_SIMPLENAME#(device);
 	}
 	
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public #ENTITY_NAME# add#ENTITY_NAME#(#ENTITY_NAME# device){
-		return service.save#ENTITY_NAME#(device);
+	public #MO_NAME# add#ENTITY_SIMPLENAME#(#MO_NAME# device){
+		return service.save#ENTITY_SIMPLENAME#(device);
 	}
  
 	@PUT
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public void delete#ENTITY_NAME#(@PathParam("id") Integer id){
-		service.delete#ENTITY_NAME#(id);
+	public void delete#ENTITY_SIMPLENAME#(@PathParam("id") Integer id){
+		service.delENTITY_SIMPLENAMENAME#(id);
 	}
 	
 	@POST

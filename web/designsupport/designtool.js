@@ -1,6 +1,9 @@
 define(function(){
 	requireComponent(['menu']);
 	window.FwBase.Wtf.Design = {};
+	/*
+	 * find the nearest wtftype element
+	 */
 	function directChild(child, target){
 		var pnode = child;
 		while(pnode && pnode != document.body){
@@ -27,12 +30,10 @@ define(function(){
 				if(type == "container"){
 					designItem.addClass("designele_sign");
 				}
-				//var ttimes = designItem.attr('wtftt');
-				//			if(ttimes == null || ttimes == "" || ttimes == "1")
+			
 				designItem.click(function(event){
 					if(!directChild(event.target, this))
 						return;
-//					FwBase.Wtf.Design.DesignSupport.currentItem = $(this);
 					FwBase.Wtf.Design.DesignSupport.showMenu($(this), type);
 				});
 				designItem.mouseout(function(){
@@ -43,7 +44,7 @@ define(function(){
 			showMenu : function(designItem, type) {
 //				$(document.body).append(div);
 				var oriItem = FwBase.Wtf.Design.DesignSupport.currParent;
-				if(oriItem && oriItem[0] == designItem[0])
+				if(oriItem && oriItem[0] == designItem[0] && oriItem.children('.designmenu').length > 0)
 					return;
 				if(oriItem){
 					if(oriItem.attr('wtftype') == 'container')
@@ -107,6 +108,9 @@ define(function(){
 						if(obj.trigger.id == "edit"){
 							FwBase.Wtf.Design.DesignSupport.editComponentAttr(obj);
 						}
+						else if(obj.trigger.id == "delete"){
+							FwBase.Wtf.Design.DesignSupport.deleteComponent(obj);
+						}
 					});
 					return menu;
 				}
@@ -143,6 +147,12 @@ define(function(){
 					height = 500;
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:width, height: height, title : FwBase.Wtf.Lang.Utils.capitalize(type) + ' Attributes'});
 				obj.eventCtx.stop = true;
+			},
+			deleteComponent : function(obj) {
+				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
+				$app.removeComponent(id);
+				FwBase.Wtf.Design.DesignSupport.currParent.remove();
+				FwBase.Wtf.Design.DesignSupport.currParent = null;
 			},
 			editModel : function(){
 				var url = window.frameCtx + "/../designsupport/model";

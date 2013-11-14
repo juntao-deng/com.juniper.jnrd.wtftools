@@ -1227,551 +1227,551 @@ $.fn.jqGrid = function( pin ) {
 			return '<tr role="row" id="' + id + '" tabindex="' + tabindex + '" class="' + classes + '"' +
 				(style === '' ? '' : ' style="' + style + '"') + restAttr + '>';
 		},
-		addXmlData = function (xml,t, rcnt, more, adjust) {
-			var startReq = new Date(),
-			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "xmlstring",
-			xmlid = "_id_", xmlRd = ts.p.xmlReader,
-			frd = ts.p.datatype === "local" ? "local" : "xml";
-			if(locdata) {
-				ts.p.data = [];
-				ts.p._index = {};
-				ts.p.localReader.id = xmlid;
-			}
-			ts.p.reccount = 0;
-			if($.isXMLDoc(xml)) {
-				if(ts.p.treeANode===-1 && !ts.p.scroll) {
-					emptyRows.call(ts, false, true);
-					rcnt=1;
-				} else { rcnt = rcnt > 1 ? rcnt :1; }
-			} else { return; }
-			var self= $(ts), i,fpos,ir=0,v,gi=ts.p.multiselect===true?1:0,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,idn, getId,f=[],F,rd ={}, xmlr,rid, rowData=[], cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
-			if(ts.p.subGrid===true) {
-				si = 1;
-				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
-			}
-			if(!xmlRd.repeatitems) {f = reader(frd);}
-			if( ts.p.keyIndex===false) {
-				idn = $.isFunction( xmlRd.id ) ?  xmlRd.id.call(ts, xml) : xmlRd.id;
-			} else {
-				idn = ts.p.keyIndex;
-			}
-			if(f.length>0 && !isNaN(idn)) {
-				idn=ts.p.keyName;
-			}
-			if( String(idn).indexOf("[") === -1 ) {
-				if (f.length) {
-					getId = function( trow, k) {return $(idn,trow).text() || k;};
-				} else {
-					getId = function( trow, k) {return $(xmlRd.cell,trow).eq(idn).text() || k;};
-				}
-			}
-			else {
-				getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
-			}
-			ts.p.userData = {};
-			ts.p.page = intNum($.jgrid.getXmlData(xml, xmlRd.page), ts.p.page);
-			ts.p.lastpage = intNum($.jgrid.getXmlData(xml, xmlRd.total), 1);
-			ts.p.records = intNum($.jgrid.getXmlData(xml, xmlRd.records));
-			if($.isFunction(xmlRd.userdata)) {
-				ts.p.userData = xmlRd.userdata.call(ts, xml) || {};
-			} else {
-				$.jgrid.getXmlData(xml, xmlRd.userdata, true).each(function() {ts.p.userData[this.getAttribute("name")]= $(this).text();});
-			}
-			var gxml = $.jgrid.getXmlData( xml, xmlRd.root, true);
-			gxml = $.jgrid.getXmlData( gxml, xmlRd.row, true);
-			if (!gxml) { gxml = []; }
-			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10), br=ts.p.scroll?$.jgrid.randId():1, altr;
-			if (gl > 0 &&  ts.p.page <= 0) { ts.p.page = 1; }
-			if(gxml && gl){
-			if (adjust) { rn *= adjust+1; }
-			var afterInsRow = $.isFunction(ts.p.afterInsertRow), hiderow=false, groupingPrepare;
-			if(ts.p.grouping)  {
-				hiderow = ts.p.groupingView.groupCollapse === true;
-				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
-			}
-			while (j<gl) {
-				xmlr = gxml[j];
-				rid = getId(xmlr,br+j);
-				rid  = ts.p.idPrefix + rid;
-				altr = rcnt === 0 ? 0 : rcnt+1;
-				cn1 = (altr+j)%2 === 1 ? cn : '';
-				var iStartTrTag = rowData.length;
-				rowData.push("");
-				if( ni ) {
-					rowData.push( addRowNum(0,j,ts.p.page,ts.p.rowNum) );
-				}
-				if( gi ) {
-					rowData.push( addMulti(rid,ni,j, false) );
-				}
-				if( si ) {
-					rowData.push( addSubGridCell.call(self,gi+ni,j+rcnt) );
-				}
-				if(xmlRd.repeatitems){
-					if (!F) { F=orderedCols(gi+si+ni); }
-					var cells = $.jgrid.getXmlData( xmlr, xmlRd.cell, true);
-					$.each(F, function (k) {
-						var cell = cells[this];
-						if (!cell) { return false; }
-						v = cell.textContent || cell.text;
-						rd[ts.p.colModel[k+gi+si+ni].name] = v;
-						rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr, rd) );
-					});
-				} else {
-					for(i = 0; i < f.length;i++) {
-						v = $.jgrid.getXmlData( xmlr, f[i]);
-						rd[ts.p.colModel[i+gi+si+ni].name] = v;
-						rowData.push( addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr, rd) );
-					}
-				}
-				rowData[iStartTrTag] = constructTr(rid, hiderow, cn1, rd, xmlr, false);
-				rowData.push("</tr>");
-				if(ts.p.grouping) {
-					grpdata = groupingPrepare.call(self,rowData, grpdata, rd, j);
-					rowData = [];
-				}
-				if(locdata || ts.p.treeGrid === true) {
-					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
-					ts.p.data.push(rd);
-					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
-				}
-				if(ts.p.gridview === false ) {
-					$("tbody:first",t).append(rowData.join(''));
-					self.triggerHandler("jqGridAfterInsertRow", [rid, rd, xmlr]);
-					if(afterInsRow) {ts.p.afterInsertRow.call(ts,rid,rd,xmlr);}
-					rowData=[];
-				}
-				rd={};
-				ir++;
-				j++;
-				if(ir===rn) {break;}
-			}
-			}
-			if(ts.p.gridview === true) {
-				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
-				if(ts.p.grouping) {
-					self.jqGrid('groupingRender',grpdata,ts.p.colModel.length);
-					grpdata = null;
-				} else if(ts.p.treeGrid === true && fpos > 0) {
-					$(ts.rows[fpos]).after(rowData.join(''));
-				} else {
-					$("tbody:first",t).append(rowData.join(''));
-				}
-			}
-			if(ts.p.subGrid === true ) {
-				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
-			}
-			ts.p.totaltime = new Date() - startReq;
-			if(ir>0) { if(ts.p.records===0) { ts.p.records=gl;} }
-			rowData =null;
-			if( ts.p.treeGrid === true) {
-				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
-			}
-			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
-			ts.p.reccount=ir;
-			ts.p.treeANode = -1;
-			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
-			if(locdata) {
-				ts.p.records = gl;
-				ts.p.lastpage = Math.ceil(gl/ rn);
-			}
-			if (!more) { ts.updatepager(false,true); }
-			if(locdata) {
-				while (ir<gl) {
-					xmlr = gxml[ir];
-					rid = getId(xmlr,ir+br);
-					rid  = ts.p.idPrefix + rid;
-					if(xmlRd.repeatitems){
-						if (!F) { F=orderedCols(gi+si+ni); }
-						var cells2 = $.jgrid.getXmlData( xmlr, xmlRd.cell, true);
-						$.each(F, function (k) {
-							var cell = cells2[this];
-							if (!cell) { return false; }
-							v = cell.textContent || cell.text;
-							rd[ts.p.colModel[k+gi+si+ni].name] = v;
-						});
-					} else {
-						for(i = 0; i < f.length;i++) {
-							v = $.jgrid.getXmlData( xmlr, f[i]);
-							rd[ts.p.colModel[i+gi+si+ni].name] = v;
-						}
-					}
-					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
-					ts.p.data.push(rd);
-					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
-					rd = {};
-					ir++;
-				}
-			}
-		},
-		addJSONData = function(data,t, rcnt, more, adjust) {
-			var startReq = new Date();
-			if(data) {
-				if(ts.p.treeANode === -1 && !ts.p.scroll) {
-					emptyRows.call(ts, false, true);
-					rcnt=1;
-				} else { rcnt = rcnt > 1 ? rcnt :1; }
-			} else { return; }
-
-			var dReader, locid = "_id_", frd,
-			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "jsonstring";
-			if(locdata) { ts.p.data = []; ts.p._index = {}; ts.p.localReader.id = locid;}
-			ts.p.reccount = 0;
-			if(ts.p.datatype === "local") {
-				dReader =  ts.p.localReader;
-				frd= 'local';
-			} else {
-				dReader =  ts.p.jsonReader;
-				frd='json';
-			}
-			var self = $(ts), ir=0,v,i,j,f=[],cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
-			ts.p.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
-			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
-			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
-			ts.p.userData = $.jgrid.getAccessor(data,dReader.userdata) || {};
-			if(si) {
-				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
-			}
-			if( ts.p.keyIndex===false ) {
-				idn = $.isFunction(dReader.id) ? dReader.id.call(ts, data) : dReader.id; 
-			} else {
-				idn = ts.p.keyIndex;
-			}
-			if(!dReader.repeatitems) {
-				f = objectReader;
-				if(f.length>0 && !isNaN(idn)) {
-					idn=ts.p.keyName;
-				}
-			}
-			drows = $.jgrid.getAccessor(data,dReader.root);
-			if (drows == null && $.isArray(data)) { drows = data; }
-			if (!drows) { drows = []; }
-			len = drows.length; i=0;
-			if (len > 0 && ts.p.page <= 0) { ts.p.page = 1; }
-			var rn = parseInt(ts.p.rowNum,10),br=ts.p.scroll?$.jgrid.randId():1, altr, selected=false, selr;
-			if (adjust) { rn *= adjust+1; }
-			if(ts.p.datatype === "local" && !ts.p.deselectAfterSort) {
-				selected = true;
-			}
-			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare;
-			if(ts.p.grouping)  {
-				hiderow = ts.p.groupingView.groupCollapse === true;
-				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
-			}
-			while (i<len) {
-				cur = drows[i];
-				idr = $.jgrid.getAccessor(cur,idn);
-				if(idr === undefined) {
-					if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
-						// reread id by name
-						idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
-					}
-					if(idr === undefined) {
-						idr = br+i;
-						if(f.length===0){
-							if(dReader.cell){
-								var ccur = $.jgrid.getAccessor(cur,dReader.cell) || cur;
-								idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
-								ccur=null;
-							}
-						}
-					}
-				}
-				idr  = ts.p.idPrefix + idr;
-				altr = rcnt === 1 ? 0 : rcnt;
-				cn1 = (altr+i)%2 === 1 ? cn : '';
-				if( selected) {
-					if( ts.p.multiselect) {
-						selr = ($.inArray(idr, ts.p.selarrrow) !== -1);
-					} else {
-						selr = (idr === ts.p.selrow);
-					}
-				}
-				var iStartTrTag = rowData.length;
-				rowData.push("");
-				if( ni ) {
-					rowData.push( addRowNum(0,i,ts.p.page,ts.p.rowNum) );
-				}
-				if( gi ){
-					rowData.push( addMulti(idr,ni,i,selr) );
-				}
-				if( si ) {
-					rowData.push( addSubGridCell.call(self,gi+ni,i+rcnt) );
-				}
-				rowReader=objectReader;
-				if (dReader.repeatitems) {
-					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-					if ($.isArray(cur)) { rowReader=arrayReader; }
-				}
-				for (j=0;j<rowReader.length;j++) {
-					v = $.jgrid.getAccessor(cur,rowReader[j]);
-					rd[ts.p.colModel[j+gi+si+ni].name] = v;
-					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur, rd) );
-				}
-				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur, selr);
-				rowData.push( "</tr>" );
-				if(ts.p.grouping) {
-					grpdata = groupingPrepare.call(self,rowData, grpdata, rd, i);
-					rowData = [];
-				}
-				if(locdata || ts.p.treeGrid===true) {
-					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
-					ts.p.data.push(rd);
-					ts.p._index[rd[locid]] = ts.p.data.length-1;
-				}
-				if(ts.p.gridview === false ) {
-					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
-					self.triggerHandler("jqGridAfterInsertRow", [idr, rd, cur]);
-					if(afterInsRow) {ts.p.afterInsertRow.call(ts,idr,rd,cur);}
-					rowData=[];//ari=0;
-				}
-				rd={};
-				ir++;
-				i++;
-				if(ir===rn) { break; }
-			}
-			if(ts.p.gridview === true ) {
-				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
-				if(ts.p.grouping) {
-					self.jqGrid('groupingRender',grpdata,ts.p.colModel.length);
-					grpdata = null;
-				} else if(ts.p.treeGrid === true && fpos > 0) {
-					$(ts.rows[fpos]).after(rowData.join(''));
-				} else {
-					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
-				}
-			}
-			if(ts.p.subGrid === true ) {
-				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
-			}
-			ts.p.totaltime = new Date() - startReq;
-			if(ir>0) {
-				if(ts.p.records===0) { ts.p.records=len; }
-			}
-			rowData = null;
-			if( ts.p.treeGrid === true) {
-				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
-			}
-			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
-			ts.p.reccount=ir;
-			ts.p.treeANode = -1;
-			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
-			if(locdata) {
-				ts.p.records = len;
-				ts.p.lastpage = Math.ceil(len/ rn);
-			}
-			if (!more) { ts.updatepager(false,true); }
-			if(locdata) {
-				while (ir<len && drows[ir]) {
-					cur = drows[ir];
-					idr = $.jgrid.getAccessor(cur,idn);
-					if(idr === undefined) {
-						if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
-							// reread id by name
-							idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
-						}
-						if(idr === undefined) {
-							idr = br+ir;
-							if(f.length===0){
-								if(dReader.cell){
-									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell) || cur;
-									idr = ccur2 != null && ccur2[idn] !== undefined ? ccur2[idn] : idr;
-									ccur2=null;
-								}
-							}
-						}
-					}
-					if(cur) {
-						idr  = ts.p.idPrefix + idr;
-						rowReader=objectReader;
-						if (dReader.repeatitems) {
-							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
-							if ($.isArray(cur)) { rowReader=arrayReader; }
-						}
-
-						for (j=0;j<rowReader.length;j++) {
-							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
-						}
-						rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
-						ts.p.data.push(rd);
-						ts.p._index[rd[locid]] = ts.p.data.length-1;
-						rd = {};
-					}
-					ir++;
-				}
-			}
-		},
-		addLocalData = function() {
-			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat;
-			if(!$.isArray(ts.p.data)) {
-				return;
-			}
-			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin;
-			$.each(ts.p.colModel,function(){
-				sorttype = this.sorttype || "text";
-				if(sorttype === "date" || sorttype === "datetime") {
-					if(this.formatter && typeof this.formatter === 'string' && this.formatter === 'date') {
-						if(this.formatoptions && this.formatoptions.srcformat) {
-							srcformat = this.formatoptions.srcformat;
-						} else {
-							srcformat = $.jgrid.formatter.date.srcformat;
-						}
-						if(this.formatoptions && this.formatoptions.newformat) {
-							newformat = this.formatoptions.newformat;
-						} else {
-							newformat = $.jgrid.formatter.date.newformat;
-						}
-					} else {
-						srcformat = newformat = this.datefmt || "Y-m-d";
-					}
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat};
-				} else {
-					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":''};
-				}
-				if(ts.p.grouping ) {
-					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
-						if( this.name === grpview.groupField[gin]) {
-							var grindex = this.name;
-							if (this.index) {
-								grindex = this.index;
-							}
-							grtypes[gin] = cmtypes[grindex];
-							grindexes[gin]= grindex;
-						}
-					}
-				}
-				if(ts.p.multiSort) {
-					if(this.lso) {
-						st.push(this.name);
-						var tmplso= this.lso.split("-");
-						sto.push( tmplso[tmplso.length-1] );
-					}
-				} else {
-					if(!fndsort && (this.index === ts.p.sortname || this.name === ts.p.sortname)){
-						st = this.name; // ???
-						fndsort = true;
-					}
-				}
-			});
-			if(ts.p.treeGrid) {
-				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype || 'text', cmtypes[st].srcfmt || '');
-				return;
-			}
-			var compareFnMap = {
-				'eq':function(queryObj) {return queryObj.equals;},
-				'ne':function(queryObj) {return queryObj.notEquals;},
-				'lt':function(queryObj) {return queryObj.less;},
-				'le':function(queryObj) {return queryObj.lessOrEquals;},
-				'gt':function(queryObj) {return queryObj.greater;},
-				'ge':function(queryObj) {return queryObj.greaterOrEquals;},
-				'cn':function(queryObj) {return queryObj.contains;},
-				'nc':function(queryObj,op) {return op === "OR" ? queryObj.orNot().contains : queryObj.andNot().contains;},
-				'bw':function(queryObj) {return queryObj.startsWith;},
-				'bn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().startsWith : queryObj.andNot().startsWith;},
-				'en':function(queryObj,op) {return op === "OR" ? queryObj.orNot().endsWith : queryObj.andNot().endsWith;},
-				'ew':function(queryObj) {return queryObj.endsWith;},
-				'ni':function(queryObj,op) {return op === "OR" ? queryObj.orNot().equals : queryObj.andNot().equals;},
-				'in':function(queryObj) {return queryObj.equals;},
-				'nu':function(queryObj) {return queryObj.isNull;},
-				'nn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().isNull : queryObj.andNot().isNull;}
-
-			},
-			query = $.jgrid.from(ts.p.data);
-			if (ts.p.ignoreCase) { query = query.ignoreCase(); }
-			function tojLinq ( group ) {
-				var s = 0, index, gor, ror, opr, rule;
-				if (group.groups != null) {
-					gor = group.groups.length && group.groupOp.toString().toUpperCase() === "OR";
-					if (gor) {
-						query.orBegin();
-					}
-					for (index = 0; index < group.groups.length; index++) {
-						if (s > 0 && gor) {
-							query.or();
-						}
-						try {
-							tojLinq(group.groups[index]);
-						} catch (e) {alert(e);}
-						s++;
-					}
-					if (gor) {
-						query.orEnd();
-					}
-				}
-				if (group.rules != null) {
-					//if(s>0) {
-					//	var result = query.select();
-					//	query = $.jgrid.from( result);
-					//	if (ts.p.ignoreCase) { query = query.ignoreCase(); } 
-					//}
-					try{
-						ror = group.rules.length && group.groupOp.toString().toUpperCase() === "OR";
-						if (ror) {
-							query.orBegin();
-						}
-						for (index = 0; index < group.rules.length; index++) {
-							rule = group.rules[index];
-							opr = group.groupOp.toString().toUpperCase();
-							if (compareFnMap[rule.op] && rule.field ) {
-								if(s > 0 && opr && opr === "OR") {
-									query = query.or();
-								}
-								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
-							}
-							s++;
-						}
-						if (ror) {
-							query.orEnd();
-						}
-					} catch (g) {alert(g);}
-				}
-			}
-
-			if (ts.p.search === true) {
-				var srules = ts.p.postData.filters;
-				if(srules) {
-					if(typeof srules === "string") { srules = $.jgrid.parse(srules);}
-					tojLinq( srules );
-				} else {
-					try {
-						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString,cmtypes[ts.p.postData.searchField]);
-					} catch (se){}
-				}
-			}
-			if(ts.p.grouping) {
-				for(gin=0; gin<lengrp;gin++) {
-					query.orderBy(grindexes[gin],grpview.groupOrder[gin],grtypes[gin].stype, grtypes[gin].srcfmt);
-				}
-			}
-			if(ts.p.multiSort) {
-				$.each(st,function(i){
-					query.orderBy(this, sto[i], cmtypes[this].stype, cmtypes[this].srcfmt);
-				});
-			} else {
-				if (st && ts.p.sortorder && fndsort) {
-					if(ts.p.sortorder.toUpperCase() === "DESC") {
-						query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt);
-					} else {
-						query.orderBy(ts.p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt);
-					}
-				}
-			}
-			var queryResults = query.select(),
-			recordsperpage = parseInt(ts.p.rowNum,10),
-			total = queryResults.length,
-			page = parseInt(ts.p.page,10),
-			totalpages = Math.ceil(total / recordsperpage),
-			retresult = {};
-			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
-			query = null;
-			cmtypes = null;
-			retresult[ts.p.localReader.total] = totalpages;
-			retresult[ts.p.localReader.page] = page;
-			retresult[ts.p.localReader.records] = total;
-			retresult[ts.p.localReader.root] = queryResults;
-			retresult[ts.p.localReader.userdata] = ts.p.userData;
-			queryResults = null;
-			return  retresult;
-		},
+//		addXmlData = function (xml,t, rcnt, more, adjust) {
+//			var startReq = new Date(),
+//			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "xmlstring",
+//			xmlid = "_id_", xmlRd = ts.p.xmlReader,
+//			frd = ts.p.datatype === "local" ? "local" : "xml";
+//			if(locdata) {
+//				ts.p.data = [];
+//				ts.p._index = {};
+//				ts.p.localReader.id = xmlid;
+//			}
+//			ts.p.reccount = 0;
+//			if($.isXMLDoc(xml)) {
+//				if(ts.p.treeANode===-1 && !ts.p.scroll) {
+//					emptyRows.call(ts, false, true);
+//					rcnt=1;
+//				} else { rcnt = rcnt > 1 ? rcnt :1; }
+//			} else { return; }
+//			var self= $(ts), i,fpos,ir=0,v,gi=ts.p.multiselect===true?1:0,si=0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,idn, getId,f=[],F,rd ={}, xmlr,rid, rowData=[], cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
+//			if(ts.p.subGrid===true) {
+//				si = 1;
+//				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
+//			}
+//			if(!xmlRd.repeatitems) {f = reader(frd);}
+//			if( ts.p.keyIndex===false) {
+//				idn = $.isFunction( xmlRd.id ) ?  xmlRd.id.call(ts, xml) : xmlRd.id;
+//			} else {
+//				idn = ts.p.keyIndex;
+//			}
+//			if(f.length>0 && !isNaN(idn)) {
+//				idn=ts.p.keyName;
+//			}
+//			if( String(idn).indexOf("[") === -1 ) {
+//				if (f.length) {
+//					getId = function( trow, k) {return $(idn,trow).text() || k;};
+//				} else {
+//					getId = function( trow, k) {return $(xmlRd.cell,trow).eq(idn).text() || k;};
+//				}
+//			}
+//			else {
+//				getId = function( trow, k) {return trow.getAttribute(idn.replace(/[\[\]]/g,"")) || k;};
+//			}
+//			ts.p.userData = {};
+//			ts.p.page = intNum($.jgrid.getXmlData(xml, xmlRd.page), ts.p.page);
+//			ts.p.lastpage = intNum($.jgrid.getXmlData(xml, xmlRd.total), 1);
+//			ts.p.records = intNum($.jgrid.getXmlData(xml, xmlRd.records));
+//			if($.isFunction(xmlRd.userdata)) {
+//				ts.p.userData = xmlRd.userdata.call(ts, xml) || {};
+//			} else {
+//				$.jgrid.getXmlData(xml, xmlRd.userdata, true).each(function() {ts.p.userData[this.getAttribute("name")]= $(this).text();});
+//			}
+//			var gxml = $.jgrid.getXmlData( xml, xmlRd.root, true);
+//			gxml = $.jgrid.getXmlData( gxml, xmlRd.row, true);
+//			if (!gxml) { gxml = []; }
+//			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10), br=ts.p.scroll?$.jgrid.randId():1, altr;
+//			if (gl > 0 &&  ts.p.page <= 0) { ts.p.page = 1; }
+//			if(gxml && gl){
+//			if (adjust) { rn *= adjust+1; }
+//			var afterInsRow = $.isFunction(ts.p.afterInsertRow), hiderow=false, groupingPrepare;
+//			if(ts.p.grouping)  {
+//				hiderow = ts.p.groupingView.groupCollapse === true;
+//				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+//			}
+//			while (j<gl) {
+//				xmlr = gxml[j];
+//				rid = getId(xmlr,br+j);
+//				rid  = ts.p.idPrefix + rid;
+//				altr = rcnt === 0 ? 0 : rcnt+1;
+//				cn1 = (altr+j)%2 === 1 ? cn : '';
+//				var iStartTrTag = rowData.length;
+//				rowData.push("");
+//				if( ni ) {
+//					rowData.push( addRowNum(0,j,ts.p.page,ts.p.rowNum) );
+//				}
+//				if( gi ) {
+//					rowData.push( addMulti(rid,ni,j, false) );
+//				}
+//				if( si ) {
+//					rowData.push( addSubGridCell.call(self,gi+ni,j+rcnt) );
+//				}
+//				if(xmlRd.repeatitems){
+//					if (!F) { F=orderedCols(gi+si+ni); }
+//					var cells = $.jgrid.getXmlData( xmlr, xmlRd.cell, true);
+//					$.each(F, function (k) {
+//						var cell = cells[this];
+//						if (!cell) { return false; }
+//						v = cell.textContent || cell.text;
+//						rd[ts.p.colModel[k+gi+si+ni].name] = v;
+//						rowData.push( addCell(rid,v,k+gi+si+ni,j+rcnt,xmlr, rd) );
+//					});
+//				} else {
+//					for(i = 0; i < f.length;i++) {
+//						v = $.jgrid.getXmlData( xmlr, f[i]);
+//						rd[ts.p.colModel[i+gi+si+ni].name] = v;
+//						rowData.push( addCell(rid, v, i+gi+si+ni, j+rcnt, xmlr, rd) );
+//					}
+//				}
+//				rowData[iStartTrTag] = constructTr(rid, hiderow, cn1, rd, xmlr, false);
+//				rowData.push("</tr>");
+//				if(ts.p.grouping) {
+//					grpdata = groupingPrepare.call(self,rowData, grpdata, rd, j);
+//					rowData = [];
+//				}
+//				if(locdata || ts.p.treeGrid === true) {
+//					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
+//					ts.p.data.push(rd);
+//					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
+//				}
+//				if(ts.p.gridview === false ) {
+//					$("tbody:first",t).append(rowData.join(''));
+//					self.triggerHandler("jqGridAfterInsertRow", [rid, rd, xmlr]);
+//					if(afterInsRow) {ts.p.afterInsertRow.call(ts,rid,rd,xmlr);}
+//					rowData=[];
+//				}
+//				rd={};
+//				ir++;
+//				j++;
+//				if(ir===rn) {break;}
+//			}
+//			}
+//			if(ts.p.gridview === true) {
+//				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
+//				if(ts.p.grouping) {
+//					self.jqGrid('groupingRender',grpdata,ts.p.colModel.length);
+//					grpdata = null;
+//				} else if(ts.p.treeGrid === true && fpos > 0) {
+//					$(ts.rows[fpos]).after(rowData.join(''));
+//				} else {
+//					$("tbody:first",t).append(rowData.join(''));
+//				}
+//			}
+//			if(ts.p.subGrid === true ) {
+//				try {self.jqGrid("addSubGrid",gi+ni);} catch (_){}
+//			}
+//			ts.p.totaltime = new Date() - startReq;
+//			if(ir>0) { if(ts.p.records===0) { ts.p.records=gl;} }
+//			rowData =null;
+//			if( ts.p.treeGrid === true) {
+//				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
+//			}
+//			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
+//			ts.p.reccount=ir;
+//			ts.p.treeANode = -1;
+//			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
+//			if(locdata) {
+//				ts.p.records = gl;
+//				ts.p.lastpage = Math.ceil(gl/ rn);
+//			}
+//			if (!more) { ts.updatepager(false,true); }
+//			if(locdata) {
+//				while (ir<gl) {
+//					xmlr = gxml[ir];
+//					rid = getId(xmlr,ir+br);
+//					rid  = ts.p.idPrefix + rid;
+//					if(xmlRd.repeatitems){
+//						if (!F) { F=orderedCols(gi+si+ni); }
+//						var cells2 = $.jgrid.getXmlData( xmlr, xmlRd.cell, true);
+//						$.each(F, function (k) {
+//							var cell = cells2[this];
+//							if (!cell) { return false; }
+//							v = cell.textContent || cell.text;
+//							rd[ts.p.colModel[k+gi+si+ni].name] = v;
+//						});
+//					} else {
+//						for(i = 0; i < f.length;i++) {
+//							v = $.jgrid.getXmlData( xmlr, f[i]);
+//							rd[ts.p.colModel[i+gi+si+ni].name] = v;
+//						}
+//					}
+//					rd[xmlid] = $.jgrid.stripPref(ts.p.idPrefix, rid);
+//					ts.p.data.push(rd);
+//					ts.p._index[rd[xmlid]] = ts.p.data.length-1;
+//					rd = {};
+//					ir++;
+//				}
+//			}
+//		},
+//		addJSONData = function(data,t, rcnt, more, adjust) {
+//			var startReq = new Date();
+//			if(data) {
+//				if(ts.p.treeANode === -1 && !ts.p.scroll) {
+//					emptyRows.call(ts, false, true);
+//					rcnt=1;
+//				} else { rcnt = rcnt > 1 ? rcnt :1; }
+//			} else { return; }
+//
+//			var dReader, locid = "_id_", frd,
+//			locdata = (ts.p.datatype !== "local" && ts.p.loadonce) || ts.p.datatype === "jsonstring";
+//			if(locdata) { ts.p.data = []; ts.p._index = {}; ts.p.localReader.id = locid;}
+//			ts.p.reccount = 0;
+//			if(ts.p.datatype === "local") {
+//				dReader =  ts.p.localReader;
+//				frd= 'local';
+//			} else {
+//				dReader =  ts.p.jsonReader;
+//				frd='json';
+//			}
+//			var self = $(ts), ir=0,v,i,j,f=[],cur,gi=ts.p.multiselect?1:0,si=ts.p.subGrid===true?1:0,addSubGridCell,ni=ts.p.rownumbers===true?1:0,arrayReader=orderedCols(gi+si+ni),objectReader=reader(frd),rowReader,len,drows,idn,rd={}, fpos, idr,rowData=[],cn=(ts.p.altRows === true) ? ts.p.altclass:"",cn1;
+//			ts.p.page = intNum($.jgrid.getAccessor(data,dReader.page), ts.p.page);
+//			ts.p.lastpage = intNum($.jgrid.getAccessor(data,dReader.total), 1);
+//			ts.p.records = intNum($.jgrid.getAccessor(data,dReader.records));
+//			ts.p.userData = $.jgrid.getAccessor(data,dReader.userdata) || {};
+//			if(si) {
+//				addSubGridCell = $.jgrid.getMethod("addSubGridCell");
+//			}
+//			if( ts.p.keyIndex===false ) {
+//				idn = $.isFunction(dReader.id) ? dReader.id.call(ts, data) : dReader.id; 
+//			} else {
+//				idn = ts.p.keyIndex;
+//			}
+//			if(!dReader.repeatitems) {
+//				f = objectReader;
+//				if(f.length>0 && !isNaN(idn)) {
+//					idn=ts.p.keyName;
+//				}
+//			}
+//			drows = $.jgrid.getAccessor(data,dReader.root);
+//			if (drows == null && $.isArray(data)) { drows = data; }
+//			if (!drows) { drows = []; }
+//			len = drows.length; i=0;
+//			if (len > 0 && ts.p.page <= 0) { ts.p.page = 1; }
+//			var rn = parseInt(ts.p.rowNum,10),br=ts.p.scroll?$.jgrid.randId():1, altr, selected=false, selr;
+//			if (adjust) { rn *= adjust+1; }
+//			if(ts.p.datatype === "local" && !ts.p.deselectAfterSort) {
+//				selected = true;
+//			}
+//			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[],hiderow=false, groupingPrepare;
+//			if(ts.p.grouping)  {
+//				hiderow = ts.p.groupingView.groupCollapse === true;
+//				groupingPrepare = $.jgrid.getMethod("groupingPrepare");
+//			}
+//			while (i<len) {
+//				cur = drows[i];
+//				idr = $.jgrid.getAccessor(cur,idn);
+//				if(idr === undefined) {
+//					if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
+//						// reread id by name
+//						idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+//					}
+//					if(idr === undefined) {
+//						idr = br+i;
+//						if(f.length===0){
+//							if(dReader.cell){
+//								var ccur = $.jgrid.getAccessor(cur,dReader.cell) || cur;
+//								idr = ccur != null && ccur[idn] !== undefined ? ccur[idn] : idr;
+//								ccur=null;
+//							}
+//						}
+//					}
+//				}
+//				idr  = ts.p.idPrefix + idr;
+//				altr = rcnt === 1 ? 0 : rcnt;
+//				cn1 = (altr+i)%2 === 1 ? cn : '';
+//				if( selected) {
+//					if( ts.p.multiselect) {
+//						selr = ($.inArray(idr, ts.p.selarrrow) !== -1);
+//					} else {
+//						selr = (idr === ts.p.selrow);
+//					}
+//				}
+//				var iStartTrTag = rowData.length;
+//				rowData.push("");
+//				if( ni ) {
+//					rowData.push( addRowNum(0,i,ts.p.page,ts.p.rowNum) );
+//				}
+//				if( gi ){
+//					rowData.push( addMulti(idr,ni,i,selr) );
+//				}
+//				if( si ) {
+//					rowData.push( addSubGridCell.call(self,gi+ni,i+rcnt) );
+//				}
+//				rowReader=objectReader;
+//				if (dReader.repeatitems) {
+//					if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
+//					if ($.isArray(cur)) { rowReader=arrayReader; }
+//				}
+//				for (j=0;j<rowReader.length;j++) {
+//					v = $.jgrid.getAccessor(cur,rowReader[j]);
+//					rd[ts.p.colModel[j+gi+si+ni].name] = v;
+//					rowData.push( addCell(idr,v,j+gi+si+ni,i+rcnt,cur, rd) );
+//				}
+//				rowData[iStartTrTag] = constructTr(idr, hiderow, cn1, rd, cur, selr);
+//				rowData.push( "</tr>" );
+//				if(ts.p.grouping) {
+//					grpdata = groupingPrepare.call(self,rowData, grpdata, rd, i);
+//					rowData = [];
+//				}
+//				if(locdata || ts.p.treeGrid===true) {
+//					rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
+//					ts.p.data.push(rd);
+//					ts.p._index[rd[locid]] = ts.p.data.length-1;
+//				}
+//				if(ts.p.gridview === false ) {
+//					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
+//					self.triggerHandler("jqGridAfterInsertRow", [idr, rd, cur]);
+//					if(afterInsRow) {ts.p.afterInsertRow.call(ts,idr,rd,cur);}
+//					rowData=[];//ari=0;
+//				}
+//				rd={};
+//				ir++;
+//				i++;
+//				if(ir===rn) { break; }
+//			}
+//			if(ts.p.gridview === true ) {
+//				fpos = ts.p.treeANode > -1 ? ts.p.treeANode: 0;
+//				if(ts.p.grouping) {
+//					self.jqGrid('groupingRender',grpdata,ts.p.colModel.length);
+//					grpdata = null;
+//				} else if(ts.p.treeGrid === true && fpos > 0) {
+//					$(ts.rows[fpos]).after(rowData.join(''));
+//				} else {
+//					$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").append(rowData.join(''));
+//				}
+//			}
+//			if(ts.p.subGrid === true ) {
+//				try { self.jqGrid("addSubGrid",gi+ni);} catch (_){}
+//			}
+//			ts.p.totaltime = new Date() - startReq;
+//			if(ir>0) {
+//				if(ts.p.records===0) { ts.p.records=len; }
+//			}
+//			rowData = null;
+//			if( ts.p.treeGrid === true) {
+//				try {self.jqGrid("setTreeNode", fpos+1, ir+fpos+1);} catch (e) {}
+//			}
+//			if(!ts.p.treeGrid && !ts.p.scroll) {ts.grid.bDiv.scrollTop = 0;}
+//			ts.p.reccount=ir;
+//			ts.p.treeANode = -1;
+//			if(ts.p.userDataOnFooter) { self.jqGrid("footerData","set",ts.p.userData,true); }
+//			if(locdata) {
+//				ts.p.records = len;
+//				ts.p.lastpage = Math.ceil(len/ rn);
+//			}
+//			if (!more) { ts.updatepager(false,true); }
+//			if(locdata) {
+//				while (ir<len && drows[ir]) {
+//					cur = drows[ir];
+//					idr = $.jgrid.getAccessor(cur,idn);
+//					if(idr === undefined) {
+//						if (typeof idn === "number" && ts.p.colModel[idn+gi+si+ni] != null) {
+//							// reread id by name
+//							idr = $.jgrid.getAccessor(cur,ts.p.colModel[idn+gi+si+ni].name);
+//						}
+//						if(idr === undefined) {
+//							idr = br+ir;
+//							if(f.length===0){
+//								if(dReader.cell){
+//									var ccur2 = $.jgrid.getAccessor(cur,dReader.cell) || cur;
+//									idr = ccur2 != null && ccur2[idn] !== undefined ? ccur2[idn] : idr;
+//									ccur2=null;
+//								}
+//							}
+//						}
+//					}
+//					if(cur) {
+//						idr  = ts.p.idPrefix + idr;
+//						rowReader=objectReader;
+//						if (dReader.repeatitems) {
+//							if(dReader.cell) {cur = $.jgrid.getAccessor(cur,dReader.cell) || cur;}
+//							if ($.isArray(cur)) { rowReader=arrayReader; }
+//						}
+//
+//						for (j=0;j<rowReader.length;j++) {
+//							rd[ts.p.colModel[j+gi+si+ni].name] = $.jgrid.getAccessor(cur,rowReader[j]);
+//						}
+//						rd[locid] = $.jgrid.stripPref(ts.p.idPrefix, idr);
+//						ts.p.data.push(rd);
+//						ts.p._index[rd[locid]] = ts.p.data.length-1;
+//						rd = {};
+//					}
+//					ir++;
+//				}
+//			}
+//		},
+//		addLocalData = function() {
+//			var st = ts.p.multiSort ? [] : "", sto=[], fndsort=false, cmtypes={}, grtypes=[], grindexes=[], srcformat, sorttype, newformat;
+//			if(!$.isArray(ts.p.data)) {
+//				return;
+//			}
+//			var grpview = ts.p.grouping ? ts.p.groupingView : false, lengrp, gin;
+//			$.each(ts.p.colModel,function(){
+//				sorttype = this.sorttype || "text";
+//				if(sorttype === "date" || sorttype === "datetime") {
+//					if(this.formatter && typeof this.formatter === 'string' && this.formatter === 'date') {
+//						if(this.formatoptions && this.formatoptions.srcformat) {
+//							srcformat = this.formatoptions.srcformat;
+//						} else {
+//							srcformat = $.jgrid.formatter.date.srcformat;
+//						}
+//						if(this.formatoptions && this.formatoptions.newformat) {
+//							newformat = this.formatoptions.newformat;
+//						} else {
+//							newformat = $.jgrid.formatter.date.newformat;
+//						}
+//					} else {
+//						srcformat = newformat = this.datefmt || "Y-m-d";
+//					}
+//					cmtypes[this.name] = {"stype": sorttype, "srcfmt": srcformat,"newfmt":newformat};
+//				} else {
+//					cmtypes[this.name] = {"stype": sorttype, "srcfmt":'',"newfmt":''};
+//				}
+//				if(ts.p.grouping ) {
+//					for(gin =0, lengrp = grpview.groupField.length; gin< lengrp; gin++) {
+//						if( this.name === grpview.groupField[gin]) {
+//							var grindex = this.name;
+//							if (this.index) {
+//								grindex = this.index;
+//							}
+//							grtypes[gin] = cmtypes[grindex];
+//							grindexes[gin]= grindex;
+//						}
+//					}
+//				}
+//				if(ts.p.multiSort) {
+//					if(this.lso) {
+//						st.push(this.name);
+//						var tmplso= this.lso.split("-");
+//						sto.push( tmplso[tmplso.length-1] );
+//					}
+//				} else {
+//					if(!fndsort && (this.index === ts.p.sortname || this.name === ts.p.sortname)){
+//						st = this.name; // ???
+//						fndsort = true;
+//					}
+//				}
+//			});
+//			if(ts.p.treeGrid) {
+//				$(ts).jqGrid("SortTree", st, ts.p.sortorder, cmtypes[st].stype || 'text', cmtypes[st].srcfmt || '');
+//				return;
+//			}
+//			var compareFnMap = {
+//				'eq':function(queryObj) {return queryObj.equals;},
+//				'ne':function(queryObj) {return queryObj.notEquals;},
+//				'lt':function(queryObj) {return queryObj.less;},
+//				'le':function(queryObj) {return queryObj.lessOrEquals;},
+//				'gt':function(queryObj) {return queryObj.greater;},
+//				'ge':function(queryObj) {return queryObj.greaterOrEquals;},
+//				'cn':function(queryObj) {return queryObj.contains;},
+//				'nc':function(queryObj,op) {return op === "OR" ? queryObj.orNot().contains : queryObj.andNot().contains;},
+//				'bw':function(queryObj) {return queryObj.startsWith;},
+//				'bn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().startsWith : queryObj.andNot().startsWith;},
+//				'en':function(queryObj,op) {return op === "OR" ? queryObj.orNot().endsWith : queryObj.andNot().endsWith;},
+//				'ew':function(queryObj) {return queryObj.endsWith;},
+//				'ni':function(queryObj,op) {return op === "OR" ? queryObj.orNot().equals : queryObj.andNot().equals;},
+//				'in':function(queryObj) {return queryObj.equals;},
+//				'nu':function(queryObj) {return queryObj.isNull;},
+//				'nn':function(queryObj,op) {return op === "OR" ? queryObj.orNot().isNull : queryObj.andNot().isNull;}
+//
+//			},
+//			query = $.jgrid.from(ts.p.data);
+//			if (ts.p.ignoreCase) { query = query.ignoreCase(); }
+//			function tojLinq ( group ) {
+//				var s = 0, index, gor, ror, opr, rule;
+//				if (group.groups != null) {
+//					gor = group.groups.length && group.groupOp.toString().toUpperCase() === "OR";
+//					if (gor) {
+//						query.orBegin();
+//					}
+//					for (index = 0; index < group.groups.length; index++) {
+//						if (s > 0 && gor) {
+//							query.or();
+//						}
+//						try {
+//							tojLinq(group.groups[index]);
+//						} catch (e) {alert(e);}
+//						s++;
+//					}
+//					if (gor) {
+//						query.orEnd();
+//					}
+//				}
+//				if (group.rules != null) {
+//					//if(s>0) {
+//					//	var result = query.select();
+//					//	query = $.jgrid.from( result);
+//					//	if (ts.p.ignoreCase) { query = query.ignoreCase(); } 
+//					//}
+//					try{
+//						ror = group.rules.length && group.groupOp.toString().toUpperCase() === "OR";
+//						if (ror) {
+//							query.orBegin();
+//						}
+//						for (index = 0; index < group.rules.length; index++) {
+//							rule = group.rules[index];
+//							opr = group.groupOp.toString().toUpperCase();
+//							if (compareFnMap[rule.op] && rule.field ) {
+//								if(s > 0 && opr && opr === "OR") {
+//									query = query.or();
+//								}
+//								query = compareFnMap[rule.op](query, opr)(rule.field, rule.data, cmtypes[rule.field]);
+//							}
+//							s++;
+//						}
+//						if (ror) {
+//							query.orEnd();
+//						}
+//					} catch (g) {alert(g);}
+//				}
+//			}
+//
+//			if (ts.p.search === true) {
+//				var srules = ts.p.postData.filters;
+//				if(srules) {
+//					if(typeof srules === "string") { srules = $.jgrid.parse(srules);}
+//					tojLinq( srules );
+//				} else {
+//					try {
+//						query = compareFnMap[ts.p.postData.searchOper](query)(ts.p.postData.searchField, ts.p.postData.searchString,cmtypes[ts.p.postData.searchField]);
+//					} catch (se){}
+//				}
+//			}
+//			if(ts.p.grouping) {
+//				for(gin=0; gin<lengrp;gin++) {
+//					query.orderBy(grindexes[gin],grpview.groupOrder[gin],grtypes[gin].stype, grtypes[gin].srcfmt);
+//				}
+//			}
+//			if(ts.p.multiSort) {
+//				$.each(st,function(i){
+//					query.orderBy(this, sto[i], cmtypes[this].stype, cmtypes[this].srcfmt);
+//				});
+//			} else {
+//				if (st && ts.p.sortorder && fndsort) {
+//					if(ts.p.sortorder.toUpperCase() === "DESC") {
+//						query.orderBy(ts.p.sortname, "d", cmtypes[st].stype, cmtypes[st].srcfmt);
+//					} else {
+//						query.orderBy(ts.p.sortname, "a", cmtypes[st].stype, cmtypes[st].srcfmt);
+//					}
+//				}
+//			}
+//			var queryResults = query.select(),
+//			recordsperpage = parseInt(ts.p.rowNum,10),
+//			total = queryResults.length,
+//			page = parseInt(ts.p.page,10),
+//			totalpages = Math.ceil(total / recordsperpage),
+//			retresult = {};
+//			queryResults = queryResults.slice( (page-1)*recordsperpage , page*recordsperpage );
+//			query = null;
+//			cmtypes = null;
+//			retresult[ts.p.localReader.total] = totalpages;
+//			retresult[ts.p.localReader.page] = page;
+//			retresult[ts.p.localReader.records] = total;
+//			retresult[ts.p.localReader.root] = queryResults;
+//			retresult[ts.p.localReader.userdata] = ts.p.userData;
+//			queryResults = null;
+//			return  retresult;
+//		},
 		updatepager = function(rn, dnd) {
 			var cp, last, base, from,to,tot,fmt, pgboxes = "", sppg,
 			tspg = ts.p.pager ? "_"+$.jgrid.jqID(ts.p.pager.substr(1)) : "",
@@ -1850,173 +1850,175 @@ $.fn.jqGrid = function( pin ) {
 			if($.isFunction(ts.p.gridComplete)) {ts.p.gridComplete.call(ts);}
 			$(ts).triggerHandler("jqGridAfterGridComplete");
 		},
-		beginReq = function() {
-			ts.grid.hDiv.loading = true;
-			if(ts.p.hiddengrid) { return;}
-			switch(ts.p.loadui) {
-				case "disable":
-					break;
-				case "enable":
-					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
-					break;
-				case "block":
-					$("#lui_"+$.jgrid.jqID(ts.p.id)).show();
-					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
-					break;
-			}
-		},
-		endReq = function() {
-			ts.grid.hDiv.loading = false;
-			switch(ts.p.loadui) {
-				case "disable":
-					break;
-				case "enable":
-					$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
-					break;
-				case "block":
-					$("#lui_"+$.jgrid.jqID(ts.p.id)).hide();
-					$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
-					break;
-			}
-		},
+//		beginReq = function() {
+//			ts.grid.hDiv.loading = true;
+//			if(ts.p.hiddengrid) { return;}
+//			switch(ts.p.loadui) {
+//				case "disable":
+//					break;
+//				case "enable":
+//					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
+//					break;
+//				case "block":
+//					$("#lui_"+$.jgrid.jqID(ts.p.id)).show();
+//					$("#load_"+$.jgrid.jqID(ts.p.id)).show();
+//					break;
+//			}
+//		},
+//		endReq = function() {
+//			ts.grid.hDiv.loading = false;
+//			switch(ts.p.loadui) {
+//				case "disable":
+//					break;
+//				case "enable":
+//					$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
+//					break;
+//				case "block":
+//					$("#lui_"+$.jgrid.jqID(ts.p.id)).hide();
+//					$("#load_"+$.jgrid.jqID(ts.p.id)).hide();
+//					break;
+//			}
+//		},
 		populate = function (npage) {
-			if(!ts.grid.hDiv.loading) {
-				var pvis = ts.p.scroll && npage === false,
-				prm = {}, dt, dstr, pN=ts.p.prmNames;
-				if(ts.p.page <=0) { ts.p.page = Math.min(1,ts.p.lastpage); }
-				if(pN.search !== null) {prm[pN.search] = ts.p.search;} if(pN.nd !== null) {prm[pN.nd] = new Date().getTime();}
-				if(pN.rows !== null) {prm[pN.rows]= ts.p.rowNum;} if(pN.page !== null) {prm[pN.page]= ts.p.page;}
-				if(pN.sort !== null) {prm[pN.sort]= ts.p.sortname;} if(pN.order !== null) {prm[pN.order]= ts.p.sortorder;}
-				if(ts.p.rowTotal !== null && pN.totalrows !== null) { prm[pN.totalrows]= ts.p.rowTotal; }
-				var lcf = $.isFunction(ts.p.loadComplete), lc = lcf ? ts.p.loadComplete : null;
-				var adjust = 0;
-				npage = npage || 1;
-				if (npage > 1) {
-					if(pN.npage !== null) {
-						prm[pN.npage] = npage;
-						adjust = npage - 1;
-						npage = 1;
-					} else {
-						lc = function(req) {
-							ts.p.page++;
-							ts.grid.hDiv.loading = false;
-							if (lcf) {
-								ts.p.loadComplete.call(ts,req);
-							}
-							populate(npage-1);
-						};
-					}
-				} else if (pN.npage !== null) {
-					delete ts.p.postData[pN.npage];
-				}
-				if(ts.p.grouping) {
-					$(ts).jqGrid('groupingSetup');
-					var grp = ts.p.groupingView, gi, gs="";
-					for(gi=0;gi<grp.groupField.length;gi++) {
-						var index = grp.groupField[gi];
-						$.each(ts.p.colModel, function(cmIndex, cmValue) {
-							if (cmValue.name === index && cmValue.index){
-								index = cmValue.index;
-							}
-						} );
-						gs += index +" "+grp.groupOrder[gi]+", ";
-					}
-					prm[pN.sort] = gs + prm[pN.sort];
-				}
-				$.extend(ts.p.postData,prm);
-				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
-				var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
-				if (bfr === false || bfr === 'stop') { return; }
-				if ($.isFunction(ts.p.datatype)) { ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust); return;}
-				if ($.isFunction(ts.p.beforeRequest)) {
-					bfr = ts.p.beforeRequest.call(ts);
-					if(bfr === undefined) { bfr = true; }
-					if ( bfr === false ) { return; }
-				}
-				dt = ts.p.datatype.toLowerCase();
-				switch(dt)
-				{
-				case "json":
-				case "jsonp":
-				case "xml":
-				case "script":
-					$.ajax($.extend({
-						url:ts.p.url,
-						type:ts.p.mtype,
-						dataType: dt ,
-						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
-						success:function(data,st, xhr) {
-							if ($.isFunction(ts.p.beforeProcessing)) {
-								if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
-									endReq();
-									return;
-								}
-							}
-							if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
-							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
-							$(ts).triggerHandler("jqGridLoadComplete", [data]);
-							if(lc) { lc.call(ts,data); }
-							$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);
-							if (pvis) { ts.grid.populateVisible(); }
-							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
-							data=null;
-							if (npage === 1) { endReq(); }
-						},
-						error:function(xhr,st,err){
-							if($.isFunction(ts.p.loadError)) { ts.p.loadError.call(ts,xhr,st,err); }
-							if (npage === 1) { endReq(); }
-							xhr=null;
-						},
-						beforeSend: function(xhr, settings ){
-							var gotoreq = true;
-							if($.isFunction(ts.p.loadBeforeSend)) {
-								gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings); 
-							}
-							if(gotoreq === undefined) { gotoreq = true; }
-							if(gotoreq === false) {
-								return false;
-							}
-								beginReq();
-							}
-					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
-				break;
-				case "xmlstring":
-					beginReq();
-					dstr = typeof ts.p.datastr !== 'string' ? ts.p.datastr : $.parseXML(ts.p.datastr);
-					addXmlData(dstr,ts.grid.bDiv);
-					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
-					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					ts.p.datatype = "local";
-					ts.p.datastr = null;
-					endReq();
-				break;
-				case "jsonstring":
-					beginReq();
-					if(typeof ts.p.datastr === 'string') { dstr = $.jgrid.parse(ts.p.datastr); }
-					else { dstr = ts.p.datastr; }
-					addJSONData(dstr,ts.grid.bDiv);
-					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
-					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
-					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
-					ts.p.datatype = "local";
-					ts.p.datastr = null;
-					endReq();
-				break;
-				case "local":
-				case "clientside":
-					beginReq();
-					ts.p.datatype = "local";
-					var req = addLocalData();
-					addJSONData(req,ts.grid.bDiv,rcnt,npage>1,adjust);
-					$(ts).triggerHandler("jqGridLoadComplete", [req]);
-					if(lc) { lc.call(ts,req); }
-					$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
-					if (pvis) { ts.grid.populateVisible(); }
-					endReq();
-				break;
-				}
-			}
+			var pageSize = parseInt($('.ui-pg-selbox',ts.p.toppager).val());
+			$(ts).triggerHandler("jqGridPageChange", {pageSize: pageSize, pageIndex: (ts.p.page - 1)});
+//			if(!ts.grid.hDiv.loading) {
+//				var pvis = ts.p.scroll && npage === false,
+//				prm = {}, dt, dstr, pN=ts.p.prmNames;
+//				if(ts.p.page <=0) { ts.p.page = Math.min(1,ts.p.lastpage); }
+//				if(pN.search !== null) {prm[pN.search] = ts.p.search;} if(pN.nd !== null) {prm[pN.nd] = new Date().getTime();}
+//				if(pN.rows !== null) {prm[pN.rows]= ts.p.rowNum;} if(pN.page !== null) {prm[pN.page]= ts.p.page;}
+//				if(pN.sort !== null) {prm[pN.sort]= ts.p.sortname;} if(pN.order !== null) {prm[pN.order]= ts.p.sortorder;}
+//				if(ts.p.rowTotal !== null && pN.totalrows !== null) { prm[pN.totalrows]= ts.p.rowTotal; }
+//				var lcf = $.isFunction(ts.p.loadComplete), lc = lcf ? ts.p.loadComplete : null;
+//				var adjust = 0;
+//				npage = npage || 1;
+//				if (npage > 1) {
+//					if(pN.npage !== null) {
+//						prm[pN.npage] = npage;
+//						adjust = npage - 1;
+//						npage = 1;
+//					} else {
+//						lc = function(req) {
+//							ts.p.page++;
+//							ts.grid.hDiv.loading = false;
+//							if (lcf) {
+//								ts.p.loadComplete.call(ts,req);
+//							}
+//							populate(npage-1);
+//						};
+//					}
+//				} else if (pN.npage !== null) {
+//					delete ts.p.postData[pN.npage];
+//				}
+//				if(ts.p.grouping) {
+//					$(ts).jqGrid('groupingSetup');
+//					var grp = ts.p.groupingView, gi, gs="";
+//					for(gi=0;gi<grp.groupField.length;gi++) {
+//						var index = grp.groupField[gi];
+//						$.each(ts.p.colModel, function(cmIndex, cmValue) {
+//							if (cmValue.name === index && cmValue.index){
+//								index = cmValue.index;
+//							}
+//						} );
+//						gs += index +" "+grp.groupOrder[gi]+", ";
+//					}
+//					prm[pN.sort] = gs + prm[pN.sort];
+//				}
+//				$.extend(ts.p.postData,prm);
+//				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
+//				var bfr = $(ts).triggerHandler("jqGridBeforeRequest");
+//				if (bfr === false || bfr === 'stop') { return; }
+//				if ($.isFunction(ts.p.datatype)) { ts.p.datatype.call(ts,ts.p.postData,"load_"+ts.p.id, rcnt, npage, adjust); return;}
+//				if ($.isFunction(ts.p.beforeRequest)) {
+//					bfr = ts.p.beforeRequest.call(ts);
+//					if(bfr === undefined) { bfr = true; }
+//					if ( bfr === false ) { return; }
+//				}
+//				dt = ts.p.datatype.toLowerCase();
+//				switch(dt)
+//				{
+//				case "json":
+//				case "jsonp":
+//				case "xml":
+//				case "script":
+//					$.ajax($.extend({
+//						url:ts.p.url,
+//						type:ts.p.mtype,
+//						dataType: dt ,
+//						data: $.isFunction(ts.p.serializeGridData)? ts.p.serializeGridData.call(ts,ts.p.postData) : ts.p.postData,
+//						success:function(data,st, xhr) {
+//							if ($.isFunction(ts.p.beforeProcessing)) {
+//								if (ts.p.beforeProcessing.call(ts, data, st, xhr) === false) {
+//									endReq();
+//									return;
+//								}
+//							}
+//							if(dt === "xml") { addXmlData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
+//							else { addJSONData(data,ts.grid.bDiv,rcnt,npage>1,adjust); }
+//							$(ts).triggerHandler("jqGridLoadComplete", [data]);
+//							if(lc) { lc.call(ts,data); }
+//							$(ts).triggerHandler("jqGridAfterLoadComplete", [data]);
+//							if (pvis) { ts.grid.populateVisible(); }
+//							if( ts.p.loadonce || ts.p.treeGrid) {ts.p.datatype = "local";}
+//							data=null;
+//							if (npage === 1) { endReq(); }
+//						},
+//						error:function(xhr,st,err){
+//							if($.isFunction(ts.p.loadError)) { ts.p.loadError.call(ts,xhr,st,err); }
+//							if (npage === 1) { endReq(); }
+//							xhr=null;
+//						},
+//						beforeSend: function(xhr, settings ){
+//							var gotoreq = true;
+//							if($.isFunction(ts.p.loadBeforeSend)) {
+//								gotoreq = ts.p.loadBeforeSend.call(ts,xhr, settings); 
+//							}
+//							if(gotoreq === undefined) { gotoreq = true; }
+//							if(gotoreq === false) {
+//								return false;
+//							}
+//								beginReq();
+//							}
+//					},$.jgrid.ajaxOptions, ts.p.ajaxGridOptions));
+//				break;
+//				case "xmlstring":
+//					beginReq();
+//					dstr = typeof ts.p.datastr !== 'string' ? ts.p.datastr : $.parseXML(ts.p.datastr);
+//					addXmlData(dstr,ts.grid.bDiv);
+//					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
+//					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
+//					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
+//					ts.p.datatype = "local";
+//					ts.p.datastr = null;
+//					endReq();
+//				break;
+//				case "jsonstring":
+//					beginReq();
+//					if(typeof ts.p.datastr === 'string') { dstr = $.jgrid.parse(ts.p.datastr); }
+//					else { dstr = ts.p.datastr; }
+//					addJSONData(dstr,ts.grid.bDiv);
+//					$(ts).triggerHandler("jqGridLoadComplete", [dstr]);
+//					if(lcf) {ts.p.loadComplete.call(ts,dstr);}
+//					$(ts).triggerHandler("jqGridAfterLoadComplete", [dstr]);
+//					ts.p.datatype = "local";
+//					ts.p.datastr = null;
+//					endReq();
+//				break;
+//				case "local":
+//				case "clientside":
+//					beginReq();
+//					ts.p.datatype = "local";
+//					var req = addLocalData();
+//					addJSONData(req,ts.grid.bDiv,rcnt,npage>1,adjust);
+//					$(ts).triggerHandler("jqGridLoadComplete", [req]);
+//					if(lc) { lc.call(ts,req); }
+//					$(ts).triggerHandler("jqGridAfterLoadComplete", [req]);
+//					if (pvis) { ts.grid.populateVisible(); }
+//					endReq();
+//				break;
+//				}
+//			}
 		},
 		setHeadCheckBox = function ( checked ) {
 			$('#cb_'+$.jgrid.jqID(ts.p.id),ts.grid.hDiv)[ts.p.useProp ? 'prop': 'attr']("checked", checked);
@@ -2868,15 +2870,16 @@ $.fn.jqGrid = function( pin ) {
 		ts.setHeadCheckBox = setHeadCheckBox;
 		ts.constructTr = constructTr;
 		ts.formatter = function ( rowId, cellval , colpos, rwdat, act){return formatter(rowId, cellval , colpos, rwdat, act);};
-		$.extend(grid,{populate : populate, emptyRows: emptyRows, beginReq: beginReq, endReq: endReq});
+		$.extend(grid,{populate : populate, emptyRows: emptyRows/*, beginReq: beginReq, endReq: endReq*/});
 		this.grid = grid;
-		ts.addXmlData = function(d) {addXmlData(d,ts.grid.bDiv);};
-		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
+//		ts.addXmlData = function(d) {addXmlData(d,ts.grid.bDiv);};
+//		ts.addJSONData = function(d) {addJSONData(d,ts.grid.bDiv);};
 		this.grid.cols = this.rows[0].cells;
 		$(ts).triggerHandler("jqGridInitGrid");
 		if ($.isFunction( ts.p.onInitGrid )) { ts.p.onInitGrid.call(ts); }
 
-		populate();ts.p.hiddengrid=false;
+//		populate();
+		ts.p.hiddengrid=false;
 	});
 };
 $.jgrid.extend({
@@ -3164,7 +3167,16 @@ $.jgrid.extend({
 		});
 		return success;
 	},
-	addRowData : function(rowid,rdata,pos,src) {
+	setPagination: function(pagination) {
+		this.each(function() {
+			var t = this;
+			t.p.records = pagination.totalRecords;
+			t.p.page = pagination.pageIndex + 1;
+			t.p.lastpage = pagination.pageCount;
+			t.updatepager(true, true);
+		});
+	},
+	addRowData : function(rowid,rdata,pos,src,addCount) {
 		if(!pos) {pos = "last";}
 		var success = false, nm, row, gi, si, ni,sind, i, v, prp="", aradd, cnm, cn, data, cm, id;
 		if(rdata) {
@@ -3263,7 +3275,8 @@ $.jgrid.extend({
 					if(t.p.subGrid===true) {
 						$(t).jqGrid("addSubGrid",gi+ni, sind);
 					}
-					t.p.records++;
+					if(addCount != false)
+						t.p.records++;
 					t.p.reccount++;
 					$(t).triggerHandler("jqGridAfterInsertRow", [rowid,data,data]);
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }

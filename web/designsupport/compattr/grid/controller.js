@@ -47,15 +47,15 @@ wdefine(function(){
 	
 	window.ccc = callbackForEntity;
 	
-	var modelBt = $app.component("modelbt");
-	modelBt.on('click', function(){
-		FwBase.Wtf.Design.DesignSupport.editModel();
-	});
-
-	var behaviorBt = $app.component("behaviorbt");
-	behaviorBt.on('click', function(){
-		FwBase.Wtf.Design.DesignSupport.editBehavior();
-	});
+//	var modelBt = $app.component("modelbt");
+//	modelBt.on('click', function(){
+//		FwBase.Wtf.Design.DesignSupport.editModel();
+//	});
+//
+//	var behaviorBt = $app.component("behaviorbt");
+//	behaviorBt.on('click', function(){
+//		FwBase.Wtf.Design.DesignSupport.editBehavior();
+//	});
 	
 	
 	var okbt = $app.component("okbt");

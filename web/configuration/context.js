@@ -3,7 +3,29 @@ function testClientMode() {
 		return true;
 	return false;
 }
+function testClientModeCache(){
+	var url = window.location.href;
+	var index = url.indexof("?");
+	if(index == -1)
+		return true;
+	var paramstr = url.substring(index + 1);
+	var params = paramstr.split("&");
+	for(var i = 0; i < params.length; i ++){
+		if(params[i].startWith("ccache")){
+			var pair = params[i].split("=");
+			if(pair[1] == null || pair[1] == true)
+				return true;
+			return false;
+		}
+	}
+	return true;
+}
 window.clientMode = testClientMode();
+if(window.clientMode){
+	window.clientModeCachable = testClientModeCache();
+	if(window.DesignMode || !window.clientModeCachable)
+		window.ClientMode_Postfix = parseInt(Math.random() * 1000) + "";
+}
 window.mainCtx = "#CTX#";
 window.frameCtx = "#FRMCTX#";
 

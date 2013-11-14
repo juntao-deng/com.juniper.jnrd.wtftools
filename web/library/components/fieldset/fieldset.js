@@ -7,8 +7,9 @@ define(["base/base", "./coolfieldset", "css!./coolfieldset"], function(base){
 		{
 			template: _.template($('#sys_atom_controls_fieldset').html()),
 			postInit : function(){
-				this.fieldset = this.el.child("#fieldset");
-				this.fieldset.coolfieldset({speed:"medium"});
+				this.fieldset = this.el.children("#fieldset");
+				this.fieldset.append(this.fieldset.siblings());
+				this.fieldset.coolfieldset({speed:"fast"});
 			},
 			makeDefault : function(){
 				this.setDefault({collapse: false, legend: 'FieldSet'});

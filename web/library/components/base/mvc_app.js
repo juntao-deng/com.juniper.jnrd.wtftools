@@ -421,19 +421,19 @@ define(["../uipattern/buttonmanager"], function(){
 	 		else
 	 			this.attrs[arguments[0]] = arguments[1];
 	 	},
-  	 	view : function(view){
-  	 		if(typeof view == "string")
-  	 			return this.viewMap[view];
-  	 		this.viewMap[view.id] = view;
-  	 	},
-  	 	removeView : function(viewId) {
-  	 		return this.viewMap[viewId];
-  	 	},
-  	 	destroyView : function(viewId){
-  	 		var view = this.removeView(viewId);
-  	 		if(view)
-  	 			view.destroy();
-  	 	},
+//  	 	view : function(view){
+//  	 		if(typeof view == "string")
+//  	 			return this.viewMap[view];
+//  	 		this.viewMap[view.id] = view;
+//  	 	},
+//  	 	removeView : function(viewId) {
+//  	 		return this.viewMap[viewId];
+//  	 	},
+//  	 	destroyView : function(viewId){
+//  	 		var view = this.removeView(viewId);
+//  	 		if(view)
+//  	 			view.destroy();
+//  	 	},
   	 	
   	 	model : function(){
   	 		if(arguments.length == 1){
@@ -461,7 +461,11 @@ define(["../uipattern/buttonmanager"], function(){
   	 	},
   	 	
   	 	removeModel : function(modelId) {
-  	 		return this.modelMap[modelId];
+  	 		var model = this.modelMap[modelId];
+  	 		if(model)
+  	 			model.ctx = null;
+  	 		delete this.modelMap[modelId];
+  	 		return model;
   	 	},
   	 	destroyModel : function(modelId){
   	 		var model = this.removeModel(modelId);
@@ -476,16 +480,36 @@ define(["../uipattern/buttonmanager"], function(){
   	 				return this.componentsMap[arguments[0]];
   	 			if(arguments[0].stateful)
   	 				this.installButtonManager();
+  	 			if(this.componentsMap[arguments[0].id] != null){
+  	 				alert("The component id: '" + arguments[0].id + "' already exists.");
+  	 				return;
+  	 			}
   	 			arguments[0].ctx = this;
   	 			this.componentsMap[arguments[0].id] = arguments[0];
   	 		}
   	 		else if(arguments.length == 2){
   	 			var obj = arguments[1];
-  	 			obj.ctx = this;
   	 			if(obj.stateful)
   	 				this.installButtonManager();
+  	 			if(this.componentsMap[arguments[0]] != null){
+  	 				alert("The component id: '" + arguments[0] + "' already exists.");
+  	 				return;
+  	 			}
+  	 			obj.ctx = this;
   	 			this.componentsMap[arguments[0]] = obj;
   	 		}
+  	 	},
+  	 	removeComponent : function(compId) {
+  	 		var comp = this.componentsMap[compId];
+  	 		delete this.componentsMap[compId];
+  	 		if(comp)
+  	 			comp.ctx = null;
+  	 		return comp;
+  	 	},
+  	 	destroyComponent : function(compId){
+  	 		var comp = this.removeComponent(compId);
+  	 		if(comp)
+  	 			comp.destroy();
   	 	},
   	 	installButtonManager: function(){
   	 		if(this.buttonManager == null){

@@ -10,18 +10,19 @@ define(["base/listener"], function(){
 	$.extend(FwBase.Wtf.View.Controls.BaseControl.prototype, FwBase.Wtf.View.Controls.Listener.prototype, {
 		create : function(){
 			if(this.metadata == null || this.metadata === window.globalEmptyObj){
-				this.metadata = {};
+				this.metadata = {mock: true};
 				this.mockMetadata();
 			}
 			else if(this.metadata.mock){
 				this.mockMetadata();
 			}
+			else
+				this.setDefault({mock: false});
 			var ct = this.type();
 			if(FwBase.Wtf.View.Controls.BaseControl.instances[ct] == null){
 				FwBase.Wtf.View.Controls.BaseControl.instances[ct] = 0;
 			}
 			this.instance = (FwBase.Wtf.View.Controls.BaseControl.instances[ct] ++);
-//			this.setDefault({instanceId: this.instance});
 			this.makeDefault();
 			this.setDefault({enable : true, visible : true});
 			if(this.template == null)

@@ -56,12 +56,12 @@
       container_div = $("<div />", {
         id: this.container_id,
         "class": "chzn-container " + (this.is_rtl ? 'chzn-rtl' : ''),
-        style: 'width: ' + this.f_width + 'px;'
+        style: 'float:left;width: ' + this.f_width + 'px;'
       });
       if (this.is_multiple) {
-        container_div.html('<ul class="chzn-choices"><li class="search-field"><input type="text" value="' + this.default_text + '" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chzn-drop" style="left:-9000px;"><ul class="chzn-results"></ul></div>');
+        container_div.html('<ul class="chzn-choices"><li class="search-field"><input type="text" value="' + this.default_text + '" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chzn-drop" style="left:-9000px;position:fixed"><ul class="chzn-results"></ul></div>');
       } else {
-        container_div.html('<a href="javascript:void(0)" class="chzn-single"><span>' + this.default_text + '</span><div><b></b></div></a><div class="chzn-drop" style="left:-9000px;"><div class="chzn-search"><input type="text" autocomplete="off" /></div><ul class="chzn-results"></ul></div>');
+        container_div.html('<a href="javascript:void(0)" class="chzn-single"><span>' + this.default_text + '</span><div><b></b></div></a><div class="chzn-drop" style="left:-9000px;position:fixed;"><div class="chzn-search"><input type="text" autocomplete="off" /></div><ul class="chzn-results"></ul></div>');
       }
       this.form_field_jq.hide().after(container_div);
       this.container = $('#' + this.container_id);
@@ -304,17 +304,18 @@
       }
     };
     Chosen.prototype.results_show = function() {
-      var dd_top;
       if (!this.is_multiple) {
         this.selected_item.addClass("chzn-single-with-drop");
         if (this.result_single_selected) {
           this.result_do_highlight(this.result_single_selected);
         }
       }
-      dd_top = this.is_multiple ? this.container.height() : this.container.height() - 1;
+      var offset = this.container.offset();
+      var dd_top = offset.top + (this.is_multiple ? this.container.height() : this.container.height() - 1);
+      var dd_left = offset.left;
       this.dropdown.css({
         "top": dd_top + "px",
-        "left": 0
+        "left": dd_left + "px"
       });
       this.results_showing = true;
       this.search_field.focus();

@@ -18,7 +18,6 @@ define(function(){
 	//use backbones extend method to add events function
 	 _.extend(FwBase.Wtf.Model.prototype, Backbone.Events);
 	 
-	 
 	 $.extend(FwBase.Wtf.Model.prototype, {
 		makeDefault : function(metadata){
 			if(!metadata.pageSize)
@@ -36,7 +35,7 @@ define(function(){
 		},
 		toInit : function(){
 			if(!this.metadata.lazyInit)
-	 		this.init();
+				this.init();
 		},
 		
 		fireAddRow : function(){
@@ -52,11 +51,11 @@ define(function(){
 	 		this.trigger("clear", {});
 	 	},
 	 	firePageChange : function(){
-//		 		this.trigger("pagechange", {key: this.currentKey, pageIndex: this.store().currentPage});
+		 	this.trigger("pagechange", arguments[0]);
 	 	},
-//		 	addRow : function(row, index) {
-//		 		this.store().addRow(row, index);
-//		 	},
+	 	firePagination : function(){
+		 	this.trigger("pagination", arguments[0]);
+	 	},
 	 	
 	 	store : function(key) {
 	 		var tmpKey = key ? key : this.currentKey;
@@ -68,7 +67,15 @@ define(function(){
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
 	 	},
-	 	
+	 	requestPage : function(options){
+	 		var pageSize = options.pageSize;
+	 		if(pageSize != null && pageSize != this.metadata.pageSize){
+	 			this.pageSize(pageSize);
+	 		}
+	 		var key = options.currentKey || this.currentKey;
+	 		var store = this.store(key);
+	 		store.requestPage(options);
+	 	},
 	 	pageSize : function(pageSize) {
 	 		if(pageSize == this.metadata.pageSize)
 	 			return;
@@ -102,13 +109,18 @@ define(function(){
 	 _.extend(FwBase.Wtf.Model.Store.prototype, Backbone.Events);
 	 
 	 $.extend(FwBase.Wtf.Model.Store.prototype, {
-	 	reload : function() {
-	 		var rowList = new FwBase.Wtf.Model.RowList();
+	 	reload : function(index) {
+	 		var cp = this.currentPage;
+	 		if(index != null)
+	 			cp = index;
+	 		var rowList = new FwBase.Wtf.Model.RowList(cp);
 	 		rowList.setParent(this, this.model);
-	 		this.pages[this.currentPage] = rowList;
+	 		this.pages[cp] = rowList;
 	 		this.listenTo(rowList, 'add', this.fireAddRow);
 	 		this.listenTo(rowList, 'remove', this.fireDelRow);
       		this.listenTo(rowList, 'reset', this.fireClear);
+      		this.listenTo(rowList, 'pagechange', this.firePageChange);
+      		this.listenTo(rowList, 'pagination', this.firePagination);
 //	      		rowList.on('all', rowList, this.render);
       		if(this.model.metadata.url != null && this.model.metadata.autoload){
       			rowList.fetch();
@@ -123,6 +135,12 @@ define(function(){
 	 	fireClear : function() {
 	 		this.model.fireClear.apply(this.model, arguments);
 	 	},
+	 	firePageChange: function() {
+	 		this.model.firePageChange.apply(this.model, arguments);
+	 	},
+	 	firePagination: function() {
+	 		this.model.firePagination.apply(this.model, arguments);
+	 	},
 	 	fireDirty : function() {
 	 		for(var i in this.pages){
 	 			if(i == this.currentPage){
@@ -133,10 +151,20 @@ define(function(){
 	 			}
 	 		}
 	 	},
+	 	requestPage: function(options) {
+	 		var forceUpdate = options.forceUpdate || true;
+	 		var cp = options.pageIndex || 0;
+	 		if(forceUpdate){
+	 			this.firePageChange(cp);
+	 		}
+	 		if(this.pages[cp] == null || forceUpdate){
+	 			this.reload(cp);
+	 		}
+	 	},
 	 	page : function(index){
 	 		if(index)
 	 			return this.pages[i];
-	 		return this.pages[this.currentPage];;
+	 		return this.pages[this.currentPage];
 	 	}
 	 });
 	 
@@ -187,6 +215,10 @@ define(function(){
   
 	 FwBase.Wtf.Model.RowList = Backbone.Collection.extend({
 	 	model : FwBase.Wtf.Model.Row,
+	 	constructor : function(pageIndex) {
+	 		this.pageIndex = pageIndex;
+	 		Backbone.Collection.apply(this, arguments);
+	 	},
 	 	setParent: function(store, dataset) {
 	 		this.store = store;
 	 		this.dataset = dataset;
@@ -221,21 +253,24 @@ define(function(){
 	 		var type = methodMap[arguments[0]];
 	 		this.url = url;
 	 		if(type == "GET"){
-	 			this.url = url + "/ctx/s_page=" + this.store.currentPage + "," + this.dataset.metadata.pageSize; 
+	 			this.url = url + "/ctx/s_page=" + this.pageIndex + "," + this.dataset.metadata.pageSize; 
 	 		}
 	 		var filters = this.dataset.filters();
 //		 		filters = [{key:'a', value:'d', joint:'='}, {key:'x', value:'y', joint:'like'}];
 	 		if(filters != null && filters.length > 0){
 	 			this.url += ";s_filter=" + $.toJSON(filters);
 	 		}
-	 		
+	 		var oThis = this;
 	 		var success = arguments[2].success;
 	 		arguments[2].success = function() {
 	 			var respObj = arguments[0];
 	 			if(respObj == null || typeof respObj.totalRecords == 'undefined')
 	 				success.apply(this, arguments);
 	 			else{
+	 				var pageCount = (respObj.totalRecords % respObj.pageSize == 0) ? parseInt(respObj.totalRecords / respObj.pageSize) : parseInt(respObj.totalRecords / respObj.pageSize) + 1;
+	 				var pagination = {pageIndex: oThis.pageIndex, pageSize: respObj.pageSize, totalRecords: respObj.totalRecords, pageCount: pageCount};
 	 				arguments[0] = respObj.records;
+	 				oThis.trigger("pagination", pagination);
 	 				success.apply(this, arguments);
 	 			}
 	 		}

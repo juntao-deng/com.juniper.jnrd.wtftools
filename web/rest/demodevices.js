@@ -4,7 +4,6 @@ define(["storage"], function(){
 		GET_root : function(params) {
 			if(Storage.get(serviceName) != null){
 				return $.evalJSON(Storage.get(serviceName));
-				rerurn [{id :'1', name :'dd'}, {}];
 			}
 			return null;
 		},

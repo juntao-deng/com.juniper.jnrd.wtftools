@@ -7,7 +7,7 @@
 			{{if(required){}}
 			<span class="required">*</span>
 			{{}}}
-			<input type="text" class="m-wrap" data-trigger="hover" placeholder="{{= (typeof placeHolder == 'undefined') ? "" : placeHolder}}"/>
+			<input type="text" data-trigger="hover" placeholder="{{= (typeof placeHolder == 'undefined') ? "" : placeHolder}}" {{= (width != null && width != "") ? ("style=\"width:" + width + "px\"") : ""}}/>
 			{{if(typeof hint != 'undefined'){}}
 				<span class="help-inline">{{= hint}}</span>
 		    {{}}}

@@ -6,8 +6,7 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 		{
 			template: _.template($('#sys_atom_controls_input_dropdown').html()),
 			mockMetadata : function(){
-				this.setDefault({label : '', placeHolder : 'Select an option ...', 
-							hint : 'This is hint for input'});
+				this.setDefault({label : '', placeHolder : 'Select an option ...'});
 				this.setDefault(datas);
 			},
 			makeDefaultFurther : function() {
@@ -29,6 +28,9 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 					this.input.attr('value', arguments[0]);
 					this.input.trigger("liszt:updated");
 				}
+			},
+			datas: function() {
+				alert("lazyload initialization not implemented");
 			}
 		}
 	);
