@@ -5,7 +5,7 @@ function testClientMode() {
 }
 function testClientModeCache(){
 	var url = window.location.href;
-	var index = url.indexof("?");
+	var index = url.indexOf("?");
 	if(index == -1)
 		return true;
 	var paramstr = url.substring(index + 1);

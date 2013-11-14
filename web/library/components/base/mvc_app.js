@@ -7,6 +7,7 @@ define(["../uipattern/buttonmanager"], function(){
   	 	 this.metadataMap = {};
   	 	 this.widgetMap = {};
   	 	 this.attrs = {};
+  	 	 this.requestData = {};
   	 };
   	 
   	 _.extend(FwBase.Wtf.Application.prototype, Backbone.Events);
@@ -85,6 +86,7 @@ define(["../uipattern/buttonmanager"], function(){
 				if(options)
 					app.parent = options.parent;
 				app.dialog = options.dialog;
+				app.reqData(reqData);
 				AppUtil.current(app);
 				window.$app = app;
 				//load contents and at last execute the app logic
@@ -420,6 +422,11 @@ define(["../uipattern/buttonmanager"], function(){
 	 			return this.attrs[arguments[0]];
 	 		else
 	 			this.attrs[arguments[0]] = arguments[1];
+	 	},
+	 	reqData : function(){
+	 		if(arguments.length == 0)
+	 			return this.requestData;
+	 		this.requestData = arguments[1];
 	 	},
 //  	 	view : function(view){
 //  	 		if(typeof view == "string")

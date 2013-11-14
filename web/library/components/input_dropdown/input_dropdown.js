@@ -10,6 +10,8 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				this.setDefault(datas);
 			},
 			makeDefaultFurther : function() {
+				if(this.metadata.placeHolder == "")
+					this.metadata.placeHolder = "&nbsp;";
 				this.setDefault({filter : true, multiple : false, emptyRecord:false, options:null, groups:null, placeHolder : 'Select an option ...'});
 			},
 			inputMask : function() {
@@ -25,23 +27,36 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 					});
 				}
 				this.input.bind("change", function(){
-					var options = {source: oThis, value: oThis.value(), eventCtx: {}};
-					return oThis.trigger("valuechange", options);
+					oThis.fireChange(oThis.value());
+//					var options = {source: oThis, value: oThis.value(), eventCtx: {}};
+//					return oThis.trigger("valuechange", options);
 				});
 				
-				if(this.metadata.value != null)
-					this.value(this.metadata.value);
+//				if(this.metadata.value != null)
+//					this.value(this.metadata.value);
 			},
 			value : function() {
 				if(arguments.length == 0){
 					return this.input.val();
 				}
 				else{
+					var value = this.value();
+					if(arguments[0] == value)
+						return;
+					this.fireChange(arguments[0], value);
 					this.input.attr('value', arguments[0]);
 					this.input.trigger("liszt:updated");
 				}
 			},
+			fireChange : function(value, oldValue) {
+				var options = {source: this, value: value, oldValue: oldValue, eventCtx: {}};
+				return this.trigger("valuechange", options);
+			},
 			datas: function(datas) {
+				var value = this.value();
+				if(value != null && value != ""){
+					this.fireChange("", value);
+				}
 				if(datas == null){
 					this.metadata.groups = null;
 					this.metadata.options = null;

@@ -34,6 +34,7 @@ wdefine(function(){
      {value: 'navigateToStack', text: 'navigateToStack'}
 	];
 	
+	
 	$app.component('tipoptions').on('valuechange', function(options){
 		var elementOptions = this.ctx.component('elementoptions');
 		if(options.value == 'selector'){
@@ -44,6 +45,21 @@ wdefine(function(){
 		}
 	});
 	
-	$app.component('elementoptions').on('valuechange', function(){
+	$app.component('elementoptions').on('valuechange', function(options){
+		if(options.value == "")
+			return;
+		var value = this.ctx.component('tipoptions').value();
+		if(value == 'selector'){
+			var url = window.frameCtx + "/../designsupport/behavior/elementmethods";
+			FwBase.Wtf.Design.DesignSupport.popDialog(url, {navid: options.value}, {width:700, height: 400, title : 'Choose target method'});
+		}
+		else{
+			var url = window.frameCtx + "/../designsupport/behavior/navigatemethods";
+			FwBase.Wtf.Design.DesignSupport.popDialog(url, {navid: options.value}, {width:700, height: 400, title : 'Choose target application'});
+		}
+	});
+	
+	$app.on('loaded', function(){
+		this.component('tipoptions').value("selector");
 	});
 });

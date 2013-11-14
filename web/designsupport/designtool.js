@@ -1,5 +1,4 @@
 define(function(){
-	window.designApp = $app;
 	requireComponent(['menu']);
 	window.FwBase.Wtf.Design = {};
 	/*
@@ -17,6 +16,7 @@ define(function(){
 	}
 	window.DesignSupport = FwBase.Wtf.Design.DesignSupport = {
 			designable : function() {
+				window.designApp = $app;
 				$('#design_container').find("[wtftype]").each(function(){
 					if($(this).attr("designable") == 'done')
 						return;
