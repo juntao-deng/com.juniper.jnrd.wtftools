@@ -1,6 +1,7 @@
 package net.juniper.space.services.impl;
 #IMPORT_REPOSITORY#
 #IMPORT_ENTITY#
+#IMPORT_MO#
 #IMPORT_SERVICE#
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,34 +9,60 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import net.juniper.space.utils.IMoEntityConvertor;
+import net.juniper.space.utils.MoEntityConvertor;
+import net.juniper.space.utils.SpecificationWrapper;
+
 @Service(value="#SERVICE_PATH#")
-public class #ENTITY_NAME#ServiceImpl implements #ENTITY_NAME#Service{
+public class #ENTITY_SIMPLENAME#ServiceImpl implements #ENTITY_SIMPLENAME#Service{
 	@Autowired
 	private #ENTITY_NAME#Repository dao;
 	
+	private IMoEntityConvertor<#MO_NAME#, #ENTITY_NAME#> convertor;
+	
 	@Override
-	public #ENTITY_NAME# get#ENTITY_NAME#(Integer id) {
-		return dao.findOne(id);
+	public #MO_NAME# get#ENTITY_SIMPLENAME#(Integer id) {
+		#ENTITY_NAME# entity = dao.findOne(id);
+		if(entity == null)
+			return null;
+		return getConvertor().convertFromEntity2Mo(entity, #MO_NAME#.class);
 	}
 
 	@Override
-	public void delete#ENTITY_NAME#(Integer id) {
+	public void delete#ENTITY_SIMPLENAME#(Integer id) {
 		dao.delete(id);
 	}
 
 	@Override
-	public #ENTITY_NAME# save#ENTITY_NAME#(#ENTITY_NAME# device) {
-		return dao.save(device);
+	public #MO_NAME# save#ENTITY_SIMPLENAME#(#MO_NAME# device) {
+		if(device == null)
+			return null;
+		#ENTITY_NAME# entity = getConvertor().convertFromMo2Entity(device, #ENTITY_NAME#.class);
+		#ENTITY_NAME# result = dao.save(entity);
+		return getConvertor().convertFromEntity2Mo(result, #MO_NAME#.class);
 	}
 
 	@Override
-	public #ENTITY_NAME# update#ENTITY_NAME#(#ENTITY_NAME# device) {
-		return dao.save(device);
+	public #MO_NAME# update#ENTITY_SIMPLENAME#(#MO_NAME# device) {
+		if(device == null)
+			return null;
+		#ENTITY_NAME# entity = getConvertor().convertFromMo2Entity(device, #ENTITY_NAME#.class);
+		#ENTITY_NAME# result = dao.save(entity);
+		return getConvertor().convertFromEntity2Mo(result, #MO_NAME#.class);
 	}
 
 	@Override
-	public Page<#ENTITY_NAME#> get#ENTITY_NAME#s(Specification<#ENTITY_NAME#> spec, Pageable pagination) {
-		return dao.findAll(spec, pagination);
+	public Page<#MO_NAME#> get#ENTITY_SIMPLENAME#s(Specification<#MO_NAME#> spec, Pageable pagination) {
+		SpecificationWrapper<#MO_NAME#, #ENTITY_NAME#> specWrapper = new SpecificationWrapper<#MO_NAME#, #ENTITY_NAME#>(spec, getConvertor());
+		Page<#ENTITY_NAME#> results = dao.findAll(specWrapper, pagination);
+		return getConvertor().convertFromEntity2Mo(results, #MO_NAME#.class);
 	}
 	
+	
+	private IMoEntityConvertor<DeviceMO, DeviceEntity> getConvertor() {
+		if(convertor == null){
+			convertor = new MoEntityConvertor<#MO_NAME#, #ENTITY_NAME#>();
+		}
+		return convertor;
+	}
 }

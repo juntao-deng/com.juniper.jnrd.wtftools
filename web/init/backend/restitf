@@ -8,7 +8,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 
-import net.juniper.space.core.locator.ServiceLocator;
 #IMPORT_MO#
 import net.juniper.wtf.core.repository.PageResult;
 
