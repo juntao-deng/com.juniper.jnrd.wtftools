@@ -131,6 +131,15 @@ define(function(){
 					var url = window.frameCtx + "/../designsupport/behavior";
 					FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 500, title : 'Edit Behavior'});
 				});
+				function callback(options){
+					var methods = options.methods;
+					if(methods != null){
+						var methods = methods.split(",");
+						$app.component('actionsdropdown').value(methods);
+					}
+				}
+				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
+				DesignSupport.interactWithEclipse({action: 'eventlist', eleid: id}, callback);
 			},
 			modelModelWrapper: function() {
 				var eventsOptions = DesignSupport.getEventDescs();

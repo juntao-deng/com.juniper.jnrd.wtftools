@@ -7,7 +7,7 @@ wdefine(function(){
 			        {text: 'Sortable', name:'sortable', width:80}
 				],
 				editable : false,
-				height: '195',
+				height: '220',
 				multiselect : false,
 				autowidth : true,
 				multiSort : true,

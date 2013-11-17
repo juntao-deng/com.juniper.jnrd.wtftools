@@ -12,7 +12,7 @@
   padding: 0em 1.25em;
 }
 .app-header .page-title {
-  margin: 1em 0em;
+  margin: 15px 0;
   padding: 0em;
   line-height: 1em;
   font-size: 1.5em;
@@ -21,11 +21,10 @@
 }
 
 .app-header .stats p.stat {
-  margin: 1em 0em 0em 1em;
+  margin: 15px 0 0 15px;
 }
 .app-header .stats .stat {
-  margin-left: 1em;
-  line-height: 2.5em;
+  margin-left: 20px;
   float: right;
 }
 .app-header .stats .stat .number {

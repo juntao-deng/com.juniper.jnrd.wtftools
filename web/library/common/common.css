@@ -57,10 +57,6 @@ input, textarea, .uneditable-input {
 	width:138px;
 }
 
-.control-group {
-  margin-bottom: 0px;
-}
-
 .dropdown-menu {
 	min-width : 120px;
 }
@@ -95,6 +91,18 @@ input, textarea, .uneditable-input {
 
 .inline{
 	display:inline-block;
+}
+
+.control-group .controls{
+	line-height: 10px;
+}
+
+.control-group .control-label{
+	padding-top: 6px;
+}
+
+.control-group .help-inline{
+	padding-top: 6px;
 }
 
 /*Blocks*/
@@ -264,7 +272,6 @@ Choosen plugin css changes
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
-  height: 31px !important;
   border-color: #e5e5e5;
   margin: 0 !important;
 }
@@ -305,8 +312,12 @@ Choosen plugin css changes
   margin-bottom: 5px;
 }
 
+.modal-body {
+  padding: 5px;
+}
+
 .modal-footer {
-  padding: 6px 15px 4px;
+  padding: 3px 15px 1px;
   background-color:#fff;
 }
 

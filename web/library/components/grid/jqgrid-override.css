@@ -49,12 +49,12 @@
 }
 
 .ui-jqgrid .ui-jqgrid-htable th span.ui-jqgrid-resize  {
-    height: 45px !important;
+    height: 40px !important;
 }
 
 .ui-jqgrid .ui-jqgrid-htable th div {
-    padding-top: 12px;
-		padding-bottom: 12px;
+    padding-top: 10px;
+		padding-bottom: 10px;
 }
 
 /**** Data rows ***/
@@ -68,7 +68,7 @@
 .ui-jqgrid tr.ui-row-ltr td {
     border-bottom: 1px solid #DDDDDD;
 		border-right:none;
-		padding:8px;
+		padding:6px;
 }
 
 
@@ -114,7 +114,7 @@
     background: #F9F9F9;
     border: 1px solid #D3D3D3;               
     line-height: 15px;
-    height: 45px;
+    height: 40px;
 }
 
 .ui-jqgrid .ui-pg-input {
@@ -133,7 +133,7 @@
     overflow:visible;
 }
 .ui-jqgrid .ui-pager-control {
-    height: 50px;
+    height: 40px;
     position: relative;
 }
 .ui-pg-table .navtable .ui-corner-all{

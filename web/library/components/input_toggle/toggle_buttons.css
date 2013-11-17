@@ -18,7 +18,6 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  margin-bottom:6px;/* keep with bootstrap*/
 }
 /* line 29, ../sass/bootstrap-toggle-buttons.scss */
 .toggle-button.deactivate {
@@ -113,6 +112,7 @@
   background-image: -moz-linear-gradient(bottom, #0088cc, #0055cc);
   background-image: -o-linear-gradient(bottom, #0088cc, #0055cc);
   background-image: linear-gradient(bottom, #0088cc, #0055cc);
+  margin-bottom:0px;
 }
 /* line 96, ../sass/bootstrap-toggle-buttons.scss */
 .toggle-button span.info {

@@ -1,7 +1,14 @@
 <div wtftype="template" wtfmetadata="dialogbody">
+	<div id="entityfs" wtftype="fieldset" wtfmetadata="{legend: 'Quick generating from entity'}">
+		<div class="row-fluid">
+			<div id="entitybutton" wtftype="button" class="keepinput" wtfmetadata="{text: 'Select entity from project', style : 'primary'}"></div>
+			<div id="generatebutton" wtftype="button" class="keepinput" wtfmetadata="{labelWith:80, text: 'Generate Java Code', style : 'primary', enable: false}"></div>
+		</div>
+		<div id="entityattr" wtftype="input" wtfmetadata="{label : 'Entity Class path:', labelWidth: 160, readOnly: true, width: 400}"></div>
+	</div>
 	<div class="row-fluid">
 		<div class="span6">
-			<div id="idattr" wtftype="input" wtfmetadata="{label : 'Id:', labelWidth: 100, readOnly : true}"></div>
+			<div id="idattr" wtftype="input" wtfmetadata="{label : 'Id:', labelWidth: 100}"></div>
 		</div>
 		<div class="span6">
 			<div id="autoload" wtftype="input_toggle" wtfmetadata="{label: 'Auto load:', labelWidth: 100}"></div>
@@ -11,13 +18,6 @@
 		<div class="span6">
 			<div id="urlattr" wtftype="input" wtfmetadata="{label : 'Restful url:', labelWidth: 100}"></div>
 		</div>
-	</div>
-	<div id="entityfs" wtftype="fieldset" wtfmetadata="{legend: 'Quick generating from entity'}">
-		<div class="row-fluid">
-			<div id="entitybutton" wtftype="button" class="keepinput" wtfmetadata="{text: 'Select entity from project', style : 'primary'}"></div>
-			<div id="generatebutton" wtftype="button" class="keepinput" wtfmetadata="{labelWith:80, text: 'Generate Java Code', style : 'primary', enable: false}"></div>
-		</div>
-		<div id="entityattr" wtftype="input" wtfmetadata="{label : 'Entity Class path:', labelWidth: 160, readOnly: true, width: 400}"></div>
 	</div>
 	
 	<div id="actionsfs" wtftype="fieldset" wtfmetadata="{legend: 'Actions'}">

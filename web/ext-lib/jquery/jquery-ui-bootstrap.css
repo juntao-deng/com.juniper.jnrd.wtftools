@@ -1419,10 +1419,9 @@ button.ui-button::-moz-focus-inner {
 .ui-dialog .ui-dialog-titlebar {
 	/*padding: .4em 1em;*/
 	position: relative;
-	padding: 5px 15px;
 	border: 0 0 0 1px solid;
 	border-color: white;
-	padding: 5px 15px;
+	padding: 0px 10px;
 	font-size: 18px;
 	text-decoration: none;
 	background: none;
@@ -1736,7 +1735,7 @@ button.ui-button::-moz-focus-inner {
 /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
 .ui-tabs .ui-tabs-panel {
 	display: block;
-	margin: 1em 0;
+	/*margin: 1em 0;*/
 	border: 0;
 	-webkit-border-radius: 0; /* Safari 4 */
 	-moz-border-radius: 0; /* Firefox 3.6 */

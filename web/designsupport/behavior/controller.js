@@ -62,4 +62,5 @@ wdefine(function(){
 	$app.on('loaded', function(){
 		this.component('tipoptions').value("selector");
 	});
+	
 });
