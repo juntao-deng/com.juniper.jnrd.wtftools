@@ -6,7 +6,7 @@ define(["../uipattern/buttonmanager"], function(){
   	 	 this.componentsMap = {};
   	 	 this.metadataMap = {};
   	 	 this.widgetMap = {};
-  	 	 this.attrs = {};
+  	 	 this.dataObj = {};
   	 	 this.requestData = {};
   	 };
   	 
@@ -417,16 +417,22 @@ define(["../uipattern/buttonmanager"], function(){
   		 }
   	 });
   	 $.extend(FwBase.Wtf.Application.prototype, {
-  		attr : function(){
-	 		if(arguments.length == 1)
-	 			return this.attrs[arguments[0]];
+  		data : function(){
+	 		if(arguments.length == 1){
+	 			if(typeof arguments[0] == "string")
+	 				return this.dataObj[arguments[0]];
+	 			this.dataObj = arguments[0];
+	 		}
 	 		else
-	 			this.attrs[arguments[0]] = arguments[1];
+	 			this.dataObj[arguments[0]] = arguments[1];
 	 	},
 	 	reqData : function(){
 	 		if(arguments.length == 0)
 	 			return this.requestData;
-	 		this.requestData = arguments[1];
+	 		else if(typeof arguments[0] == "string")
+	 			return this.requestData[arguments[0]];
+	 		else
+	 			this.requestData = arguments[0];
 	 	},
 //  	 	view : function(view){
 //  	 		if(typeof view == "string")

@@ -1,4 +1,6 @@
-define(["base/base", "../../../ext-lib/codemirror/lib/codemirror", "css!../../../ext-lib/codemirror/lib/codemirror"], function(){
+define(["base/base", "../../../ext-lib/codemirror/lib/codemirror", "css!../../../ext-lib/codemirror/lib/codemirror", "../../../ext-lib/codemirror/mode/javascript/javascript", "../../../ext-lib/codemirror/addon/hint/show-hint", 
+        "../../../ext-lib/codemirror/addon/hint/javascript-hint", "css!../../../ext-lib/codemirror/addon/hint/show-hint",
+        "css!../../../ext-lib/codemirror/theme/ambiance"], function(){
 	FwBase.Wtf.View.Controls.Highlighteditor = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
@@ -7,18 +9,13 @@ define(["base/base", "../../../ext-lib/codemirror/lib/codemirror", "css!../../..
 		{
 			template: _.template($('#sys_atom_controls_highlighteditor').html()),
 			postInit : function(){
-				var oThis = this;
-				requirejs(["../../ext-lib/codemirror/mode/javascript/javascript", "../../ext-lib/codemirror/addon/hint/show-hint", 
-				           "../../ext-lib/codemirror/addon/hint/javascript-hint", "css!../../ext-lib/codemirror/addon/hint/show-hint",
-				           "css!../../ext-lib/codemirror/theme/ambiance"], function(){
-					CodeMirror.commands.autocomplete = function(cm) {
-						CodeMirror.showHint(cm, CodeMirror.hint.javascript);
-					};
-					oThis.editor = CodeMirror.fromTextArea(oThis.el.children("#highlighteditor")[0], {
-						lineNumbers: true,
-						extraKeys: {"Ctrl-Space": "autocomplete"},
-						theme: 'ambiance'
-					});
+				CodeMirror.commands.autocomplete = function(cm) {
+					CodeMirror.showHint(cm, CodeMirror.hint.javascript);
+				};
+				this.editor = CodeMirror.fromTextArea(this.el.children("#highlighteditor")[0], {
+					lineNumbers: true,
+					extraKeys: {"Ctrl-Space": "autocomplete"},
+					theme: 'ambiance'
 				});
 			},
 			makeDefault : function(){
@@ -27,8 +24,12 @@ define(["base/base", "../../../ext-lib/codemirror/lib/codemirror", "css!../../..
 			value : function(){
 				if(arguments.length == 0)
 					return this.editor.getValue();
-				else
-					this.editor.setValue(arguments[0]);
+				else{
+					var v = arguments[0];
+					if(v == null)
+						v = "";
+					this.editor.setValue(v);
+				}
 			}
 		}
 	);

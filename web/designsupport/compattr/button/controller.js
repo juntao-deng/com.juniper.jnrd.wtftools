@@ -18,9 +18,10 @@ wdefine(function(){
 		
 		var md = {text : textattr, enable : enableattr, style: styleattr};
 		
-		var controller = null;
-		var rest = null;
-		updateComponent(idattr, md, controller, rest);
+//		var controller = null;
+//		var rest = null;
+		updateComponent(idattr, md);
+		DesignSupport.closeForEvent();
 		this.ctx.close();
 	});
 	

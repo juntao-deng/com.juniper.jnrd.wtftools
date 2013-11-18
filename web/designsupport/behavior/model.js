@@ -6,7 +6,9 @@ wdefine(function(){
 							    ]
 				});
 	
-	$app.metadata('elementoptions',  {value: '', label: 'Choose element:', labelWidth: 120, filter: false, width: 160, emptyRecord: true, placeHolder: "",
+	$app.metadata('elementoptions',  {value: '', label: 'Choose element:', labelWidth: 140, filter: false, width: 160, emptyRecord: true, placeHolder: "",
 									options:[]
 				});
+	
+	$app.metadata("codetab", {activeItem: 'item1', items: [{id:'item1', text : 'Function'}, {id:'item2', text : 'Global Functions'}]});
 });

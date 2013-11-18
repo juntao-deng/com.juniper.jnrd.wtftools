@@ -129,13 +129,22 @@ define(function(){
 			eventControllerWrapper: function() {
 				$app.component('actionsdropdown').on('choiseclick', function(options){
 					var url = window.frameCtx + "/../designsupport/behavior";
-					FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:800, height: 500, title : 'Edit Behavior'});
+					FwBase.Wtf.Design.DesignSupport.popDialog(url, {eventName: options.value, methodContent: $app.data("method_" + options.value), methodGlobalContent: $app.data("globalmethod")}, {width:800, height: 500, title : 'Edit Behavior'});
+				});
+				
+				$app.component('actionsdropdown').on('valuechange', function(options){
+					DesignSupport.interactWithEclipse({action: 'state'});
+//					DesignSupport.interactWithEclipse({action: "updateController", compId: DesignSupport.currParent.attr('id'), eventName: options.value, eventContent: ""});
 				});
 				function callback(options){
-					var methods = options.methods;
-					if(methods != null){
-						var methods = methods.split(",");
+					var methodstr = options.methods;
+					if(methodstr != null){
+						var methods = methodstr.split(",");
 						$app.component('actionsdropdown').value(methods);
+						for(var i in options){
+							if(i.startWith("method_"))
+								$app.data(i, decodeURIComponent(options[i]));
+						}
 					}
 				}
 				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
@@ -162,6 +171,21 @@ define(function(){
 					var value = this.ctx.component('modeldropdown').value();
 					FwBase.Wtf.Design.DesignSupport.popDialog(url, {navid: value}, {width:800, height: 500, title : 'Edit Model'});
 				});
+			},
+			
+			closeForEvent : function(){
+				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
+				var values = $app.component('actionsdropdown').value();
+				if(values != null && values.length > 0){
+					DesignSupport.interactWithEclipse({action: 'state'});
+					for(var i = 0; i < values.length; i ++){
+						DesignSupport.interactWithEclipse({action: "updateController", compId: id, eventName: values[i], eventContent: $app.data('method_' + values[i])});
+					}
+				}
+				
+				var globalFunc = $app.data('methodGlobalContent');
+				if(globalFunc != null && globalFunc != "")
+					DesignSupport.interactWithEclipse({action: "updateController", methodGlobalContent: globalFunc});
 			},
 			getEventDescs : function() {
 				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
@@ -249,6 +273,13 @@ define(function(){
 					FwBase.Wtf.Design.DesignSupport.eventPool[eventId] = callback;
 				}
 				window.status = 'wtf_event:' + $.toJSON(obj);
+				if(!window.DesignMode){
+					DesignSupport.mockCallback();
+				}
+			},
+			
+			mockCallback : function() {
+				
 			},
 			
 			fireInput : function(str) {

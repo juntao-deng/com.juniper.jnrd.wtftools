@@ -60,7 +60,21 @@ wdefine(function(){
 	});
 	
 	$app.on('loaded', function(){
+		this.data('eventName', this.reqData('eventName'));
 		this.component('tipoptions').value("selector");
+		this.component('codeeditor').value(this.reqData('methodContent'));
+		this.component('globalcodeeditor').value(this.reqData('methodGlobalContent'));
 	});
 	
+	$app.component('okbt').on('click', function(){
+		var funcContent = $app.component('codeeditor').value();
+		var globalFuncContent = $app.component('globalcodeeditor').value();
+		var key = "method_" + this.ctx.reqData('eventName');
+		var data = {methodGlobalContent: globalFuncContent};
+		data[key] =  funcContent;
+		this.ctx.parent.data(data);
+		//DesignSupport.interactWithEclipse({action: 'state'});
+		//DesignSupport.interactWithEclipse({action: "updateController", compId: DesignSupport.currParent.attr('id'), eventName: this.ctx.reqData('eventName'), eventContent: funcContent, globalEventContent: globalFuncContent});
+		this.ctx.close();
+	});
 });
