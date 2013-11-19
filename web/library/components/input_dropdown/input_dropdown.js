@@ -43,8 +43,13 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 					var value = this.value();
 					if(arguments[0] == value)
 						return;
-					this.fireChange(arguments[0], value);
-					this.input.attr('value', arguments[0]);
+					var newValue = arguments[0];
+					if(this.metadata.multiple && newValue != null){
+						if(typeof newValue == "string")
+							newValue = newValue.split(",");
+					}
+					this.fireChange(newValue, value);
+					this.input.val(newValue);
 					this.input.trigger("liszt:updated");
 				}
 			},
@@ -126,7 +131,7 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				{value: 'St. Louis Rams', text: 'St. Louis Rams'},
 				{value: 'San Francisco 49ers', text: 'San Francisco 49ers'},
 				{value: 'Seattle Seahawks', text: 'Seattle Seahawks'}
-			]},
+			]}
 		]
 	};
 	return FwBase.Wtf.View.Controls.Input_dropdown;

@@ -46,7 +46,7 @@
 					function(){
 						hideFieldsetContent(fieldset, setting);
 					}
-				)
+				);
 				
 				hideFieldsetContent(fieldset, {animation:false});
 			}

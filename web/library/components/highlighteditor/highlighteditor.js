@@ -1,6 +1,4 @@
-define(["base/base", "../../../ext-lib/codemirror/lib/codemirror", "css!../../../ext-lib/codemirror/lib/codemirror", "../../../ext-lib/codemirror/mode/javascript/javascript", "../../../ext-lib/codemirror/addon/hint/show-hint", 
-        "../../../ext-lib/codemirror/addon/hint/javascript-hint", "css!../../../ext-lib/codemirror/addon/hint/show-hint",
-        "css!../../../ext-lib/codemirror/theme/ambiance"], function(){
+define(["base/base", "../../../ext-lib/codemirror/lib/codemirror", "css!../../../ext-lib/codemirror/lib/codemirror"], function(){
 	FwBase.Wtf.View.Controls.Highlighteditor = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
@@ -9,6 +7,9 @@ define(["base/base", "../../../ext-lib/codemirror/lib/codemirror", "css!../../..
 		{
 			template: _.template($('#sys_atom_controls_highlighteditor').html()),
 			postInit : function(){
+				requirejs(["../../ext-lib/codemirror/mode/javascript/javascript", "../../ext-lib/codemirror/addon/hint/show-hint", 
+				           "../../ext-lib/codemirror/addon/hint/javascript-hint", "css!../../ext-lib/codemirror/addon/hint/show-hint",
+				           "css!../../ext-lib/codemirror/theme/ambiance"]);
 				CodeMirror.commands.autocomplete = function(cm) {
 					CodeMirror.showHint(cm, CodeMirror.hint.javascript);
 				};

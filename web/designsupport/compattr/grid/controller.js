@@ -3,27 +3,23 @@ wdefine(function(){
 	
 	DesignSupport.eventControllerWrapper();
 	DesignSupport.modelControllerWrapper();
-	function updateComponent(id, md, controller, rest){
-		FwBase.Wtf.Design.DesignSupport.syncAppFiles(id, md, controller, rest);
-	}
-	
-	function callbackForEntity(infos) {
-		if(infos.errormsg){
-			alert(infos.errormsg);
-			return;
-		}
-		var model = $app.model('columnsModel');
-		var columnInfos = infos.columnInfos;
-		if(columnInfos && columnInfos.length > 0){
-			model.page().reset();
-			model.page().add(columnInfos);
-		}
-		$app.attr("restservice", infos.restservice);
-		if(infos.generateClass != null){
-			$app.attr('generateClass', infos.generateClass);
-			alert("The restful service for class '" + infos.generateClass + "' doesn't exist, it will be created after you click the 'Save Changes' Button");
-		}
-	}
+//	function callbackForEntity(infos) {
+//		if(infos.errormsg){
+//			alert(infos.errormsg);
+//			return;
+//		}
+//		var model = $app.model('columnsModel');
+//		var columnInfos = infos.columnInfos;
+//		if(columnInfos && columnInfos.length > 0){
+//			model.page().reset();
+//			model.page().add(columnInfos);
+//		}
+//		$app.attr("restservice", infos.restservice);
+//		if(infos.generateClass != null){
+//			$app.attr('generateClass', infos.generateClass);
+//			alert("The restful service for class '" + infos.generateClass + "' doesn't exist, it will be created after you click the 'Save Changes' Button");
+//		}
+//	}
 	/** Global scope end*/
 	
 	/** Events scope begin*/
@@ -42,7 +38,7 @@ wdefine(function(){
 		$app.component('pageattr').value(metadata.pagination != null);
 		
 		var columns = metadata.columns;
-		var model = $app.model('columnsModel');
+		var model = this.model('columnsModel');
 		model.page().add(columns);
 	});
 	
@@ -86,11 +82,12 @@ wdefine(function(){
 			columns[i] = rows[i].toJSON();
 		}
 		
-		var md = {model : $app.attr('restservice') + "_model", 'columns': columns, editable : editableattr};
+		var md = {model : this.ctx.component('modeldropdown').value(), 'columns': columns, editable : editableattr};
 		
-		var controller = null;
-		var rest = {generateClass: app.attr('generateClass')};
-		updateComponent(idattr, md, controller, rest);
+//		var controller = null;
+//		var rest = {generateClass: app.attr('generateClass')};
+		FwBase.Wtf.Design.DesignSupport.syncModels(idattr, md);
+		DesignSupport.closeForEvent();
 		app.close();
 	});
 	/** Events scope end*/

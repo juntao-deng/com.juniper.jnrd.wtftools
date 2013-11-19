@@ -11,6 +11,7 @@ define(["input_base/input_base", "./toggle_buttons", "css!./toggle_buttons"], fu
 				});
 			},
 			makeDefaultFurther : function(){
+				this.setDefault({defaultValue: true});
 			},
 			mockMetadata : function() {
 //				this.setDefault({label : 'Toggle Input:', placeHolder : 'Please input here ...', 

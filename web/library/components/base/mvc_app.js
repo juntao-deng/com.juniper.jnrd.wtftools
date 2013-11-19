@@ -72,15 +72,6 @@ define(["../uipattern/buttonmanager"], function(){
 			var modelJsArr = [rqhtml + "model"];
 			var controllerArr = [rqhtml + "controller"];
 			requireUtil(htmlArr, function(html){
-				if(window.DesignMode && $.trim(html) == ''){
-					html = '<div wtftype="container" style="height:99%;min-height:300px">';
-				}
-				if(container.length == 0){
-					container = $(document.body);
-					container.append(html);
-				}
-				else
-					container.html(html);
 				var app = new AppUtil(url);
 				app.webroot = pathInfo[0];
 				if(options)
@@ -89,6 +80,17 @@ define(["../uipattern/buttonmanager"], function(){
 				app.reqData(reqData);
 				AppUtil.current(app);
 				window.$app = app;
+				
+				if(window.DesignMode && app.dialog == null){
+					html = '<div wtftype="container" style="height:99%;min-height:300px">' + html + "</div>";
+				}
+				if(container.length == 0){
+					container = $(document.body);
+					container.append(html);
+				}
+				else
+					container.html(html);
+				
 				//load contents and at last execute the app logic
 				function appModelCallback() {
 					var modelJs = rqhtml + "model";
@@ -456,14 +458,14 @@ define(["../uipattern/buttonmanager"], function(){
   	 				return this.modelMap[arguments[0]];
   	 			var obj = arguments[0];
   	 			if(!(obj instanceof Model))
-  	 				obj = new Model(obj);
+  	 				obj = new Model(arguments[0].id, obj);
   	 			obj.ctx = this;
   	 			this.modelMap[arguments[0].id] = obj;
   	 		}
   	 		else if(arguments.length == 2){
   	 			var obj = arguments[1];
   	 			if(!(obj instanceof Model))
-  	 				obj = new Model(obj);
+  	 				obj = new Model(arguments[0], obj);
   	 			obj.ctx = this;
   	 			this.modelMap[arguments[0]] = obj;
   	 		}

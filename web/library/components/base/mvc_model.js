@@ -1,10 +1,12 @@
 define(function(){
-	 window.Model = FwBase.Wtf.Model = function(metadata){
+	 window.Model = FwBase.Wtf.Model = function(id, metadata){
+		this.id = id;
 		if(metadata == null)
 			metadata = {};
 	 	this.metadata = this.makeDefault(metadata);
 	 	this.currentKey = FwBase.Wtf.Model.DEFAULT_KEY;
 	 	this.stores = {};
+	 	this.tranurl = null;
 	 	if(this.metadata.url){
 			this.url(this.metadata.url);
 		}
@@ -89,8 +91,7 @@ define(function(){
 	 	url : function(url){
 	 		if(!url.startWith('/')){
 	 			var ctx = $app.webroot;
-	 			url = "/" + ctx + "/" + FwBase.Wtf.Model.defaults.resturlbase + "/" + url;
-	 			this.metadata.url = url;
+	 			this.transurl = "/" + ctx + "/" + FwBase.Wtf.Model.defaults.resturlbase + "/" + url;
 	 		}
 	 	},
 	 	filters : function() {
@@ -179,7 +180,7 @@ define(function(){
 	 FwBase.Wtf.Model.Row = Backbone.Model.extend({
 		 sync : function() {
 			 var dataset = this.collection.dataset;
-			 var url = dataset.metadata.url;
+			 var url = dataset.transurl;
 		 	 var type = methodMap[arguments[0]];
 		 	 this.url = url;
 		 	 if(type == "DELETE")
@@ -234,7 +235,7 @@ define(function(){
 	 	action : function(actionName, options){
 	 		if(options == null)
 	 			options = {};
-	 		var url = this.dataset.metadata.url;
+	 		var url = this.dataset.transurl;
 	 		var type = "create";
 	 		this.url = url + "/action/" + actionName;
 	 		
@@ -257,7 +258,7 @@ define(function(){
 	 		}
 	 	},
 	 	sync : function() {
-	 		var url = this.dataset.metadata.url;
+	 		var url = this.dataset.transurl;
 	 		var type = methodMap[arguments[0]];
 	 		this.url = url;
 	 		if(type == "GET"){

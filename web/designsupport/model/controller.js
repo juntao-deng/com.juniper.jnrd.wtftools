@@ -29,6 +29,7 @@ wdefine(function(){
 			$app.component("generatebutton").enable(true);
 			$app.component("entityattr").value(infos.selectedClass);
 			$app.component("generatebutton").data({restapiExist: infos.restapiExist, selectedClass: infos.selectedClass});
+			$app.data("moName", infos.moName);
 		}
 		else{
 			$app.component("generatebutton").enable(false);
@@ -36,16 +37,45 @@ wdefine(function(){
 			$app.component("generatebutton").data({restapiExist: false});
 		}
 		
-//		var model = $app.model('columnsModel');
-//		var columnInfos = infos.columnInfos;
-//		if(columnInfos && columnInfos.length > 0){
-//			model.page().reset();
-//			model.page().add(columnInfos);
-//		}
-//		$app.attr("restservice", infos.restservice);
-//		if(infos.generateClass != null){
-//			$app.attr('generateClass', infos.generateClass);
-//			alert("The restful service for class '" + infos.generateClass + "' doesn't exist, it will be created after you click the 'Save Changes' Button");
-//		}
+		$app.component("idattr").value(infos.modelId);
+		$app.component("urlattr").value(infos.serviceName);
+		$app.component("autoload").value(true);
 	}
+	
+	var okbt = $app.component("okbt").on('click', function(){
+		var app = this.ctx;
+		var id = app.component('idattr').value();
+		var autoload = app.component("autoload").value();
+		var url = app.component("urlattr").value();
+		var entity = app.component("entityattr").value();
+		var model = {autoload: autoload, url: url, entityName: entity, moName: app.data('moName')};
+		DesignSupport.getDesignApp().model(id, model);
+		model.id = id;
+		FwBase.Wtf.Design.DesignSupport.syncModel(id, model);
+		if(app.parent.component('modeldropdown')){
+			var models = DesignSupport.getDesignApp().models();
+			var options = [];
+			for(var i = 0; i < models.length; i ++){
+				options.push({text: models[i].id, value: models[i].id});
+			}
+			app.parent.component('modeldropdown').datas(options);
+		}
+			
+		DesignSupport.closeForEvent();
+		app.close();
+	});
+	
+	$app.on('loaded', function(){
+		var navid = this.reqData('navid');
+		if(navid){
+			var model = DesignSupport.getDesignApp().model(navid);
+			this.component("entityattr").value(model.metadata.entityName);
+			if(model.metadata.entityName != null && model.metadata.entityName != "")
+				this.component("generatebutton").enable(false);
+			this.component("idattr").value(model.id);
+			this.component("urlattr").value(model.metadata.url);
+			this.component("autoload").value(model.metadata.autoload);
+			this.data("moName", model.metadata.moName);
+		}
+	});
 });
