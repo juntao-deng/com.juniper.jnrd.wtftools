@@ -127,7 +127,7 @@ define(function(){
 				$app.metadata('actionsdropdown', {label:'&nbsp;&nbsp;Select Actions:', labelWidth:120, multiple: true, width: 400, options: eventsOptions, hint:'&nbsp;&nbsp;&nbsp;&nbsp;Added in Controller.js'});
 			},
 			
-			eventControllerWrapper: function() {
+			eventControllerWrapper: function(modelId) {
 				$app.component('actionsdropdown').on('choiseclick', function(options){
 					var url = window.frameCtx + "/../designsupport/behavior";
 					FwBase.Wtf.Design.DesignSupport.popDialog(url, {eventName: options.value, methodContent: $app.data("method_" + options.value), methodGlobalContent: $app.data("methodGlobalContent")}, {width:800, height: 500, title : 'Edit Behavior'});
@@ -148,8 +148,12 @@ define(function(){
 						}
 					}
 				}
-				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
-				DesignSupport.interactWithEclipse({action: 'eventlist', eleid: id}, callback);
+				var id = null;
+				if(modelId == null)
+					id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
+				else
+					id = modelId;
+				DesignSupport.interactWithEclipse({action: 'eventlist', compId: id, isModel: (modelId != null)}, callback);
 			},
 			modelModelWrapper: function() {
 				var models = DesignSupport.getDesignApp().models();
@@ -158,15 +162,48 @@ define(function(){
 					options.push({text: models[i].id, value: models[i].id});
 				}
 				
-				var defaultValue = DesignSupport.getDesignApp().metadata(DesignSupport.currParent.attr("id")).model;
+				var defaultValue = DesignSupport.getDesignEle().metadata.model;
 				$app.metadata('modeldropdown', {label:'&nbsp;&nbsp;Select Model:', defaultValue: defaultValue, labelWidth:120, multiple: false, width: 400, options: options});
 				$app.metadata('addmodelbt', {text: '', icon: 'icon-plus', style: 'inverse'});
 				$app.metadata('editmodelbt', {text: '', icon: 'icon-edit', style: 'inverse'});
 			},
 			
 			modelControllerWrapper: function() {
+				$app.on('loaded', function(){
+					var topApp = DesignSupport.getDesignApp();
+					var bindingEle = DesignSupport.getDesignEle();
+					var modelName = bindingEle.metadata.model;
+					var columns = bindingEle.metadata.columns;
+					if(modelName != null && modelName != ""){
+						var grid = this.component('columnsgrid'); 
+						grid.data('originalColumns', columns);
+						grid.data('originalOption', modelName);
+					}
+					var model = this.model('columnsModel');
+					model.page().add(columns);
+				});
 				$app.component('modeldropdown').on('valuechange', function(options){
-					//repaint columns
+					var grid = this.ctx.component('columnsgrid');
+					var model = this.ctx.model('columnsModel');
+					model.reset();
+					if(options.value == grid.data('originalOption')){
+						model.page().add(grid.data('originalColumns'));
+					}
+					else{
+						var entityName = model.metadata.entityName;
+						if(entityName != null && entityName != "")
+							DesignSupport.interactWithEclipse({action: 'entityInfo', entityName: entityName}, callback);
+					}
+					function callback(infos) {
+						if(infos.errormsg){
+							alert(infos.errormsg);
+							return;
+						}
+						var columnInfos = infos.columnInfos;
+						if(columnInfos && columnInfos.length > 0){
+							model.page().add(columnInfos);
+						}
+					}
 				});
 				
 				$app.component('addmodelbt').on('click', function(options){
@@ -184,19 +221,23 @@ define(function(){
 			/**
 			 * invoke after component's attribute dialog close
 			 */
-			closeForEvent : function(){
-				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
+			closeForEvent : function(modelId){
+				var id = null;
+				if(modelId != null)
+					id = modelId;
+				else
+					id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
 				var values = $app.component('actionsdropdown').value();
 				if(values != null && values.length > 0){
 					DesignSupport.interactWithEclipse({action: 'state'});
-					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, eventNames: values});
+					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, isModel: (modelId != null), eventNames: values});
 					for(var i = 0; i < values.length; i ++){
-						DesignSupport.interactWithEclipse({action: "updateController", compId: id, eventName: values[i], eventContent: $app.data('method_' + values[i])});
+						DesignSupport.interactWithEclipse({action: "updateController", compId: id, isModel: (modelId != null), eventName: values[i], eventContent: $app.data('method_' + values[i])});
 					}
 				}
 				else{
 					DesignSupport.interactWithEclipse({action: 'state'});
-					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, eventNames: []});
+					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, isModel: (modelId != null), eventNames: []});
 				}
 				
 				var globalFunc = $app.data('methodGlobalContent');
@@ -270,7 +311,7 @@ define(function(){
 				return DesignSupport.getDesignApp().component(id);
 			},
 			//========================= for editor ======================================
-			syncModels : function(id, md) {
+			syncMetadata : function(id, md) {
 				$app.parent.component(id).reset(md);
 				var action = 'updatemd';
 				FwBase.Wtf.Design.DesignSupport.interactWithEclipse({action : action, compId: id, metadata : md});	

@@ -26,6 +26,6 @@ wdefine(function(){
 	});
 	
 	function updateComponent(id, md, controller, rest){
-		FwBase.Wtf.Design.DesignSupport.syncAppFiles(id, md, controller, rest);
+		FwBase.Wtf.Design.DesignSupport.syncMetadata(id, md);
 	}
 });

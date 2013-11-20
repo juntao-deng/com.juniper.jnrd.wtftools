@@ -58,10 +58,7 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				return this.trigger("valuechange", options);
 			},
 			datas: function(datas) {
-				var value = this.value();
-				if(value != null && value != ""){
-					this.fireChange("", value);
-				}
+				var oldValue = this.value();
 				if(datas == null){
 					this.metadata.groups = null;
 					this.metadata.options = null;
@@ -102,6 +99,11 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				this.input.val("");
 				this.input.html(result);
 				this.input.trigger("liszt:updated");
+				
+				var value = this.value();
+				if(value != oldValue){
+					this.fireChange(value, oldValue);
+				}
 			}
 		}
 	);

@@ -1,8 +1,9 @@
 wdefine(function(){
+	$app.model('columnsModel', {});
 	$app.metadata('columnsgrid', {columns: [
 			        {text: 'Name', name:'name', width:80},
 			        {text: 'Text', name:'text', width: 80},
-			        {text: 'Visible', name:'visible',width:90},
+			        {text: 'Visible', name:'visible', width:90},
 			        {text: 'Type', name:'type', width:80},        
 			        {text: 'Sortable', name:'sortable', width:80}
 				],

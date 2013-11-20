@@ -88,24 +88,25 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				this.gridObj.setPagination(pagination);
 			},
 			makeDefault : function() {
-				if(this.metadata.model == null){
-					this.metadata.model = this.id + "_model";
-					var model = new FwBase.Wtf.Model();
-					$app.model(this.id + "_model", model);
-				}
-				else if($app.model(this.metadata.model) == null){
-					var str = this.metadata.model;
-					var model = new FwBase.Wtf.Model();
-					$app.model(str, model);
-				}
+//				if(this.metadata.model == null){
+//					this.metadata.model = this.id + "_model";
+//					var model = new FwBase.Wtf.Model();
+//					$app.model(this.id + "_model", model);
+//				}
+//				else if($app.model(this.metadata.model) == null){
+//					var str = this.metadata.model;
+//					var model = new FwBase.Wtf.Model();
+//					$app.model(str, model);
+//				}
 				if(this.metadata.height)
 					this.metadata.minHeight = null;
 				this.setDefault({pagination: {rowNum : 10, rowList: [10, 15, 30]}, minHeight : 300, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
 			},
 			mockMetadata : function() {
-				var model = new FwBase.Wtf.Model(this.id + "_model", {});
-				$app.model(model);
-				this.setDefault({multiselect : true, columns: columns, model : model});
+				var modelId = this.id + "MockModel";
+				var model = new FwBase.Wtf.Model(modelId, {});
+				this.ctx.model(model);
+				this.setDefault({multiselect : true, columns: columns, model : modelId});
 			}
 		}
 	);

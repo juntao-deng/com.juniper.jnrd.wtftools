@@ -431,8 +431,9 @@ define(["../uipattern/buttonmanager"], function(){
 	 	reqData : function(){
 	 		if(arguments.length == 0)
 	 			return this.requestData;
-	 		else if(typeof arguments[0] == "string")
-	 			return this.requestData[arguments[0]];
+	 		else if(typeof arguments[0] == "string"){
+	 			return this.requestData ? this.requestData[arguments[0]] : null;
+	 		}
 	 		else
 	 			this.requestData = arguments[0];
 	 	},

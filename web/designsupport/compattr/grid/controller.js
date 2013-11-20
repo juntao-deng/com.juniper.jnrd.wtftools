@@ -36,10 +36,6 @@ wdefine(function(){
 		$app.component('heightattr').value(metadata.height);
 		$app.component('minheightattr').value(metadata.minHeight);
 		$app.component('pageattr').value(metadata.pagination != null);
-		
-		var columns = metadata.columns;
-		var model = this.model('columnsModel');
-		model.page().add(columns);
 	});
 	
 	/**
@@ -86,7 +82,7 @@ wdefine(function(){
 		
 //		var controller = null;
 //		var rest = {generateClass: app.attr('generateClass')};
-		FwBase.Wtf.Design.DesignSupport.syncModels(idattr, md);
+		FwBase.Wtf.Design.DesignSupport.syncMetadata(idattr, md);
 		DesignSupport.closeForEvent();
 		app.close();
 	});

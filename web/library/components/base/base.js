@@ -114,7 +114,15 @@ define(["base/listener"], function(){
 		data : function() {
 			if(arguments.length == 0)
 				return this.dataObj;
-			this.dataObj = arguments[0];
+			if(arguments.length == 1 && typeof arguments[0] == "string")
+				return this.dataObj ? this.dataObj[arguments[0]] : null;
+			else if(arguments.length == 1 && typeof arguments[0] == "object")
+				this.dataObj = arguments[0];
+			else{
+				if(!this.dataObj)
+					this.dataObj = {};
+				this.dataObj[arguments[0]] = arguments[1];
+			}
 		}
 	});
 	return FwBase.Wtf.View.Controls.BaseControl;

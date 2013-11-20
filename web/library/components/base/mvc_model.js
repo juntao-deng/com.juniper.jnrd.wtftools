@@ -32,7 +32,7 @@ define(function(){
 			if(key)
 				this.currentKey = key;
 			if(!this.stores[this.currentKey]){
-				this.stores[this.currentKey] = new FwBase.Wtf.Model.Store(this, 0);
+				this.stores[this.currentKey] = new FwBase.Wtf.Model.Store(this, this.currentKey, 0);
 			}
 		},
 		toInit : function(){
@@ -56,16 +56,29 @@ define(function(){
 	 	firePagination : function(){
 		 	this.trigger("pagination", arguments[0]);
 	 	},
-	 	
+	 	fireStoreReset : function() {
+	 		if(this.currentKey == arguments[0].key){
+	 			this.trigger("clear", {});
+	 		}
+	 	},
 	 	store : function(key) {
 	 		var tmpKey = key ? key : this.currentKey;
 	 		var store = this.stores[tmpKey];
-	 		if(store == null)
-	 			return null;
+	 		if(store == null){
+				store = new FwBase.Wtf.Model.Store(this, tmpKey, 0);
+				this.stores[tmpKey] = store;
+	 		}
 	 		return store;
 	 	},
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
+	 	},
+	 	
+	 	reset : function() {
+	 		for(var i in this.stores){
+	 			this.stores[i].reset();
+	 			delete this.stores[i];
+	 		}
 	 	},
 	 	requestPage : function(options){
 	 		var pageSize = options.pageSize;
@@ -98,8 +111,15 @@ define(function(){
 	 		return null;
 	 	},
 	 	eventDescs : function() {
-			return [{value: 'add', text : 'Add'}, {value: 'remove', text : 'Remove'},
-			        {value: 'clear', text : 'Clear'}, {value: 'pagechange', text : 'PageChange'}
+			return [{value: 'beforeselect', text : 'Before Select'}, 
+			        {value: 'select', text : 'Select'},
+			        {value: 'unselect', text : 'Unselect'},
+			        {value: 'request', text : 'Request'},
+			        {value: 'requestend', text : 'Request End'},
+			        {value: 'add', text : 'Add'}, 
+			        {value: 'remove', text : 'Remove'},
+			        {value: 'clear', text : 'Clear'}, 
+			        {value: 'pagechange', text : 'PageChange'}
 			       ];
 		},
 		
@@ -109,9 +129,10 @@ define(function(){
 		}
 	 });
 	 
-	 FwBase.Wtf.Model.Store = function(model, currentPage) {
+	 FwBase.Wtf.Model.Store = function(model, key, currentPage) {
 	 	this.model = model;
 	 	this.pages = {};
+	 	this.key = key;
 	 	this.currentPage = currentPage;
 	 	this.reload();
 	 };
@@ -150,15 +171,14 @@ define(function(){
 	 	firePagination: function() {
 	 		this.model.firePagination.apply(this.model, arguments);
 	 	},
-	 	fireDirty : function() {
+	 	reset : function() {
 	 		for(var i in this.pages){
 	 			if(i == this.currentPage){
 	 				this.pages[i].reset([]);
 	 			}
-	 			else{
-	 				delete this.pages[i];
-	 			}
+	 			delete this.pages[i];
 	 		}
+	 		this.model.fireStoreReset.apply(this.model, [this]);
 	 	},
 	 	requestPage: function(options) {
 	 		var forceUpdate = options.forceUpdate || true;

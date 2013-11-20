@@ -1,5 +1,6 @@
 wdefine(function(){
-	DesignSupport.eventControllerWrapper();
+	var navid = $app.reqData('navid');
+	DesignSupport.eventControllerWrapper(navid == null ? "abc_123_def_456" : navid);
 	
 	$app.component("entitybutton").on("click", function(){
 		var event = {action: 'entity'};
@@ -61,7 +62,7 @@ wdefine(function(){
 			app.parent.component('modeldropdown').datas(options);
 		}
 			
-		DesignSupport.closeForEvent();
+		DesignSupport.closeForEvent(id);
 		app.close();
 	});
 	
