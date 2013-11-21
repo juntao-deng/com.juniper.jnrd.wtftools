@@ -153,12 +153,17 @@ define(function(){
 					id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
 				else
 					id = modelId;
-				DesignSupport.interactWithEclipse({action: 'eventlist', compId: id, isModel: (modelId != null)}, callback);
+				var type = "0"; //component
+				if(modelId != null)
+					type = "1"; //model
+				DesignSupport.interactWithEclipse({action: 'eventlist', compId: id, type: type}, callback);
 			},
 			modelModelWrapper: function() {
 				var models = DesignSupport.getDesignApp().models();
 				var options = [];
 				for(var i = 0; i < models.length; i ++){
+					if(models[i].mock)
+						continue;
 					options.push({text: models[i].id, value: models[i].id});
 				}
 				
@@ -190,7 +195,8 @@ define(function(){
 						model.page().add(grid.data('originalColumns'));
 					}
 					else{
-						var entityName = model.metadata.entityName;
+						var topApp = DesignSupport.getDesignApp();
+						var entityName = topApp.model(options.value).metadata.entityName;
 						if(entityName != null && entityName != "")
 							DesignSupport.interactWithEclipse({action: 'entityInfo', entityName: entityName}, callback);
 					}
@@ -228,16 +234,19 @@ define(function(){
 				else
 					id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
 				var values = $app.component('actionsdropdown').value();
+				var type = "0"; //component
+				if(modelId != null)
+					type = "1"; //model
 				if(values != null && values.length > 0){
 					DesignSupport.interactWithEclipse({action: 'state'});
-					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, isModel: (modelId != null), eventNames: values});
+					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, type : type, eventNames: values});
 					for(var i = 0; i < values.length; i ++){
-						DesignSupport.interactWithEclipse({action: "updateController", compId: id, isModel: (modelId != null), eventName: values[i], eventContent: $app.data('method_' + values[i])});
+						DesignSupport.interactWithEclipse({action: "updateController", compId: id, type : type, eventName: values[i], eventContent: $app.data('method_' + values[i])});
 					}
 				}
 				else{
 					DesignSupport.interactWithEclipse({action: 'state'});
-					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, isModel: (modelId != null), eventNames: []});
+					DesignSupport.interactWithEclipse({action: "clearEvents", compId: id, type : type, eventNames: []});
 				}
 				
 				var globalFunc = $app.data('methodGlobalContent');

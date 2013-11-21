@@ -8,7 +8,7 @@ wdefine(function(){
 	});
 	
 	$app.component("generatebutton").on("click", function(){
-		var event = {action: 'generatecode', selectedClass: this.data().selectedClass};
+		var event = {action: 'generatecode', entityName: this.ctx.component("entityattr").value()};
 		DesignSupport.interactWithEclipse(event, callbackForGenerate);
 	});
 	function callbackForGenerate(infos) {
@@ -17,8 +17,14 @@ wdefine(function(){
 			return;
 		}
 		else{
-			//infos.generatedList
-			//show msg
+			var generatedList = infos.generatedList;
+			var str = "The following files are generated:\n";
+			for(var i = 0; i < generatedList.length; i ++){
+				str += generatedList[i];
+				if(i != generatedList.length - 1)
+					str += ",\n";
+			}
+			alert(str);
 		}
 	}
 	function callbackForEntity(infos) {
@@ -57,6 +63,8 @@ wdefine(function(){
 			var models = DesignSupport.getDesignApp().models();
 			var options = [];
 			for(var i = 0; i < models.length; i ++){
+				if(models[i].mock)
+					continue;
 				options.push({text: models[i].id, value: models[i].id});
 			}
 			app.parent.component('modeldropdown').datas(options);
@@ -72,7 +80,7 @@ wdefine(function(){
 			var model = DesignSupport.getDesignApp().model(navid);
 			this.component("entityattr").value(model.metadata.entityName);
 			if(model.metadata.entityName != null && model.metadata.entityName != "")
-				this.component("generatebutton").enable(false);
+				this.component("generatebutton").enable(true);
 			this.component("idattr").value(model.id);
 			this.component("urlattr").value(model.metadata.url);
 			this.component("autoload").value(model.metadata.autoload);
