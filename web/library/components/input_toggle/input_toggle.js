@@ -17,7 +17,7 @@ define(["input_base/input_base", "./toggle_buttons", "css!./toggle_buttons"], fu
 //				this.setDefault({label : 'Toggle Input:', placeHolder : 'Please input here ...', 
 //						hint : 'This is hint for input'});
 			},
-			checked : function(){
+			value : function(){
 				if(arguments.length == 0)
 					return this.input.is(':checked');
 				else{

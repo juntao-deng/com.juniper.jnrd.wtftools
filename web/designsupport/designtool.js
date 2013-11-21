@@ -312,6 +312,8 @@ define(function(){
 				var delegateType = type;
 				if(type == "card")
 					delegateType = "tab";
+				else if(type == "input_integer" || type == "input_ip" || type == "input_search" || type == "input_toggle")
+					delegateType = "input";
 				var url = window.frameCtx + "/../designsupport/compattr/" + delegateType;
 				var height = 420;
 				var width = 800;

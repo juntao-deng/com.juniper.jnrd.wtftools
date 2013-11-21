@@ -3,7 +3,7 @@
 		{{if(labelWidth != 0){}}
 			<label class="control-label" style="float:left;width:{{= labelWidth}}px">{{= label}}</label>
 		{{}}}
-		<div class="controls" style="margin-left:{{= (labelWidth != 0)? (labelWidth + 10) : 0}}px">
+		<div class="controls" style="margin-left:{{= (labelWidth != 0)? 10 : 0}}px;float:left">
 			<select class="{{= filter ? "chosen" : ""}}" {{= multiple ? 'multiple="multiple"' : ''}} tabindex="1" {{= (width != null && width != "") ? ("style=\"width:" + width + "px\"") : ""}} placeHolder="{{= placeHolder}}">
 				{{if(emptyRecord){}}
 					<option value="">{{= placeHolder}}</option>
@@ -35,10 +35,10 @@
 					}
 				}}
 			</select>
+		</div>
 			{{if(typeof hint != 'undefined'){}}
-				<span class="help-inline" style="margin-top:5px">{{= hint}}</span>
+				<span class="help-inline" style="float:left">{{= hint}}</span>
 		    {{}}}
 			<div style="clear:both"></div>
-		</div>
 	</div>
 </script>

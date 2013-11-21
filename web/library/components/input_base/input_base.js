@@ -6,6 +6,7 @@ define(["base/base", "inputmask"], function(base){
 		{
 			template: _.template($('#sys_atom_controls_input_base').html()),
 			postInit : function() {
+				this.el.addClass("inline");
 				this.input = this.getInput();
 				this.inputMask();
 				this.value(this.metadata.defaultValue);
@@ -14,19 +15,21 @@ define(["base/base", "inputmask"], function(base){
 					var obj = {source : oThis, value: oThis.value(), eventCtx: {}};
 					oThis.trigger("valuechange", obj);
 				});
-				
-				this.readOnly(this.metadata.readOnly);
+				this.editableAttr = true;
+				this.editable(this.metadata.editable);
 			},
 			getInput : function() {
 				return this.el.find('input');
 			},
 			makeDefault : function() {
 				if(this.metadata.label && this.metadata.label != ''){
-					this.setDefault({width:null, required: false, readOnly: false, labelWidth:170});
+					this.setDefault({width:null, required: false, editable: true, labelWidth:100});
 				}
 				else{
-					this.setDefault({width:null, required: false, readOnly: false, label:'', labelWidth: 0});
+					this.setDefault({width:null, required: false, editable: true, label:'', labelWidth: 0});
 				}
+				if(typeof this.metadata.labelWidth != "number")
+					this.metadata.labelWidth = parseInt(this.metadata.labelWidth);
 				this.makeDefaultFurther();
 			},
 			makeDefaultFurther: function() {
@@ -47,12 +50,15 @@ define(["base/base", "inputmask"], function(base){
 					this.input.val(arguments[0]);
 			},
 			
-			readOnly : function(){
+			editable : function(){
 				if(arguments.length == 0){
-					return this.input.attr('readonly') != null;
+					return this.editableAttr;
 				}
 				else{
-					if(arguments[0])
+					if(arguments[0] == this.editableAttr)
+						return;
+					this.editableAttr = arguments[0];
+					if(!arguments[0])
 						this.input.attr('readonly', 'readonly');
 					else
 						this.input.removeAttr('readonly');

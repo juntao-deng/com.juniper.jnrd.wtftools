@@ -13,6 +13,17 @@ define(["input_base/input_base"], function(inputbase){
 			},
 			inputMask : function() {
 				this.input.inputmask({mask: "9", repeat : this.metadata.repeat, "greedy": this.metadata.greedy, rightAlignNumerics: true});
+			},
+			value : function() {
+				if(arguments.length > 0)
+					FwBase.Wtf.View.Controls.InputBase.prototype.value.apply(this, arguments);
+				else{
+					var value = FwBase.Wtf.View.Controls.InputBase.prototype.value.apply(this, arguments);
+					if(value != null && value != "")
+						return parseInt(value);
+					return null;
+				}
+					
 			}
 		}
 	);
