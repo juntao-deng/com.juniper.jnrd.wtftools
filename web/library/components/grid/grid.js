@@ -6,6 +6,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 		{
 			template: _.template($('#sys_atom_controls_grid').html()),
 			postInit : function(){
+				buildDefaultColumns(this.metadata.columns);
 				this.model = this.ctx.model(this.metadata.model);
 				if(this.model){
 					this.listenTo(this.model, "clear", this.clearPage);
@@ -14,9 +15,6 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					this.listenTo(this.model, "change", this.changeRow);
 					this.listenTo(this.model, "pagechange", this.pageChange)
 					this.listenTo(this.model, "pagination", this.pagination)
-//					this.listenTo(this.model, "page", this.selectRow);
-//					this.listenTo(this.model, "unselect", this.unselectRow);
-					
 				}
 				this.paginationEle = this.el.children("#table_pagination_" + this.instance);
 				var pageSize = this.metadata.pagination? this.metadata.pagination.rowNum : null;
@@ -88,16 +86,6 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				this.gridObj.setPagination(pagination);
 			},
 			makeDefault : function() {
-//				if(this.metadata.model == null){
-//					this.metadata.model = this.id + "_model";
-//					var model = new FwBase.Wtf.Model();
-//					$app.model(this.id + "_model", model);
-//				}
-//				else if($app.model(this.metadata.model) == null){
-//					var str = this.metadata.model;
-//					var model = new FwBase.Wtf.Model();
-//					$app.model(str, model);
-//				}
 				if(this.metadata.height)
 					this.metadata.minHeight = null;
 				this.setDefault({pagination: {rowNum : 10, rowList: [10, 15, 30]}, minHeight : 300, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
@@ -118,16 +106,26 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 		}
 		return arr;
 	}
-	columns = [
-        {name: 'id', text:'Inv No',index:'id', width:80, sorttype:"int", search:true},
-        {name: 'invdate', text:'Date',index:'invdate', width:90, sorttype:"date", formatter:"date"},
-        {name: 'name', text:'Client',index:'name', width:100},
-        {name: 'amount', text:'Amount',index:'amount', width:80, align:"right",sorttype:"float", formatter:"number"},
+	function buildDefaultColumns(columns){
+		if(columns == null)
+			return;
+		for(var i = 0; i < columns.length; i ++){
+			var align = "left";
+			var dt = columns[i].datatype;
+			if(dt == 'float' || dt == 'int')
+				align = "right";
+			Util.setDefault(columns[i], {visible: true, editortype: 'input', sortable: true, editable: true, datatype: 'string', formatter: 'string', align: align});
+		}
+	};
+	var columns = [
+        {name: 'id', text:'Id', width:80},
+        {name: 'name', text:'Name', width:100},
+        {name: 'code', text:'Code', width:90, formatter:"date"},
+        {name: 'amount', text:'Amount', width:80, align:"right",sorttype:"float", formatter:"number"},
         {name: 'tax', text:'Tax',index:'tax', width:80, align:"right",sorttype:"float"},        
         {name: 'total', text:'Total',index:'total', width:80,align:"right",sorttype:"float"},        
         {name: 'note', text:'Notes',index:'note', width:150, sortable:false}
 	];
-	
 	
 	return FwBase.Wtf.View.Controls.Grid;
 });

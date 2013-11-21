@@ -10,6 +10,8 @@ wdefine(function(){
 	
 	function insertWidget(tplId){
 		var str = '<div wtftype="widget" wtfmetadata="' + tplId + '"></div>';
-		FwBase.Wtf.Design.DesignSupport.currParent.html(str);
+		var menu = FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu');
+		menu.remove();
+		FwBase.Wtf.Design.DesignSupport.currParent.append(str);
 	}
 });

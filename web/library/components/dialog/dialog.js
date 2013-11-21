@@ -1,4 +1,4 @@
-define(["base/base"], function(base){
+define(["base/base", "loading/loading"], function(base){
 	FwBase.Wtf.View.Controls.Dialog = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
@@ -48,17 +48,24 @@ define(["base/base"], function(base){
 			template: _.template($('#sys_atom_controls_dialog').html()),
 			postInit : function(){
 				this.dialog = this.el.children("#sys_dialog" + this.id);
+				var oThis = this;
 				this.dialog.notifyContentChange = function() {
-					var head = this.find('.modal-header');
+					this.find('.modal-header').remove();
 					var body = this.find('.modal-body');
 					var footer = this.find('.modal-footer');
-					body.outerHeight(this.height() - head.outerHeight() - footer.outerHeight());
+					body.outerHeight(this.height() - footer.outerHeight());
+					if(oThis.loading)
+						oThis.loading.hide();
 				};
 				this.dialog[0].oThis = this;
 				this.dialog.dialog({autoOpen: false, modal: true, draggable: true, width: 600, height: 300, beforeClose: innerBeforeClose, close: innerClose, resizeStop : innerResize});
 			},
 			makeDefault : function(){
 				this.setDefault({visible : false});
+			},
+			mask : function() {
+				this.loading = new FwBase.Wtf.View.Controls.Loading({maskBackground: true, obj : this.dialog});
+				this.loading.show();
 			},
 			visible : function() {
 				if(arguments.length == 0)

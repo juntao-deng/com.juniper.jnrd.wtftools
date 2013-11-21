@@ -41,4 +41,12 @@ define(function(){
 	 		options.success(result);
 	 	});
 	 };
+	//alias
+	 window.$comp = function(){
+		return $app.component.apply($app, arguments); 
+	 };
+	 
+	 window.$model = function(){
+		return $app.model.apply($app, arguments);
+	 };
 });

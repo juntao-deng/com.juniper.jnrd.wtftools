@@ -3,9 +3,13 @@ wdefine(function(){
 	$app.metadata('columnsgrid', {columns: [
 			        {text: 'Name', name:'name', width:80},
 			        {text: 'Text', name:'text', width: 80},
-			        {text: 'Visible', name:'visible', width:90},
-			        {text: 'Type', name:'type', width:80},        
-			        {text: 'Sortable', name:'sortable', width:80}
+			        {text: 'Visible', name:'visible', width:80, defaultValue: true},
+			        {text: 'Data Type', name:'datatype', width:80, defaultValue: "string"},
+			        {text: 'Editor Type', name:'editortype', width:80, defaultValue: 'input'},
+			        {text: 'Formatter', name:'formatter', width:80},
+			        {text: 'Sortable', name:'sortable', width:80},
+			        {text: 'Editable', name:'editable', width:80},
+			        {text: 'Align', name:'align', width:80}
 				],
 				editable : false,
 				height: '220',
@@ -17,11 +21,6 @@ wdefine(function(){
 				model : 'columnsModel'
 			}
 	);
-	
-	$app.metadata('columnmenu', {handler: null, buttonMode: 1, groups : [
-					{menus : [{id:'add',name:'Add', icon:'icon-plus'}, {id:'edit',name:'Edit', icon: 'icon-edit'}, {id:'del',name:'Delete', icon: ' icon-minus'}]},
-					{menus : [{id:'up',name:'Up', icon: 'icon-arrow-up'}, {id:'down', name:'Down', icon: 'icon-arrow-down'}]}]});
-	
 	DesignSupport.eventModelWrapper();
 	DesignSupport.modelModelWrapper();
 });

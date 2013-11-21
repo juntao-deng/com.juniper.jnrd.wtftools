@@ -357,3 +357,7 @@ Choosen plugin css changes
 .controls .inline {
   margin-top: 8px; 
 }
+
+.extend_zone{
+	display:inline-block;
+}

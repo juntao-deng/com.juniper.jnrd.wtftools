@@ -1,2 +1,0 @@
-wdefine(['css!./dialogheader'], function(){
-});

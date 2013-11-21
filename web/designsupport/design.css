@@ -16,10 +16,25 @@
 	border: 1px dotted gray;
 }
 
+.designele_sign .extend_zone{
+	min-width:15px;
+	min-height:10px;
+	display:inline-block;
+}
+
 .design_container{
 	height : 99%;
+}
+
+.design_minheight{
+	min-height:250px;
+}
+
+.spring{
+	background: gray;	
 }
 
 html,body{
 	height:100%;
 }
+

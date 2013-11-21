@@ -22,19 +22,21 @@ wdefine(function(){
 		var str = null;
 		if(type == 'tab' || type == 'card'){
 			str = '<div id="' + id + '" wtftype="' + type + '">' +
-					'<div id="item1"><div wtftype="container" style="min-height:200px"></div></div>' + 
-					'<div id="item2"><div wtftype="container" style="min-height:200px"></div></div>' + 	
+					'<div id="item1"><div wtftype="container" class="design_minheight"></div></div>' + 
+					'<div id="item2"><div wtftype="container" class="design_minheight"></div></div>' + 	
 			      '</div>';
 		}
 		else if(type == 'wizard'){
 			str = '<div id="' + id + '" wtftype="' + type + '">' +
-			'<div id="step1"><div wtftype="container" style="min-height:200px"></div></div>' + 
-			'<div id="step2"><div wtftype="container" style="min-height:200px"></div></div>' + 
-			'<div id="step3"><div wtftype="container" style="min-height:200px"></div></div>' + 	
+			'<div id="step1"><div wtftype="container" class="design_minheight"></div></div>' + 
+			'<div id="step2"><div wtftype="container" class="design_minheight"></div></div>' + 
+			'<div id="step3"><div wtftype="container" class="design_minheight"></div></div>' + 	
 	      '</div>';
 		}
 		else
 			str = '<div id="' + id + '" wtftype="' + type + '"></div>';
-		FwBase.Wtf.Design.DesignSupport.currParent.html(str);
+		var menu = FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu');
+		menu.remove();
+		FwBase.Wtf.Design.DesignSupport.currParent.append(str);
 	}
 });

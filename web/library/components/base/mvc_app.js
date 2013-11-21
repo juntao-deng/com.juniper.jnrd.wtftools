@@ -88,9 +88,12 @@ define(["../uipattern/buttonmanager"], function(){
 					container = $(document.body);
 					container.append(html);
 				}
-				else
-					container.html(html);
-				
+				else{
+					if(app.dialog)
+						app.dialog.content(html);
+					else
+						container.html(html);
+				}
 				//load contents and at last execute the app logic
 				function appModelCallback() {
 					var modelJs = rqhtml + "model";
@@ -139,6 +142,7 @@ define(["../uipattern/buttonmanager"], function(){
 	 		requireComponent(['dialog'], function(){
 		 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
 		 		dialog.visible(true, options);
+		 		dialog.mask();
 		 		var container = dialog.bodyContainer();
 		 		dialog.once("close", function(){
 		 			$app.clean();

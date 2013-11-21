@@ -60,6 +60,8 @@ wdefine(function(){
 			str += '</div>';
 		}
 		
-		FwBase.Wtf.Design.DesignSupport.currParent.html(str);
+		var menu = FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu');
+		menu.remove();
+		FwBase.Wtf.Design.DesignSupport.currParent.append(str);
 	}
 });

@@ -62,8 +62,7 @@ wdefine(function(){
 	/**
 	 * @Event('click') 
 	 */
-	var okbt = $app.component("okbt");
-	okbt.on('click', function(){
+	$comp("okbt").on('click', function(){
 		var app = this.ctx;
 		var idattr = app.component('idattr').value();
 		var editableattr = app.component('editableattr').checked();

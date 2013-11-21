@@ -171,6 +171,12 @@ define(function(){
 				$app.metadata('modeldropdown', {label:'&nbsp;&nbsp;Select Model:', defaultValue: defaultValue, labelWidth:120, multiple: false, width: 400, options: options});
 				$app.metadata('addmodelbt', {text: '', icon: 'icon-plus', style: 'inverse'});
 				$app.metadata('editmodelbt', {text: '', icon: 'icon-edit', style: 'inverse'});
+				$app.metadata('deletemodelbt', {text: '', icon: 'icon-minus', style: 'inverse'});
+				
+				
+				$app.metadata('columnmenu', {handler: null, buttonMode: 1, groups : [
+								{menus : [{id:'add',name:'Add', icon:'icon-plus'}, {id:'edit',name:'Edit', icon: 'icon-edit'}, {id:'del',name:'Delete', icon: ' icon-minus'}]},
+								{menus : [{id:'up',name:'Up', icon: 'icon-arrow-up'}, {id:'down', name:'Down', icon: 'icon-arrow-down'}]}]});
 			},
 			
 			modelControllerWrapper: function() {
@@ -178,7 +184,11 @@ define(function(){
 					var topApp = DesignSupport.getDesignApp();
 					var bindingEle = DesignSupport.getDesignEle();
 					var modelName = bindingEle.metadata.model;
-					var columns = bindingEle.metadata.columns;
+					var columns = null;
+					if(FwBase.Wtf.View.Controls.Form != null && bindingEle instanceof FwBase.Wtf.View.Controls.Form)
+						columns = bindingEle.metadata.elements;
+					else if (FwBase.Wtf.View.Controls.Grid != null && bindingEle instanceof FwBase.Wtf.View.Controls.Grid)
+						columns = bindingEle.metadata.columns;
 					if(modelName != null && modelName != ""){
 						var grid = this.component('columnsgrid'); 
 						grid.data('originalColumns', columns);
@@ -286,7 +296,7 @@ define(function(){
 				var url = window.frameCtx + "/../designsupport/compattr/" + type;
 				var height = 420;
 				var width = 800;
-				if(type == 'grid')
+				if(type == 'grid' || type == "tree" || type == "form")
 					height = 500;
 				FwBase.Wtf.Design.DesignSupport.popDialog(url, null, {width:width, height: height, title : FwBase.Wtf.Lang.Utils.capitalize(type) + ' Attributes'});
 				obj.eventCtx.stop = true;

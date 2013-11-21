@@ -1,0 +1,38 @@
+<div wtftype="template" wtfmetadata="okcanceldialog">
+	<div id="attrtab" wtftype="tab" wtfmetadata="{items:[{id:'basicitem', text :'Basic'}, {id:'advanceditem', text :'Advance'}]}">
+		<div id="basicitem">
+			<div class="row-fluid">
+				<div class="span6">
+					<div id="idattr" wtftype="input" wtfmetadata="{label : 'ID:', labelWidth: 80, readOnly : true}"></div>
+					<div id="enableattr" wtftype="input_toggle" wtfmetadata="{label: 'Enable', labelWidth: 80}"></div>
+					<div id="labelwidthattr" wtftype="input_integer" wtfmetadata="{label: 'Label Width:', labelWidth: 80}"></div>
+				</div>
+				<div class="span6">
+					<div id="heightattr" wtftype="input_integer" wtfmetadata="{label: 'Height:', labelWidth: 80}"></div>
+					<div id="rowsattr" wtftype="input_integer" wtfmetadata="{label: 'Rows:', labelWidth: 80}"></div>
+				</div>
+			</div>
+			<div id="actionsfs" wtftype="fieldset" wtfmetadata="{legend: 'Actions'}">
+				<div id="actionsdropdown" wtftype="input_dropdown"></div>
+			</div>
+		</div>
+		<div id="advanceditem">
+			<div class="row-fluid">
+				<div class="span9">
+					<div id="modeldropdown" wtftype="input_dropdown"></div>
+				</div>
+				<div class="span1">
+					<div id="addmodelbt" wtftype="button"></div>
+				</div>
+				<div class="span1">
+					<div id="editmodelbt" wtftype="button"></div>
+				</div>
+				<div class="span1">
+					<div id="deletemodelbt" wtftype="button"></div>
+				</div>
+			</div>
+			<div id="columnsgrid" wtftype="grid"></div>	
+			<div id="columnmenu" wtftype="menu"></div>
+		</div>
+	</div>
+</div>

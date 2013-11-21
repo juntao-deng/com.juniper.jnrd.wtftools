@@ -1,10 +1,10 @@
 wdefine(function(){
 	var selectMd = {
 		options : [
-		     {text : "navmenu", value : "navmenu"},
-		     {text : "navtree", value : "navtree"},
-		     {text : "bodygrid", value : "bodygrid"},
 		     {text : "landingpage", value : "landingpage"},
+		     {text : "okcanceldialog", value : "okcanceldialog"},
+		     {text : "wizard", value : "wizard"},
+		     {text : "wizarddialog", value : "wizarddialog"},
 		     {text : "landingpagetree", value : "landingpagetree"}
 		]
 	};

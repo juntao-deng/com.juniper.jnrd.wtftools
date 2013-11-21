@@ -27,11 +27,11 @@ define(["input_base/input_base"], function(inputbase){
 	);
 	
 	var datas = {options:[
-					{value: 'Dallas Cowboys', name: 'Dallas Cowboys'},
-					{value: 'New York Giants', name: 'New York Giants'},
-					{value: 'Philadelphia Eagles', name: 'Philadelphia Eagles'},
-					{value: 'Washington Redskins', name: 'Washington Redskins'}
-					]
+         					{value: 'value1', name: 'Value 1'},
+        					{value: 'value2', name: 'Value 2'},
+        					{value: 'value3', name: 'Value 3'},
+        					{value: 'value4', name: 'Value 4'}
+        				]
 				};
 	return FwBase.Wtf.View.Controls.Input_checkboxgroup;
 });

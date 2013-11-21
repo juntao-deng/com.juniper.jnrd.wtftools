@@ -30,6 +30,12 @@ define(["base/mvcbase"], function(){
 			var postStr = str.substring(1);
 			return firstChar + postStr;
 		},
+		setDefault: function(target, source){
+			for(var attr in source){
+				if(typeof target[attr] == 'undefined')
+					target[attr] = source[attr];
+			}
+		},
 		trimScript : function(s){
 			if(s == null)
 				return s;
@@ -76,6 +82,9 @@ define(["base/mvcbase"], function(){
 					});
 				});
 			});
+		},
+		mask : function(obj) {
+			
 		}
 	};
 	 

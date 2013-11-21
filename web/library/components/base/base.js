@@ -59,10 +59,7 @@ define(["base/listener"], function(){
 		},
 		
 		setDefault : function(metadata){
-			for(var attr in metadata){
-				if(typeof this.metadata[attr] == 'undefined')
-					this.metadata[attr] = metadata[attr];
-			}
+			Util.setDefault(this.metadata, metadata);
 		},
 		
 		visible : function(){
