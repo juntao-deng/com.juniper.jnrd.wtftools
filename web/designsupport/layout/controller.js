@@ -1,6 +1,6 @@
 wdefine(function(){
 	var colsinput = $app.component('colsinput');
-	colsinput.on('change', function(){
+	colsinput.on('valuechange', function(options){
 		var value = this.value();
 		var slider = $app.component("colslider");
 		var values = [];
@@ -19,8 +19,10 @@ wdefine(function(){
 			values = [12];
 			enable = false;
 		}
-		var meta = {values : values, enable: enable};
-		slider.reInit(meta);
+		var meta = slider.cloneMetadata();
+		meta.values = values;
+		meta.enable = enable;
+		slider.reset(meta);
 	});
 
 	var okbt = $app.component("okbt");

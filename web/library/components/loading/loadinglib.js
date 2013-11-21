@@ -58,15 +58,15 @@ if (!window['ol']) {
 				bottom:this.container.css("bottom"),
 				width:width
 			});
-			this.container.css({
-				position:"relative",
-				width:"100%",
-				top:null,
-				right:null,
-				left:null,
-				bottom:null
-			}).wrap(f);
-
+//			this.container.css({
+//				position:"relative",
+//				width:"100%",
+//				top:null,
+//				right:null,
+//				left:null,
+//				bottom:null
+//			}).wrap(f);
+			this.container.wrap(f);
 			this.loadingMask=$('<div class="' + maskClass + '"></div>');
 			this.loadingMask.css({
 				zIndex: options.zIndex

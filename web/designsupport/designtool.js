@@ -77,7 +77,15 @@ define(function(){
 					                      ],
 					             style: 'inverse'
 					};
-					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
+					//add next page for card
+					if(FwBase.Wtf.View.Controls.Card != null && DesignSupport.getDesignEle() instanceof FwBase.Wtf.View.Controls.Card){
+						meta.groups[0].menus[0].menus = meta.groups[0].menus[0].menus.concat([ {id:'nextpage',name:'Card:Next Page', icon: 'icon-edit'}, 
+			                                	         {id:'prepage',name:'Card:Pre Page', icon: 'icon-edit'},
+			                                	         {id:'cardedit',name:'Card:Edit', icon: 'icon-edit'},
+			                                	         {id:'carddel',name:'Card:Delete', icon: 'icon-edit'},
+			                                	         ]);
+					}
+					var menu = new FwBase.Wtf.View.Controls.Menu(DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
 						if(obj.trigger.id == "addlayout")
 							FwBase.Wtf.Design.DesignSupport.addLayout(obj);
@@ -89,6 +97,14 @@ define(function(){
 							FwBase.Wtf.Design.DesignSupport.addWidget(obj);
 						else if(obj.trigger.id == "clear")
 							FwBase.Wtf.Design.DesignSupport.clearContent(obj);
+						else if(obj.trigger.id == "nextpage")
+							DesignSupport.getDesignEle().next();
+						else if(obj.trigger.id == "prepage")
+							DesignSupport.getDesignEle().previous();
+						else if(obj.trigger.id == "cardedit")
+							DesignSupport.editComponentAttr(obj);
+						else if(obj.trigger.id == "carddel")
+							DesignSupport.deleteComponent(obj);
 					});
 					return menu;
 				}
@@ -107,10 +123,10 @@ define(function(){
 					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
 						if(obj.trigger.id == "edit"){
-							FwBase.Wtf.Design.DesignSupport.editComponentAttr(obj);
+							DesignSupport.editComponentAttr(obj);
 						}
 						else if(obj.trigger.id == "delete"){
-							FwBase.Wtf.Design.DesignSupport.deleteComponent(obj);
+							DesignSupport.deleteComponent(obj);
 						}
 					});
 					return menu;
@@ -292,8 +308,11 @@ define(function(){
 				FwBase.Wtf.Design.DesignSupport.syncHtml();
 			},
 			editComponentAttr : function(obj) {
-				var type = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtftype');
-				var url = window.frameCtx + "/../designsupport/compattr/" + type;
+				var type = DesignSupport.getDesignDom().attr('wtftype');
+				var delegateType = type;
+				if(type == "card")
+					delegateType = "tab";
+				var url = window.frameCtx + "/../designsupport/compattr/" + delegateType;
 				var height = 420;
 				var width = 800;
 				if(type == 'grid' || type == "tree" || type == "form")
@@ -302,9 +321,10 @@ define(function(){
 				obj.eventCtx.stop = true;
 			},
 			deleteComponent : function(obj) {
-				var id = FwBase.Wtf.Design.DesignSupport.currParent.attr("id");
+				var dom = DesignSupport.getDesignDom();
+				var id = DesignSupport.getDesignDom().attr("id");
 				$app.removeComponent(id);
-				FwBase.Wtf.Design.DesignSupport.currParent.remove();
+				dom.remove();
 				FwBase.Wtf.Design.DesignSupport.currParent = null;
 			},
 			editModel : function(){
@@ -327,7 +347,16 @@ define(function(){
 			},
 			getDesignEle : function() {
 				var id = DesignSupport.currParent.attr("id");
+				if(id == null){
+					id = DesignSupport.getDesignDom().attr('id');
+				}
 				return DesignSupport.getDesignApp().component(id);
+			},
+			getDesignDom : function() {
+				var type = DesignSupport.currParent.attr("wtftype");
+				if(type == null || type == "container")
+					return DesignSupport.currParent.parents("[wtftype='tab'],[wtftype='card']").first();
+				return DesignSupport.currParent;
 			},
 			//========================= for editor ======================================
 			syncMetadata : function(id, md) {

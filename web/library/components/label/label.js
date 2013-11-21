@@ -3,7 +3,7 @@ define(["base/base", "css!./label"], function(base){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
 	
-	FwBase.Wtf.View.Controls.Label.CONST_STYLE_NORMAL = "";
+	FwBase.Wtf.View.Controls.Label.CONST_STYLE_NORMAL = "normal";
 	FwBase.Wtf.View.Controls.Label.CONST_STYLE_PRIMARY = "primary";
 	FwBase.Wtf.View.Controls.Label.CONST_STYLE_INFO = "info";
 	FwBase.Wtf.View.Controls.Label.CONST_STYLE_SUCCESS = "success";
@@ -22,7 +22,7 @@ define(["base/base", "css!./label"], function(base){
 				});
 			},
 			makeDefault : function(){
-				this.setDefault({icon: null, style : "", text : "Label"});
+				this.setDefault({icon: null, style : "normal", text : "Label"});
 				this.metadata.cssclass = "label label-" + this.metadata.style;
 			}
 		}

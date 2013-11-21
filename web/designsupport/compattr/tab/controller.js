@@ -5,21 +5,18 @@ wdefine(function(){
 		var comp = this.parent.component(compId);
 		var metadata = comp.metadata;
 		this.component('idattr').value(compId);
-		this.component('textattr').value(metadata.text);
-		this.component('styleattr').value(metadata.style);
+		this.component('activeitemattr').value(metadata.currentItem);
 	});
 	$app.component("okbt").on('click', function(){
 		var idattr = this.ctx.component('idattr').value();
-		var textattr = this.ctx.component('textattr').value();
-		var styleattr = this.ctx.component('styleattr').value();
-		
-		var md = {text : textattr, style: styleattr};
+		var textattr = this.ctx.component('activeitem').value();
+		var md = {text : textattr, activeitem : activeitem};
 		updateComponent(idattr, md);
 		DesignSupport.closeForEvent();
 		this.ctx.close();
 	});
 	
-	function updateComponent(id, md, controller, rest){
+	function updateComponent(id, md){
 		FwBase.Wtf.Design.DesignSupport.syncMetadata(id, md);
 	}
 });

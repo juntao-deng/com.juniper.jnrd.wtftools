@@ -7,7 +7,10 @@ define(["base/base", "tab/tab"], function(base){
 			return _.template($('#sys_atom_controls_card').html());
 		},
 		next : function() {
-			
+			this.active(this.active() + 1);
+		},
+		previous: function() {
+			this.active(this.active() - 1);
 		}
 	});
 	return FwBase.Wtf.View.Controls.Card;

@@ -29,19 +29,11 @@ define(["base/base"], function(base, uislider){
 			var str = joinValues(this, this.metadata.values);
 			this.slider.siblings('#sys_slider_amount').text(str);
 		},
-		reInit : function(meta) {
-			if(this.slider)
-				this.slider.slider('destroy');
-			for(var i in meta){
-				this.metadata[i] = meta[i];
-			}
-			if(this.metadata.values.length == 1)
-				this.metadata.range = false;
-			this.postInit();
-		},
-		enable : function() {
-			if(arguments.length == 0)
-				return true;
+		doEnable : function(enable) {
+			if(enable)
+				this.slider.slider("enable", true);
+			else
+				this.slider.slider("disable", true);
 		},
 		values : function() {
 			if(arguments.length == 0)

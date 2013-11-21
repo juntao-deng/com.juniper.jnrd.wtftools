@@ -120,6 +120,9 @@ define(["base/listener"], function(){
 					this.dataObj = {};
 				this.dataObj[arguments[0]] = arguments[1];
 			}
+		},
+		cloneMetadata : function(){
+			return $.extend(true, {}, this.metadata);
 		}
 	});
 	return FwBase.Wtf.View.Controls.BaseControl;

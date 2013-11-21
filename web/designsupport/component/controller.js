@@ -1,6 +1,21 @@
 wdefine(function(){
-	var okbt = $app.component("okbt");
-	okbt.on('click', function(){
+	$app.component("componentinput").on("valuechange", function(options){
+		var value = options.value;
+		var id = tryGetId(value);
+		this.ctx.component("componentid").value(id);
+	});
+	function tryGetId(value){
+		var beginIndex = 1;
+		var beginId = value + beginIndex;
+		var app = DesignSupport.getDesignApp();
+		var comp = app.component(beginId);
+		while(comp != null){
+			beginId = value + (++ beginIndex);
+			comp = app.component(beginId);
+		}
+		return beginId;
+	}
+	$app.component("okbt").on('click', function(){
 		var app = this.ctx;
 		var compInput = app.component('componentinput');
 		if(compInput.value() == null || $.trim(compInput.value()) == ""){

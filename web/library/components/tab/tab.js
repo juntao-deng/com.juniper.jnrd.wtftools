@@ -7,16 +7,18 @@ define(["base/base"], function(base){
 			return _.template($('#sys_atom_controls_tab').html());
 		},
 		mockMetadata : function() {
-			this.setDefault({activeItem: 'item1', items: [{id:'item1', text : 'TabItem1'}, {id:'item2', text : 'TabItem2'}]});
+			this.setDefault({activeitem: 'item1', items: [{id:'item1', text : 'TabItem1'}, {id:'item2', text : 'TabItem2'}]});
 		},
 		makeDefault : function() {
 //			this.setDefault();
 		},
 		postInit : function(){
+			this.activeIndex = 0;
 			this.tab = this.el.children('#tab');
 			this.tab.append(this.tab.siblings());
 			this.fixtabs();
-			this.tabs = this.tab.tabs();
+			this.tab.tabs();
+			this.active(this.metadata.activeitem);
 		},
 		fixtabs : function() {
 			for(var i = 0; i < this.metadata.items.length; i ++){
@@ -40,17 +42,37 @@ define(["base/base"], function(base){
 				return this.tab.children("#" + id).html();
 			this.tab.children("#" + id).html(content);
 		},
-		active : function(item) {
-			if(typeof item == 'integer'){
-				this.tabs('option', 'active', item);
+		active : function() {
+			if(arguments.length == 0)
+				return this.activeIndex;
+			var item = arguments[0];
+			if(typeof item == 'number'){
+				if(item >= this.metadata.items.length)
+					item = this.metadata.items.length - 1;
+				else if(item < 0)
+					item = 0;
+				this.activeIndex = item;
+				this.tab.tabs('option', 'active', item);
 			}
 			else{
-				var index = this.itemIndex(item);
-				this.tabs('option', 'active', index);
+				var index = null;
+				if(item == null || item == "")
+					index = 0;
+				else
+					index = this.itemIndex(item);
+				if(index == -1)
+					index = 0;
+				this.activeIndex = index;
+				this.tab.tabs('option', 'active', index);
 			}
 		},
 		itemIndex : function(item){
-			
+			var items = this.metadata.items;
+			for(var i = 0; i < items.length; i ++){
+				if(item == items[i].id)
+					return i;
+			}
+			return -1;
 		},
 		reInit : function(meta) {
 			if(this.slider)

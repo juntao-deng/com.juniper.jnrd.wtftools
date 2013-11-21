@@ -17,9 +17,6 @@ wdefine(function(){
 		var styleattr = this.ctx.component('styleattr').value();
 		
 		var md = {text : textattr, enable : enableattr, style: styleattr};
-		
-//		var controller = null;
-//		var rest = null;
 		updateComponent(idattr, md);
 		DesignSupport.closeForEvent();
 		this.ctx.close();

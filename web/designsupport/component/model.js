@@ -3,6 +3,7 @@ wdefine(function(){
 		groups : [
 		     {label: 'Normal', options:[
 		                                {text : "button", value : "button"},
+		                                {text : "label", value : "label"},
 									    {text : "image", value : "image"},
 									    {text : "menu", value : "menu"},
 									    {text : "slider", value : "slider"},

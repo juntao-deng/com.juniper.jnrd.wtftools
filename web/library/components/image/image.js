@@ -12,6 +12,7 @@ define(["base/base"], function(base){
 			template: _.template($('#sys_atom_controls_image').html()),
 			postInit : function(){
 				var oThis = this;
+				this.el.addClass("inline");
 				this.el.children("#image").click(function(){
 					oThis.trigger("click", {source : oThis});
 				});

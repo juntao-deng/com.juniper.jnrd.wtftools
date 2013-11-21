@@ -11,8 +11,8 @@ define(["base/base", "inputmask"], function(base){
 				this.value(this.metadata.defaultValue);
 				var oThis = this;
 				this.input.change(function(){
-					var obj = {source : oThis};
-					oThis.trigger("change", obj);
+					var obj = {source : oThis, value: oThis.value(), eventCtx: {}};
+					oThis.trigger("valuechange", obj);
 				});
 				
 				this.readOnly(this.metadata.readOnly);
@@ -57,6 +57,19 @@ define(["base/base", "inputmask"], function(base){
 					else
 						this.input.removeAttr('readonly');
 				}
+			},
+			
+			eventDescs : function() {
+				return [{value: 'valuechange', text : 'Value Change'}, {value: 'focus', text : 'Focus'}, {value: 'blur', text : 'Blur'}];
+			},
+			
+			/**
+			 * return all public methods, for designer
+			 */
+			methodDescs : function() {
+				var methods = FwBase.Wtf.View.Controls.BaseControl.methodDescs.call(this);
+				return methods.concat([{name : 'editable', params: {type: 'boolean'}, desc: 'Set the component enable or not'},
+				                      {name : 'editable', desc: "Get the component's enable state"}]);
 			}
 		}
 	);
