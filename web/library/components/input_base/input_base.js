@@ -6,7 +6,7 @@ define(["base/base", "inputmask"], function(base){
 		{
 			template: _.template($('#sys_atom_controls_input_base').html()),
 			postInit : function() {
-				this.el.addClass("inline");
+//				this.el.addClass("inline");
 				this.input = this.getInput();
 				this.inputMask();
 				this.value(this.metadata.defaultValue);

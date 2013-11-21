@@ -52,6 +52,13 @@ wdefine(function(){
 			str = '<div id="' + id + '" wtftype="' + type + '"></div>';
 		var menu = FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu');
 		menu.remove();
-		FwBase.Wtf.Design.DesignSupport.currParent.append(str);
+		var wtfpos = FwBase.Wtf.Design.DesignSupport.currParent.attr('wtfpos');
+		if(wtfpos != null){
+			var child = $(str);
+			child.attr('for', wtfpos);
+			FwBase.Wtf.Design.DesignSupport.currParent.append(child);
+		}
+		else
+			FwBase.Wtf.Design.DesignSupport.currParent.append(str);
 	}
 });

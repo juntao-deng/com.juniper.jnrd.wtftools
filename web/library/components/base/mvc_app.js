@@ -278,13 +278,35 @@ define(["../uipattern/buttonmanager"], function(){
 	 	doParseTemplate : function(requireList, requireModelList, requireControllerList, requireContainer, callbacks){
 	 		requirejs(requireList, function(){
 				for(var i = 0; i < arguments.length; i ++){
-					var children = requireContainer[i].children();
+					var children = requireContainer[i].children().each(function(){
+						this.wtfpos = $(this).attr('for');
+					});
  					if(children.length > 0)
  						children.remove();
  					requireContainer[i].html(arguments[i]);
- 					var positions = requireContainer[i].find("[wtfpos]");
- 					if(positions.length > 0 && children.length > 0)
- 						positions.html(children);
+ 					var positions = requireContainer[i].find("[wtfpos]").each(function(){
+ 						this.wtfpos = $(this).attr('wtfpos');
+ 					});
+ 					var defaultPos = requireContainer[i].find("[wtfpos='default']");
+ 					if(defaultPos == null && positions.length > 0)
+ 						defaultPos = positions[0];
+ 					
+ 					if(positions.length > 0 && children.length > 0){
+ 						for(var i = 0; i < children.length; i ++){
+ 							var pos = children[i].wtfpos;
+ 							if(pos == null || pos == "default")
+ 								$(defaultPos).append(children[i]);
+ 							else{
+ 								for(var j = 0; j < positions.length; j ++){
+ 									if(pos == positions[j].wtfpos){
+ 										$(positions[j]).append(children[i]);
+ 									}
+ 								}
+ 							}
+ 						}
+// 						for(var i = 0; i < positions.length; i ++)
+// 							$(positions[i]).html(children[i]);
+ 					}
 				}
 				requirejs(requireModelList, function(){
 					for(var i = 0; i < arguments.length; i ++){

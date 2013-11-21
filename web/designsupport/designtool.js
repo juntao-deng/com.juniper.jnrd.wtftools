@@ -112,14 +112,16 @@ define(function(){
 					var meta = {groups : [
 					                      {menus : [
 					                                {id:'design',name:'', icon: 'icon-th-list', 
-					                                	menus : [{id:'edit',name:'Edit', icon: 'icon-edit'}, 
-					                                	         {id:'delete',name:'Delete', icon: 'icon-remove'}
+					                                	menus : [{id:'edit',name:'Edit', icon: 'icon-edit'}
 					                                	]}
 					                                ]
 					                      }
 					                      ],
 					            style: 'inverse'
 					};
+					if(DesignSupport.currParent.parents('[wtftype="template"]').length == 0){
+						meta.groups[0].menus[0].menus = meta.groups[0].menus[0].menus.concat([{id:'delete',name:'Delete', icon: 'icon-remove'}]);
+					}
 					var menu = new FwBase.Wtf.View.Controls.Menu(FwBase.Wtf.Design.DesignSupport.currParent.children('.designmenu'), meta, 'design_menu_' + type);
 					menu.on('click', function(obj){
 						if(obj.trigger.id == "edit"){

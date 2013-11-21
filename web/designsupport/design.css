@@ -21,6 +21,11 @@
 	min-height:10px;
 	display:inline-block;
 }
+.designele .extend_zone{
+	min-width:15px;
+	min-height:10px;
+	display:inline-block;
+}
 
 .design_container{
 	height : 99%;
