@@ -93,6 +93,10 @@ input, textarea, .uneditable-input {
 	display:inline-block;
 }
 
+.wtfinline{
+	display:inline-block;
+}
+
 .control-group .controls{
 	line-height: 10px;
 }

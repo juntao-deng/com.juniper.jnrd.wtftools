@@ -15,7 +15,7 @@ define(["base/base", "css!./label"], function(base){
 		{
 			template: _.template($('#sys_atom_controls_label').html()),
 			postInit : function(){
-				this.el.addClass("inline");
+				this.el.addClass("wtfinline");
 				var oThis = this;
 				this.el.children("#label").click(function(){
 					oThis.trigger("click", {source : oThis});

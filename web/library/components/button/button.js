@@ -16,7 +16,7 @@ define(["base/base"], function(base){
 			template: _.template($('#sys_atom_controls_button').html()),
 			postInit : function(){
 				if(!this.el.hasClass('line'))
-					this.el.addClass("inline");
+					this.el.addClass("wtfinline");
 				this.button = this.el.find("#button");
 				var oThis = this;
 				this.button.click(function(){
