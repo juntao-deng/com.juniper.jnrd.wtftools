@@ -48,15 +48,15 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 						if(typeof newValue == "string")
 							newValue = newValue.split(",");
 					}
-//					this.fireChange(newValue, value);
+					this.fireChange(newValue, value);
 					this.input.val(newValue);
 					this.input.trigger("liszt:updated");
 				}
 			},
-//			fireChange : function(value, oldValue) {
-//				var options = {source: this, value: value, oldValue: oldValue, eventCtx: {}};
-//				return this.trigger("valuechange", options);
-//			},
+			fireChange : function(value, oldValue) {
+				var options = {source: this, value: value, oldValue: oldValue, eventCtx: {}};
+				return this.trigger("valuechange", options);
+			},
 			datas: function(datas) {
 				var oldValue = this.value();
 				if(datas == null){

@@ -612,7 +612,23 @@ define(["../uipattern/buttonmanager"], function(){
   	 			$app = $app.parent;
   	 			AppUtil.current($app);
   	 		}
-  	 	}
+  	 	},
+  	 	
+  	 	eventDescs : function() {
+			return [{value: 'loaded', text : 'Loaded'}, {value: 'closing', text : 'Closing'}, {value: 'closed', text : 'Closed'}];
+		},
+		
+		/**
+		 * return all public methods, for designer
+		 */
+		methodDescs : function() {
+			var methods = FwBase.Wtf.View.Controls.BaseControl.prototype.methodDescs.call(this);
+			return methods.concat([{name : 'close', desc: 'Close current app or dialog'},
+			                      {name : 'data', params:[{name: 'dataObj', type: 'object'}], desc: "Set data object"},
+			                      {name : 'data', params:[{name: 'key', type: 'string'}], desc: "Get data attribute"},
+			                      {name : 'data', params:[{name: 'key', type: 'string'}, {name: 'value', type: 'object'}], desc: "Set data by key, value"}
+			                      ]);
+		}
   	 });
   	 
   	 function lazyDialog(){

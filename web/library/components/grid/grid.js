@@ -9,12 +9,13 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				buildDefaultColumns(this.metadata.columns);
 				this.model = this.ctx.model(this.metadata.model);
 				if(this.model){
-					this.listenTo(this.model, "clear", this.clearPage);
-					this.listenTo(this.model, "add", this.addRow);
-					this.listenTo(this.model, "remove", this.deleteRow);
-					this.listenTo(this.model, "change", this.changeRow);
-					this.listenTo(this.model, "pagechange", this.pageChange)
-					this.listenTo(this.model, "pagination", this.pagination)
+					this.listenTo(this.model, "clear", this.lis_clearPage);
+					this.listenTo(this.model, "add", this.lis_addRow);
+					this.listenTo(this.model, "remove", this.lis_deleteRow);
+					this.listenTo(this.model, "change", this.lis_changeRow);
+					this.listenTo(this.model, "pagechange", this.lis_pageChange);
+					this.listenTo(this.model, "pagination", this.lis_pagination);
+					this.listenTo(this.model, "selection", this.lis_selection);
 				}
 				this.paginationEle = this.el.children("#table_pagination_" + this.instance);
 				var pageSize = this.metadata.pagination? this.metadata.pagination.rowNum : null;
@@ -38,8 +39,18 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					autowidth: this.metadata.autowidth,
 					cellEdit : this.metadata.editable,
 					multiSort : this.metadata.multiSort,
-					viewsortcols : [true, 'vertical', true]
+					viewsortcols : [true, 'vertical', true],
+//					onSelectRow : this.fireOnSelectRow,
+					onSelectAll : this.fireOnSelectAll,
+					beforeSelectRow: this.fireOnBeforeSelectRow,
+					onCellSelect : this.fireOnCellSelect,
+					ondblClickRow : this.fireOnDblclickRow,
+					onRightClickRow: this.fireOnRightClickRow,
+					onSortCol : this.fireOnSortCol
+					
 				});
+				this.gridObj[0].objOwner = this;
+				this.gridObj.bind('jqGridSelectRow', this.fireOnSelectRow);
 				if(this.model){
 					this.model.pageSize(pageSize == null ? -1 : pageSize);
 					var oThis = this;
@@ -49,41 +60,17 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 						oThis.model.requestPage({pageIndex: pageIndex, pageSize: pageSize, forceUpdate: true});
 					});
 				}
+//				this.gridObj.jqGrid('navGrid', this.paginationEle).jqGrid('navButtonAdd', this.paginationEle, { caption:"NewButton", buttonicon:"ui-icon-newwin", onClickButton:null, position: "last", title:"", cursor: "pointer"});
 				//this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
 			},
 			repaint : function(obj) {
 				this.gridObj.clearGridData();
-			},
-			addRow : function(obj) {
-				var row = obj.row;
-				var index = obj.index;
-				if(index == null)
-					this.gridObj.addRowData(row.cid, row.toJSON(), null, null, false);
-				else
-					this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index), false);
-			},
-			changeRow : function() {
-			},
-			deleteRow : function(obj) {
-				var row = obj.row;
-				this.gridObj.delRowData(row.cid);
-			},
-			unselectRow : function() {
 			},
 			showColumn : function(id){
 				this.gridObj.jqGrid('navGrid','showCol', id);
 			},
 			hideColumn : function(id){
 				this.gridObj.jqGrid('navGrid','hideCol', id);
-			},
-			clearPage : function() {
-				this.gridObj.clearGridData();
-			},
-			pageChange : function(){
-				this.gridObj.clearGridData();
-			},
-			pagination : function(pagination){
-				this.gridObj.setPagination(pagination);
 			},
 			makeDefault : function() {
 				if(this.metadata.height)
@@ -96,7 +83,42 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				model.mock = true;
 				this.ctx.model(model);
 				this.setDefault({multiselect : true, columns: columns, model : modelId});
+			},
+			/*Fire events start, private*/
+			fireOnSelectRow : function() {
+				this.objOwner.model.select(arguments[0]);
+			},
+			/*Fire events end*/
+			/*Listeners start, private */
+			lis_addRow : function(obj) {
+				var row = obj.row;
+				var index = obj.index;
+				if(index == null)
+					this.gridObj.addRowData(row.cid, row.toJSON(), null, null, false);
+				else
+					this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index), false);
+			},
+			lis_changeRow : function() {
+			},
+			lis_deleteRow : function(obj) {
+				var row = obj.row;
+				this.gridObj.delRowData(row.cid);
+			},
+			lis_unselectRow : function() {
+			},
+			lis_clearPage : function() {
+				this.gridObj.clearGridData();
+			},
+			lis_pageChange : function(){
+				this.gridObj.clearGridData();
+			},
+			lis_pagination : function(pagination){
+				this.gridObj.setPagination(pagination);
+			},
+			lis_selection : function(selections) {
+				alert(selections);
 			}
+			/*Listeners end*/
 		}
 	);
 	function getColNames(metadata) {

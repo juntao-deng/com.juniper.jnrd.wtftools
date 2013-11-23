@@ -105,7 +105,7 @@ define(["base/listener"], function(){
 		 * return all public methods, for designer
 		 */
 		methodDescs : function() {
-			return [{name : 'visible', params: {type: 'boolean'}, desc: 'Set the component visible or not'},
+			return [{name : 'visible', params: [{name: 'visible', type: 'boolean'}], desc: 'Set the component visible or not'},
 			        {name : 'visible', desc: "Get the component's visible state"}];
 		},
 		data : function() {

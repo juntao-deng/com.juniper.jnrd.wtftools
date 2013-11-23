@@ -51,8 +51,8 @@ define(["base/base"], function(base){
 			 * return all public methods, for designer
 			 */
 			methodDescs : function() {
-				var methods = FwBase.Wtf.View.Controls.BaseControl.methodDescs.call(this);
-				return methods.concat([{name : 'enable', params: {type: 'boolean'}, desc: 'Set the component enable or not'},
+				var methods = FwBase.Wtf.View.Controls.BaseControl.prototype.methodDescs.call(this);
+				return methods.concat([{name : 'enable', params: [{name: 'enable', type: 'boolean'}], desc: 'Set the component enable or not'},
 				                      {name : 'enable', desc: "Get the component's enable state"}]);
 			}
 		}

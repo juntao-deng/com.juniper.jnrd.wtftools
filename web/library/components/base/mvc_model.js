@@ -39,7 +39,7 @@ define(function(){
 			if(!this.metadata.lazyInit)
 				this.init();
 		},
-		
+		/*Fire events start */
 		fireAddRow : function(){
 			var index = arguments[2].at;
 			this.trigger("add", {row : arguments[0], index : index});
@@ -61,6 +61,10 @@ define(function(){
 	 			this.trigger("clear", {});
 	 		}
 	 	},
+	 	fireSelection : function() {
+	 		this.trigger("selection", arguments[0]);
+	 	},
+	 	/*Fire events end*/
 	 	store : function(key) {
 	 		var tmpKey = key ? key : this.currentKey;
 	 		var store = this.stores[tmpKey];
@@ -73,7 +77,17 @@ define(function(){
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
 	 	},
+	 	/**
+	 	 * Select rows in current store
+	 	 * @param 1.  ids, can be "rowid" or array of rowid :[rowid1, rowid2] or index of row index
+	 	 */
+	 	select : function(ids) {
+	 		return this.page().select(ids);
+	 	},
 	 	
+	 	selectCrossPage : function(ids){
+	 		alert("not implemented");
+	 	},
 	 	reset : function() {
 	 		for(var i in this.stores){
 	 			this.stores[i].reset();
@@ -101,14 +115,14 @@ define(function(){
 	 				delete this.stores[i];
 	 		}
 	 	},
+	 	filters : function() {
+	 		return null;
+	 	},
 	 	url : function(url){
 	 		if(!url.startWith('/')){
 	 			var ctx = $app.webroot;
 	 			this.transurl = "/" + ctx + "/" + FwBase.Wtf.Model.defaults.resturlbase + "/" + url;
 	 		}
-	 	},
-	 	filters : function() {
-	 		return null;
 	 	},
 	 	eventDescs : function() {
 			return [{value: 'beforeselect', text : 'Before Select'}, 
@@ -246,11 +260,67 @@ define(function(){
 	 	model : FwBase.Wtf.Model.Row,
 	 	constructor : function(pageIndex) {
 	 		this.pageIndex = pageIndex;
+	 		this.selections = {ids:[], indices:[]};
 	 		Backbone.Collection.apply(this, arguments);
 	 	},
 	 	setParent: function(store, dataset) {
 	 		this.store = store;
 	 		this.dataset = dataset;
+	 	},
+	 	rows : function(){
+	 		return this.models;
+	 	},
+	 	select : function(){
+	 		if(arguments.length == 0)
+	 			return this.selections;
+	 		else if(typeof arguments[0] == "string"){
+	 			return this.doSelectById(arguments[0]);
+	 		}
+	 		else if(typeof arguments[0] == "number"){
+	 			return this.doSelectByIndex(arguments[0]);
+	 		}
+	 		else if(typeof arguments[0] == "array"){
+	 			var arr = arguments[0];
+	 			for(var i = 0; i < arr.length; i ++){
+	 				if(typeof arr[i] == "string")
+	 					this.doSelectById(arr[i]);
+	 				else
+	 					this.doSelectByIndex(arr[i]);
+	 			}
+	 		}
+	 		this.dataset.fireSelection.apply(this.dataset, [this.selections]);
+	 	},
+	 	doSelectById: function(id) {
+	 		var index = arguments[0];
+ 			if(this.selections.indexOf(index) != -1){
+ 				return true;
+ 			}
+ 			var model = this.at(index);
+ 			if(model != null){
+ 				var id = model.id;
+ 				this.selections.ids.push(id);
+ 				this.selections.indices.push(index);
+ 				return true;
+ 			}
+ 			else
+ 				return false;
+	 	},
+	 	doSelectByIndex: function(index) {
+ 			if(this.selections.indexOf(index) != -1){
+ 				return true;
+ 			}
+ 			var model = this.at(index);
+ 			if(model != null){
+ 				var id = model.id;
+ 				this.selections.ids.push(id);
+ 				this.selections.indices.push(index);
+ 				return true;
+ 			}
+ 			else
+ 				return false;
+	 	},
+	 	unselect : function() {
+	 		
 	 	},
 	 	action : function(actionName, options){
 	 		if(options == null)
@@ -258,17 +328,6 @@ define(function(){
 	 		var url = this.dataset.transurl;
 	 		var type = "create";
 	 		this.url = url + "/action/" + actionName;
-	 		
-//		 		var success = arguments[2].success;
-//		 		arguments[2].success = function() {
-//		 			var respObj = arguments[0];
-//		 			if(respObj == null || typeof respObj.totalRecords == 'undefined')
-//		 				success.apply(this, arguments);
-//		 			else{
-//		 				arguments[0] = respObj.records;
-//		 				success.apply(this, arguments);
-//		 			}
-//		 		}
 	 		
 	 		if(window.clientMode){
 	 			this.syncFromClient.call(this, type, this, options);
@@ -310,9 +369,6 @@ define(function(){
 	 		else{
 	 			Backbone.sync.apply(this, arguments);
 	 		}
-	 	},
-	 	rows : function(){
-	 		return this.models;
 	 	},
 	 	syncFromClient : function(method, model, options) {
 	 		var type = methodMap[method];

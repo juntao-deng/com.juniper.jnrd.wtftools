@@ -1,15 +1,17 @@
 wdefine(function(){
-	$app.metadata('tipoptions',  {value: 'selector', label: 'Help input:', labelWidth: 80, filter: false, width: 160,
-									options:[
-									         {value: 'selector', text: 'Selector'},
-									         {value: 'navigator', text: 'Navigator'}
-							    ]
-				});
-	
-	$app.metadata('elementoptions',  {value: '', label: 'Choose element:', labelWidth: 120, filter: false, width: 160,
-									options:[
-									         {value: 'selector', text: 'Selector'},
-									         {value: 'navigator', text: 'Navigator'}
-							    ]
-				});
+	$app.model('listmodel', {});
+	$app.metadata('listgrid', {columns: [
+	                    			        {text: 'Method Name', name:'methodname', width:120},
+	                    			        {text: 'Params', name:'params', width:180},
+	                    			        {text: 'Method Desc', name:'methoddesc', width: 335}
+	                    				],
+	                    				editable : false,
+	                    				height: '240',
+	                    				multiselect : false,
+	                    				autowidth : false,
+	                    				multiSort : true,
+	                    				pagination: null,
+	                    				model : 'listmodel'
+	                    			}
+	                    	);
 });
