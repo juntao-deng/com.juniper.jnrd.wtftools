@@ -304,7 +304,7 @@ define(function(){
  			}
  			else
  				return false;
-	 	},
+	 	}, 
 	 	doSelectByIndex: function(index) {
  			if(this.selections.indexOf(index) != -1){
  				return true;
