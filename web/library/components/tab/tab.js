@@ -26,6 +26,7 @@ define(["base/base"], function(base){
 				var itemDiv = this.tab.children("#" + item.id);
 				if(itemDiv.length > 0)
 					continue;
+				this.tab.append('<div id="' + item.id + '"><div wtftype="container" class="design_minheight"></div></div>');
 			}
 		},
 		insertTab : function(itemMetadata, index){

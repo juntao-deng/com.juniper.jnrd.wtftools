@@ -260,7 +260,7 @@ define(function(){
 	 	model : FwBase.Wtf.Model.Row,
 	 	constructor : function(pageIndex) {
 	 		this.pageIndex = pageIndex;
-	 		this.selections = {ids:[], indices:[]};
+	 		this.selections = {ids:[], indices:[], rows: []};
 	 		Backbone.Collection.apply(this, arguments);
 	 	},
 	 	setParent: function(store, dataset) {
@@ -273,7 +273,16 @@ define(function(){
 	 	select : function(){
 	 		if(arguments.length == 0)
 	 			return this.selections;
-	 		else if(typeof arguments[0] == "string"){
+	 		var clear = true;
+	 		if(arguments.length == 2){
+	 			clear = arguments[1];
+	 		}
+	 		if(clear){
+	 			this.selections.ids = [];
+	 			this.selections.indices = [];
+	 			this.selections.rows = [];
+	 		}
+	 		if(typeof arguments[0] == "string"){
 	 			return this.doSelectById(arguments[0]);
 	 		}
 	 		else if(typeof arguments[0] == "number"){
@@ -300,6 +309,7 @@ define(function(){
  				var id = model.id;
  				this.selections.ids.push(id);
  				this.selections.indices.push(index);
+ 				this.selections.rows.push(model);
  				return true;
  			}
  			else

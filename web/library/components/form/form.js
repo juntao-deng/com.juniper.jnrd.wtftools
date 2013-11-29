@@ -13,8 +13,9 @@ define(["base/base"], function(base){
 				this.listenTo(this.model, "add", this.addRow);
 				this.listenTo(this.model, "remove", this.deleteRow);
 				this.listenTo(this.model, "change", this.changeRow);
-				this.listenTo(this.model, "pagechange", this.pageChange)
-				this.listenTo(this.model, "pagination", this.pagination)
+				this.listenTo(this.model, "pagechange", this.pageChange);
+				this.listenTo(this.model, "pagination", this.pagination);
+				this.listenTo(this.model, "selection", this.lis_selection);
 			}
 			var oThis = this;
 			var requireArr = getRequiresInputs(this.metadata);
@@ -31,7 +32,14 @@ define(["base/base"], function(base){
 		makeDefault : function() {
 			
 		},
-		addRow : function(obj) {
+		showColumn : function(id){
+			this.gridObj.jqGrid('navGrid','showCol', id);
+		},
+		hideColumn : function(id){
+			this.gridObj.jqGrid('navGrid','hideCol', id);
+		},
+		/*Listeners begin, private*/
+		lis_addRow : function(obj) {
 			var row = obj.row;
 			var index = obj.index;
 			if(index == null)
@@ -39,29 +47,30 @@ define(["base/base"], function(base){
 			else
 				this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index), false);
 		},
-		changeRow : function() {
+		lis_changeRow : function() {
 		},
-		deleteRow : function(obj) {
+		lis_deleteRow : function(obj) {
 			var row = obj.row;
 			this.gridObj.delRowData(row.cid);
 		},
-		unselectRow : function() {
+		lis_unselectRow : function() {
 		},
-		showColumn : function(id){
-			this.gridObj.jqGrid('navGrid','showCol', id);
-		},
-		hideColumn : function(id){
-			this.gridObj.jqGrid('navGrid','hideCol', id);
-		},
-		clearPage : function() {
+		lis_clearPage : function() {
 			this.gridObj.clearGridData();
 		},
-		pageChange : function(){
+		lis_pageChange : function(){
 			this.gridObj.clearGridData();
 		},
-		pagination : function(pagination){
+		lis_pagination : function(pagination){
 			this.gridObj.setPagination(pagination);
 		},
+		lis_selection : function(selections) {
+			var row = selections.rows[0];
+			for(var i = 0; i <this.elements.length; i ++){
+				this.elements[i].value(row.get(key));
+			}
+		},
+		/*Listeners end*/
 		mockMetadata : function() {
 			var modelId = this.id + "MockModel";
 			var model = new FwBase.Wtf.Model(modelId, {});
