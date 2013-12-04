@@ -6,7 +6,8 @@ define(["base/base"], function(base){
 	$.extend(FwBase.Wtf.View.Controls.Form.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, {
 		template: _.template($('#sys_atom_controls_form').html()),
 		postInit : function(){
-			this.elements = buildDefaultElements(this.metadata.elements);
+			this.elements = [];
+			buildDefaultElements(this.metadata.elements);
 			this.model = this.ctx.model(this.metadata.model);
 			if(this.model){
 				this.listenTo(this.model, "clear", this.clearPage);
@@ -24,13 +25,22 @@ define(["base/base"], function(base){
 					var elemeta = oThis.metadata.elements[i];
 					elemeta.labelWidth = oThis.metadata.labelWidth;
 					var container = oThis.el.find(".formelement#" + elemeta.name);
-					oThis.elements.push(new FwBase.Wtf.View.Controls[Util.capitalize(elemeta.editortype)](container, elemeta, elemeta.name));
+					oThis.elements.push(new FwBase.Wtf.View.Controls[Util.capitalize(elemeta.editorType)](container, elemeta, elemeta.name));
 				}
 				
 			});
 		},
 		makeDefault : function() {
-			
+			this.setDefault({rows: 2});
+			var elements = this.metadata.elements;
+			if(elements != null){
+				for(var i = 0; i < elements.length; i ++){
+					if(elements[i].name.indexOf('.') != -1){
+						elements[i].oriName = elements[i].name;
+						elements[i].name = elements[i].name.replace('.', "_");
+					}
+				}
+			}
 		},
 		showColumn : function(id){
 			this.gridObj.jqGrid('navGrid','showCol', id);
@@ -64,10 +74,23 @@ define(["base/base"], function(base){
 		lis_pagination : function(pagination){
 			this.gridObj.setPagination(pagination);
 		},
-		lis_selection : function(selections) {
-			var row = selections.rows[0];
+		lis_selection : function(options) {
+			if(options.add){
+				alert("TODO for multiple selection");
+				return;
+			}
+			var row = options.selection.rows[0];
 			for(var i = 0; i <this.elements.length; i ++){
-				this.elements[i].value(row.get(key));
+				var elemeta = this.metadata.elements[i];
+				var value = null;
+				if(elemeta.oriName){
+					var pair = elemeta.oriName.split(".");
+					value = row.get(pair[0])[pair[1]];
+				}
+				else{
+					value = row.get(elemeta.name);
+				}
+				this.elements[i].value(value);
 			}
 		},
 		/*Listeners end*/
@@ -77,27 +100,27 @@ define(["base/base"], function(base){
 			model.mock = true;
 			this.ctx.model(model);
 			this.setDefault({model: modelId, rows : 2, labelWidth : 120, elements : [
-			     {name: 'a', label: 'Text:', nextrow : false, rowSpan : 1, editortype:'input'},
-			     {name: 'b', label: 'Dropdown Single:', nextrow : false, rowSpan : 1, editortype:'input_dropdown', options: singleDropdownData.options},
-			     {name: 'c', label: 'Dropdown Multi:', nextrow : false, rowSpan : 1, width:600, colspan:2, multiple:true, editortype:'input_dropdown', groups: multiDropdownData.groups},
-			     {name: 'd', label: 'Checkbox:', nextrow : false, rowSpan : 1, editortype:'input_checkbox'},
-			     {name: 'e', label: 'Checkbox group:', nextrow : false, rowSpan : 1, editortype:'input_checkboxgroup', options:[
+			     {name: 'a', label: 'Text:', nextrow : false, rowSpan : 1, editorType:'input'},
+			     {name: 'b', label: 'Dropdown Single:', nextrow : false, rowSpan : 1, editorType:'input_dropdown', options: singleDropdownData.options},
+			     {name: 'c', label: 'Dropdown Multi:', nextrow : false, rowSpan : 1, width:600, colspan:2, multiple:true, editorType:'input_dropdown', groups: multiDropdownData.groups},
+			     {name: 'd', label: 'Checkbox:', nextrow : false, rowSpan : 1, editorType:'input_checkbox'},
+			     {name: 'e', label: 'Checkbox group:', nextrow : false, rowSpan : 1, editorType:'input_checkboxgroup', options:[
 			                                                                                     					{value: 'value1', name: 'Value 1'},
 			                                                                                    					{value: 'value2', name: 'Value 2'},
 			                                                                                    					{value: 'value3', name: 'Value 3'}
 			                                                                                    					]},
-			     {name: 'f', label: 'Radiobox group:', nextrow : false, rowSpan : 1, editortype:'input_radiogroup', options:[
+			     {name: 'f', label: 'Radiobox group:', nextrow : false, rowSpan : 1, editorType:'input_radiogroup', options:[
 			                                                                                     					{value: 'value1', name: 'Value 1'},
 			                                                                                    					{value: 'value2', name: 'Value 2'},
 			                                                                                    					{value: 'value3', name: 'Value 3'}
 			                                                                                    					]},
-			     {name: 'g', label: 'Input date:', nextrow : false, rowSpan : 1, editortype:'input_date'},
-			     {name: 'h', label: 'Input ip:', nextrow : false, rowSpan : 1, editortype:'input_ip'},
-			     {name: 'i', label: 'Autocomplete:', nextrow : false, rowSpan : 1, editortype:'input_autocomplete', source: ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"]},
-			     {name: 'j', label: 'Input toggle:', nextrow : false, rowSpan : 1, editortype:'input_toggle'},
-			     {name: 'k', label: 'Input search:', nextrow : false, rowSpan : 1, editortype:'input_search'},
-			     {name: 'l', label: 'Input textarea:', nextrow : true, rowSpan : 1, editortype:'input_textarea'},
-			     {name: 'm', label: 'Input select:', nextrow : false, rowSpan : 1, editortype:'input_select', options:[
+			     {name: 'g', label: 'Input date:', nextrow : false, rowSpan : 1, editorType:'input_date'},
+			     {name: 'h', label: 'Input ip:', nextrow : false, rowSpan : 1, editorType:'input_ip'},
+			     {name: 'i', label: 'Autocomplete:', nextrow : false, rowSpan : 1, editorType:'input_autocomplete', source: ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"]},
+			     {name: 'j', label: 'Input toggle:', nextrow : false, rowSpan : 1, editorType:'input_toggle'},
+			     {name: 'k', label: 'Input search:', nextrow : false, rowSpan : 1, editorType:'input_search'},
+			     {name: 'l', label: 'Input textarea:', nextrow : true, rowSpan : 1, editorType:'input_textarea'},
+			     {name: 'm', label: 'Input select:', nextrow : false, rowSpan : 1, editorType:'input_select', options:[
 	                                                                                     					{value: 'value1', name: 'Value 1'},
 	                                                                                    					{value: 'value2', name: 'Value 2'},
 	                                                                                    					{value: 'value3', name: 'Value 3'},
@@ -112,7 +135,7 @@ define(["base/base"], function(base){
 		var arr = ["input_base"];
 		if(metadata.elements){
 			for(var i = 0; i < metadata.elements.length; i ++){
-				var type = metadata.elements[i].editortype;
+				var type = metadata.elements[i].editorType;
 				if(type == null || type == ""){
 					alert("wrong input type");
 					return;
@@ -127,7 +150,9 @@ define(["base/base"], function(base){
 		if(elements == null)
 			return;
 		for(var i = 0; i < elements.length; i ++){
-			Util.setDefault(elements[i], {visible: true, editortype: 'input', editable: true, datatype: 'string'});
+			Util.setDefault(elements[i], {visible: true, editorType: 'input', editable: true, datatype: 'string'});
+			if(elements[i].name.indexOf('.') != -1)
+				elements[i].name = elements[i].name.replaceAll('.', "_");
 		}
 	};
 	

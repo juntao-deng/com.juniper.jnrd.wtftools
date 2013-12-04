@@ -48,23 +48,22 @@ function getSysArray(prefix){
     	fontawesome: prefix + 'ext-lib/font-awesome/css/font-awesome',
     	jqueryui: prefix + 'ext-lib/jquery/jquery-ui',
     	jqueryuibootstrap: prefix + 'ext-lib/jquery/jquery-ui-bootstrap',
-    	flot: prefix + 'ext-lib/flot/jquery.flot',
-    	flotpie: prefix + 'ext-lib/flot/jquery.flot.pie',
-    	flotcategories: prefix + 'ext-lib/flot/jquery.flot.categories',
+    	highcharts: prefix + 'ext-lib/highcharts/js/highcharts',
     	inputmask : prefix + 'ext-lib/inputmask/jquery.inputmask.bundle',
     	storage : prefix + 'rest/storage',
     	mvc_base : prefix + 'library/components/base/mvc_base',
     	mvc_app : prefix + 'library/components/base/mvc_app',
     	mvc_view : prefix + 'library/components/base/mvc_view',
     	mvc_model : prefix + 'library/components/base/mvc_model',
-    	mvc_widget : prefix + 'library/components/base/mvc_widget'
+    	mvc_widget : prefix + 'library/components/base/mvc_widget',
+    	mvc_restapi : prefix + 'library/components/base/mvc_restapi'
     }
 }
 
 requirejs.config(window.globalRequireConfig);
 
 requirejs(['jquery'], function(){
-	var requireArr = ['underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'base/util', 'base/mvcbase', 'flot', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
+	var requireArr = ['underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
 	requirejs(requireArr, function() {
 			var arr = [];
 			if(window.extendArr)

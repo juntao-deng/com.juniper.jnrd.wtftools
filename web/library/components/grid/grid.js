@@ -86,7 +86,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			},
 			/*Fire events start, private*/
 			fireOnSelectRow : function() {
-				this.objOwner.model.select(arguments[0]);
+				this.objOwner.model.select(arguments[1]);
 			},
 			/*Fire events end*/
 			/*Listeners start, private */
@@ -116,7 +116,6 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				this.gridObj.setPagination(pagination);
 			},
 			lis_selection : function(selections) {
-				alert(selections);
 			}
 			/*Listeners end*/
 		}

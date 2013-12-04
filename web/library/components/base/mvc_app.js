@@ -185,61 +185,64 @@ define(["../uipattern/buttonmanager"], function(){
 	 	doParseWidget : function(groups, callbacks){
 	 		if(callbacks == null)
 	 			callbacks = {};
-			var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
+			for(var i in groups){
+				AppUtil.doParseWidgetByGroup(i, groups[i], callbacks);
+			}
+	 	},
+	 	
+	 	doParseWidgetByGroup : function(ctx, group, callbacks){
+	 		var prefix = window.ClientConfig ? ClientConfig.prefix("template", "text") : "text";
 			prefix += "!";
 			var rqhtml = "../widgets/";
-			for(var i in groups){
-				var requireUtil = requirejs;
-				if(window.requirelibs){
-					requireUtil = requirelibs[i];
-				}
-				var htmlArr = [];
-				var modelJsArr = [];
-				var controllerArr = [];
-				for(var j = 0; j < groups[i].length; j ++){
-					var group = groups[i];
-					var id = groups[i][j].id;
-					htmlArr.push(prefix + rqhtml + id + "/" + id + ".html");
-					modelJsArr.push(rqhtml + id + "/model");
-					controllerArr.push(rqhtml + id + "/controller");
-				}
-				requireUtil(htmlArr, function(){
-					var containers = [];
-					for(var j = 0; j < arguments.length; j ++){
-						var html = arguments[j];
-						var container = groups[i][j].container;
-						container.html(html);
-						var id = groups[i][j].id;
-						var widget = new FwBase.Wtf.Widget(id);
-						$app.widget(widget);
-						container.ctx = widget;
-						containers.push(container);
-					}
-					requireUtil(modelJsArr, function(){
-						for(var j = 0; j < arguments.length; j ++){
-							if(arguments[j] != null){
-								var id = groups[i][j].id;
-								window.$widget = $app.widget(id);
-								arguments[j].exec();
-							}
-						}
-						var widgetCallback = function(){
-							requireUtil(controllerArr, function() {
-								for(var j = 0; j < arguments.length; j ++){
-									if(arguments[j] != null){
-										var id = groups[i][j].id;
-										window.$widget = $app.widget(id);
-										arguments[j].exec();
-									}
-								}
-							});
-						};
-//						containers.push($(document.body));
-						callbacks.widgetCallback = widgetCallback;
-						AppUtil.parseHtml(containers, callbacks);
-					});
-				});
+	 		var requireUtil = requirejs;
+			if(window.requirelibs){
+				requireUtil = requirelibs[ctx];
 			}
+			var htmlArr = [];
+			var modelJsArr = [];
+			var controllerArr = [];
+			for(var j = 0; j < group.length; j ++){
+				var id = group[j].id;
+				htmlArr.push(prefix + rqhtml + id + "/" + id + ".html");
+				modelJsArr.push(rqhtml + id + "/model");
+				controllerArr.push(rqhtml + id + "/controller");
+			}
+			requireUtil(htmlArr, function(){
+				var containers = [];
+				for(var j = 0; j < arguments.length; j ++){
+					var html = arguments[j];
+					var container = group[j].container;
+					container.html(html);
+					var id = group[j].id;
+					var widget = new FwBase.Wtf.Widget(id);
+					$app.widget(widget);
+					container.ctx = widget;
+					containers.push(container);
+				}
+				requireUtil(modelJsArr, function(){
+					for(var j = 0; j < arguments.length; j ++){
+						if(arguments[j] != null){
+							var id = group[j].id;
+							window.$widget = $app.widget(id);
+							arguments[j].exec();
+						}
+					}
+					var widgetCallback = function(){
+						requireUtil(controllerArr, function() {
+							for(var j = 0; j < arguments.length; j ++){
+								if(arguments[j] != null){
+									var id = group[j].id;
+									window.$widget = $app.widget(id);
+									arguments[j].exec();
+								}
+							}
+						});
+					};
+//					containers.push($(document.body));
+					callbacks.widgetCallback = widgetCallback;
+					AppUtil.parseHtml(containers, callbacks);
+				});
+			});
 	 	},
 	 	
 	 	detectWidget : function(groups) {

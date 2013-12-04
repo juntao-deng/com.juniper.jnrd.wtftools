@@ -58,10 +58,15 @@ define(["base/base", "inputmask"], function(base){
 					if(arguments[0] == this.editableAttr)
 						return;
 					this.editableAttr = arguments[0];
-					if(!arguments[0])
-						this.input.attr('readonly', 'readonly');
-					else
-						this.input.removeAttr('readonly');
+					if(this.editableHandler){
+						this.editableHandler(arguments[0]);
+					}
+					else{
+						if(!arguments[0])
+							this.input.attr('readonly', 'readonly');
+						else
+							this.input.removeAttr('readonly');
+					}
 				}
 			},
 			

@@ -14114,8 +14114,16 @@ $.widget( "ui.tabs", {
 			"aria-selected": "false",
 			tabIndex: -1
 		});
+		var initWidth = this.element.innerWidth();
 		this.panels.not( this._getPanelForTab( this.active ) )
-			.hide()
+			//.hide()
+			.css({
+				"position": "absolute",
+				"left": "-10000px",
+				"top": "-10000px",
+				"visibility": "hidden",
+				"width": initWidth + "px"
+			})
 			.attr({
 				"aria-expanded": "false",
 				"aria-hidden": "true"
@@ -14132,7 +14140,14 @@ $.widget( "ui.tabs", {
 					tabIndex: 0
 				});
 			this._getPanelForTab( this.active )
-				.show()
+				//.show()
+				.css({
+					"position": "relative",
+					"left": "0px",
+					"top": "0px",
+					"width":"auto",
+					"visibility": 'visible'
+				})
 				.attr({
 					"aria-expanded": "true",
 					"aria-hidden": "false"
@@ -14360,26 +14375,46 @@ $.widget( "ui.tabs", {
 
 		function show() {
 			eventData.newTab.closest( "li" ).addClass( "ui-tabs-active ui-state-active" );
-
-			if ( toShow.length && that.options.show ) {
-				that._show( toShow, that.options.show, complete );
-			} else {
-				toShow.show();
-				complete();
-			}
-		}
-
-		// start out by hiding, then showing, then completing
-		if ( toHide.length && this.options.hide ) {
-			this._hide( toHide, this.options.hide, function() {
-				eventData.oldTab.closest( "li" ).removeClass( "ui-tabs-active ui-state-active" );
-				show();
+			toShow.css({
+				"position": "relative",
+				"left": "0px",
+				"top": "0px",
+				"visibility": "visible",
+				"width": "auto"
 			});
-		} else {
-			eventData.oldTab.closest( "li" ).removeClass( "ui-tabs-active ui-state-active" );
-			toHide.hide();
-			show();
+			complete();
+//			if ( toShow.length && that.options.show ) {
+//				that._show( toShow, that.options.show, complete );
+//			} else {
+//				toShow.show();
+//				complete();
+//			}
 		}
+
+		function hide(){
+			eventData.oldTab.closest( "li" ).removeClass( "ui-tabs-active ui-state-active" );
+//			var initWidth = this.element.innerWidth();
+			toHide.css({
+				"position": "absolute",
+				"left": "-10000px",
+				"top": "-10000px",
+				"visibility": "hidden"
+//				"width": initWidth + "px"
+			});
+		}
+		hide();
+		show();
+		// start out by hiding, then showing, then completing
+//		if ( toHide.length && this.options.hide ) {
+//			this._hide( toHide, this.options.hide, function() {
+//				eventData.oldTab.closest( "li" ).removeClass( "ui-tabs-active ui-state-active" );
+//				show();
+//			});
+//		} else {
+//			eventData.oldTab.closest( "li" ).removeClass( "ui-tabs-active ui-state-active" );
+//			toHide.hide();
+//			show();
+//		}
 
 		toHide.attr({
 			"aria-expanded": "false",

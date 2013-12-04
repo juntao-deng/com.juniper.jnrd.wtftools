@@ -21,7 +21,7 @@ define(["base/base", "css!./sidenav"], function(base){
 				pItem.append(this.itemtemplate(item));
 				var currItem = pItem.find("a").last();
 				currItem.click(function(){
-					FwBase.Wtf.Application.navigateTo($(this).attr('href'));
+					FwBase.Wtf.Application.navigateTo($(this).attr('href'), null, {title: $(this).html()});
 					return false;
 				});
 			},

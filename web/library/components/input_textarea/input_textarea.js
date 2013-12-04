@@ -11,6 +11,9 @@ define(["input_base/input_base"], function(base){
 			},
 			inputMask : function() {
 				
+			},
+			getInput : function() {
+				return this.el.find('textarea');
 			}
 		}
 	);

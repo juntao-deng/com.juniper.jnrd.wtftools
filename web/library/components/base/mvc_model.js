@@ -7,9 +7,11 @@ define(function(){
 	 	this.currentKey = FwBase.Wtf.Model.DEFAULT_KEY;
 	 	this.stores = {};
 	 	this.tranurl = null;
+	 	this.matrixParamObj = {};
 	 	if(this.metadata.url){
 			this.url(this.metadata.url);
 		}
+	 	
 	 };
 	 FwBase.Wtf.Model.DEFAULT_KEY = "SYS_DEFAULT_KEY";
 	 FwBase.Wtf.Model.defaults = {
@@ -39,32 +41,6 @@ define(function(){
 			if(!this.metadata.lazyInit)
 				this.init();
 		},
-		/*Fire events start */
-		fireAddRow : function(){
-			var index = arguments[2].at;
-			this.trigger("add", {row : arguments[0], index : index});
-	 	},
-	 	fireDelRow : function(){
-	 		this.trigger("remove", {row : arguments[0]});
-	 	},
-	 	fireClear : function(argument){
-	 		this.trigger("clear", {});
-	 	},
-	 	firePageChange : function(){
-		 	this.trigger("pagechange", arguments[0]);
-	 	},
-	 	firePagination : function(){
-		 	this.trigger("pagination", arguments[0]);
-	 	},
-	 	fireStoreReset : function() {
-	 		if(this.currentKey == arguments[0].key){
-	 			this.trigger("clear", {});
-	 		}
-	 	},
-	 	fireSelection : function() {
-	 		this.trigger("selection", arguments[0]);
-	 	},
-	 	/*Fire events end*/
 	 	store : function(key) {
 	 		var tmpKey = key ? key : this.currentKey;
 	 		var store = this.stores[tmpKey];
@@ -76,6 +52,12 @@ define(function(){
 	 	},
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
+	 	},
+	 	/**
+	 	 * reload data for current store, current page. using current client parameters
+	 	 */
+	 	reload : function() {
+	 		this.store().reload();
 	 	},
 	 	/**
 	 	 * Select rows in current store
@@ -118,6 +100,56 @@ define(function(){
 	 	filters : function() {
 	 		return null;
 	 	},
+	 	/**
+	 	 * add or get matrix parameter for restrul api
+	 	 */
+	 	matrixParam : function() {
+	 		if(arguments.length == 2){
+	 			this.matrixParamObj[arguments[0]] = arguments[1];
+	 		}
+	 		else{
+	 			return this.matrixParamObj[arguments[0]];
+	 		}
+	 	},
+	 	matrixParams : function() {
+	 		return this.matrixParamObj;
+	 	},
+	 	/**
+	 	 * remvoe matrix parameter
+	 	 */
+	 	removeMatrixParam : function(key) {
+	 		delete this.matrixParamObj[key];
+	 	},
+	 	
+	 	/*Fire events start */
+	 	fireAddRow : function(){
+	 		var index = arguments[2].at;
+	 		this.trigger("add", {row : arguments[0], index : index});
+	 	},
+	 	fireDelRow : function(){
+	 		this.trigger("remove", {row : arguments[0]});
+	 	},
+	 	fireClear : function(argument){
+	 		this.trigger("clear", {});
+	 	},
+	 	firePageChange : function(){
+	 		this.trigger("pagechange", arguments[0]);
+	 	},
+	 	firePagination : function(){
+	 		this.trigger("pagination", arguments[0]);
+	 	},
+	 	fireStoreReset : function() {
+	 		if(this.currentKey == arguments[0].key){
+	 			this.trigger("clear", {});
+	 		}
+	 	},
+	 	fireSelection : function() {
+	 		var options = {add: false, selection: arguments[0]};
+	 		this.trigger("selection", options);
+	 	},
+	 	/*Fire events end*/
+	 	
+	 	/*private methods start*/
 	 	url : function(url){
 	 		if(!url.startWith('/')){
 	 			var ctx = $app.webroot;
@@ -141,6 +173,7 @@ define(function(){
 			return [{name : 'enable', params: {type: 'boolean'}, desc: 'Set the component enable or not'},
 			                      {name : 'enable', desc: "Get the component's enable state"}];
 		}
+		/*private end */
 	 });
 	 
 	 FwBase.Wtf.Model.Store = function(model, key, currentPage) {
@@ -154,9 +187,13 @@ define(function(){
 	 
 	 $.extend(FwBase.Wtf.Model.Store.prototype, {
 	 	reload : function(index) {
-	 		var cp = this.currentPage;
+	 		var cp = null;
 	 		if(index != null)
 	 			cp = index;
+	 		else{
+	 			cp = this.currentPage;
+	 			this.fireClear();
+	 		}
 	 		var rowList = new FwBase.Wtf.Model.RowList(cp);
 	 		rowList.setParent(this, this.model);
 	 		this.pages[cp] = rowList;
@@ -165,25 +202,9 @@ define(function(){
       		this.listenTo(rowList, 'reset', this.fireClear);
       		this.listenTo(rowList, 'pagechange', this.firePageChange);
       		this.listenTo(rowList, 'pagination', this.firePagination);
-//	      		rowList.on('all', rowList, this.render);
       		if(this.model.metadata.url != null && this.model.metadata.autoload){
       			rowList.fetch();
       		}
-	 	},
-	 	fireAddRow : function() {
-	 		this.model.fireAddRow.apply(this.model, arguments);
-	 	},
-	 	fireDelRow : function() {
-	 		this.model.fireDelRow.apply(this.model, arguments);
-	 	},
-	 	fireClear : function() {
-	 		this.model.fireClear.apply(this.model, arguments);
-	 	},
-	 	firePageChange: function() {
-	 		this.model.firePageChange.apply(this.model, arguments);
-	 	},
-	 	firePagination: function() {
-	 		this.model.firePagination.apply(this.model, arguments);
 	 	},
 	 	reset : function() {
 	 		for(var i in this.pages){
@@ -208,7 +229,24 @@ define(function(){
 	 		if(index)
 	 			return this.pages[i];
 	 		return this.pages[this.currentPage];
+	 	},
+	 	/*fire event start*/
+	 	fireAddRow : function() {
+	 		this.model.fireAddRow.apply(this.model, arguments);
+	 	},
+	 	fireDelRow : function() {
+	 		this.model.fireDelRow.apply(this.model, arguments);
+	 	},
+	 	fireClear : function() {
+	 		this.model.fireClear.apply(this.model, arguments);
+	 	},
+	 	firePageChange: function() {
+	 		this.model.firePageChange.apply(this.model, arguments);
+	 	},
+	 	firePagination: function() {
+	 		this.model.firePagination.apply(this.model, arguments);
 	 	}
+	 	/*fire event end*/
 	 });
 	 
 	 FwBase.Wtf.Model.Row = Backbone.Model.extend({
@@ -255,7 +293,9 @@ define(function(){
 	    'delete': 'DELETE',
 	    'read':   'GET'
 	 };
-  
+	 /**
+	  * Each rowlist stands for one page.It belongs to one store
+	  */
 	 FwBase.Wtf.Model.RowList = Backbone.Collection.extend({
 	 	model : FwBase.Wtf.Model.Row,
 	 	constructor : function(pageIndex) {
@@ -283,10 +323,10 @@ define(function(){
 	 			this.selections.rows = [];
 	 		}
 	 		if(typeof arguments[0] == "string"){
-	 			return this.doSelectById(arguments[0]);
+	 			this.doSelectById(arguments[0]);
 	 		}
 	 		else if(typeof arguments[0] == "number"){
-	 			return this.doSelectByIndex(arguments[0]);
+	 			this.doSelectByIndex(arguments[0]);
 	 		}
 	 		else if(typeof arguments[0] == "array"){
 	 			var arr = arguments[0];
@@ -300,15 +340,20 @@ define(function(){
 	 		this.dataset.fireSelection.apply(this.dataset, [this.selections]);
 	 	},
 	 	doSelectById: function(id) {
-	 		var index = arguments[0];
- 			if(this.selections.indexOf(index) != -1){
+ 			if(_.indexOf(this.selections.ids, id) != -1){
  				return true;
  			}
- 			var model = this.at(index);
+ 			var model = this.get(id);
  			if(model != null){
+ 				var models = this.models;
+ 				var i = 0;
+ 				for(; i < models.length; i ++){
+ 					if(models[i] == model)
+ 						break;
+ 				}
  				var id = model.id;
  				this.selections.ids.push(id);
- 				this.selections.indices.push(index);
+ 				this.selections.indices.push(i);
  				this.selections.rows.push(model);
  				return true;
  			}
@@ -354,10 +399,18 @@ define(function(){
 	 			this.url = url + "/ctx/s_page=" + this.pageIndex + "," + this.dataset.metadata.pageSize; 
 	 		}
 	 		var filters = this.dataset.filters();
-//		 		filters = [{key:'a', value:'d', joint:'='}, {key:'x', value:'y', joint:'like'}];
 	 		if(filters != null && filters.length > 0){
-	 			this.url += ";s_filter=" + $.toJSON(filters);
+	 			this.url += ";";
+	 			this.url += "s_filter=" + $.toJSON(filters);
 	 		}
+	 		var matrixParams = this.dataset.matrixParams();
+	 		if(matrixParams != null && !_.isEmpty(matrixParams)){
+	 			for(var i in matrixParams){
+	 				this.url += ";";
+	 				this.url += (i + "=" + matrixParams[i]);
+	 			}
+	 		}
+	 		
 	 		var oThis = this;
 	 		var success = arguments[2].success;
 	 		arguments[2].success = function() {

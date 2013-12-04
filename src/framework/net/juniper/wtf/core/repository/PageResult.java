@@ -21,7 +21,7 @@ public class PageResult<T> {
 	public PageResult(List<T> records){
 		this.records = records;
 		this.pageSize = -1;
-		this.totalRecords = this.records.size();
+		this.totalRecords = records == null ? 0 : this.records.size();
 		this.pageIndex = 0;
 	}
 

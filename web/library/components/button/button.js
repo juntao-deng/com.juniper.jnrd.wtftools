@@ -32,7 +32,9 @@ define(["base/base"], function(base){
 				});
 			},
 			makeDefault : function(){
-				this.setDefault({icon: null, style : "", text : "Button"});
+				if(this.metadata.icon == null)
+					this.setDefault({text : "Button"});
+				this.setDefault({icon: null, style : "", text: ""});
 				this.metadata.cssclass = "btn btn-" + this.metadata.style;
 			},
 			

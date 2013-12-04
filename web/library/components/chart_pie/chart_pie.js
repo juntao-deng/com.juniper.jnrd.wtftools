@@ -1,4 +1,4 @@
-define(["base/base", "flot", "flotpie"], function(plot){	
+define(["base/base", "highcharts"], function(){	
 	FwBase.Wtf.View.Controls.Chart_pie = function(){
 		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
@@ -14,37 +14,37 @@ define(["base/base", "flot", "flotpie"], function(plot){
 			postInit : function() {
 				this.grided = false;
 				
-				this.plot = $.plot(this.el.children("#chart_pie"), [[]], {
-					series: {
-				        pie: {
-				            show: true,
-				            radius: 1,
-				            label: {
-				                show: true,
-				                radius: 3/4,
-				                formatter: labelFormatter,
-				                background: {
-				                    opacity: 0.5
-				                }
-				            }
-				        }
-				    },
-				    legend: {
-				        show: false
-				    }
-				});
-				if(this.metadata.mock){
-					var data = [];
-					var series = Math.floor(Math.random() * 6) + 3;
-
-					for (var i = 0; i < series; i++) {
-						data[i] = {
-							label: "Series" + (i + 1),
-							data: Math.floor(Math.random() * 100) + 1
-						}
-					}
-					this.data(data);
-				}
+//				this.plot = $.plot(this.el.children("#chart_pie"), [[]], {
+//					series: {
+//				        pie: {
+//				            show: true,
+//				            radius: 1,
+//				            label: {
+//				                show: true,
+//				                radius: 3/4,
+//				                formatter: labelFormatter,
+//				                background: {
+//				                    opacity: 0.5
+//				                }
+//				            }
+//				        }
+//				    },
+//				    legend: {
+//				        show: false
+//				    }
+//				});
+//				if(this.metadata.mock){
+//					var data = [];
+//					var series = Math.floor(Math.random() * 6) + 3;
+//
+//					for (var i = 0; i < series; i++) {
+//						data[i] = {
+//							label: "Series" + (i + 1),
+//							data: Math.floor(Math.random() * 100) + 1
+//						}
+//					}
+//					this.data(data);
+//				}
 			},
 			data : function(data) {
 				this.plot.setData(data);
