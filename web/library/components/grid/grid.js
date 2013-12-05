@@ -51,6 +51,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				});
 				this.gridObj[0].objOwner = this;
 				this.gridObj.bind('jqGridSelectRow', this.fireOnSelectRow);
+				this.gridObj.bind('jqGridDblClickRow', this.fireOnDblClickRow);
 				if(this.model){
 					this.model.pageSize(pageSize == null ? -1 : pageSize);
 					var oThis = this;
@@ -60,6 +61,8 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 						oThis.model.requestPage({pageIndex: pageIndex, pageSize: pageSize, forceUpdate: true});
 					});
 				}
+				
+				
 //				this.gridObj.jqGrid('navGrid', this.paginationEle).jqGrid('navButtonAdd', this.paginationEle, { caption:"NewButton", buttonicon:"ui-icon-newwin", onClickButton:null, position: "last", title:"", cursor: "pointer"});
 				//this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
 			},
@@ -88,15 +91,22 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			fireOnSelectRow : function() {
 				this.objOwner.model.select(arguments[1]);
 			},
+			fireOnDblClickRow : function() {
+				var options = {source: this.objOwner, eventCtx: {}, rowIndex: (arguments[2] - 1), rowId: arguments[1], row: null};
+				this.objOwner.trigger('dblclick', options);
+			},
 			/*Fire events end*/
 			/*Listeners start, private */
 			lis_addRow : function(obj) {
 				var row = obj.row;
 				var index = obj.index;
+				var id = row.id;
+				if(id == null)
+					id = row.cid;
 				if(index == null)
-					this.gridObj.addRowData(row.cid, row.toJSON(), null, null, false);
+					this.gridObj.addRowData(id, row.toJSON(), null, null, false);
 				else
-					this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index), false);
+					this.gridObj.addRowData(id, row.toJSON(), 'before', this.model.page().at(index), false);
 			},
 			lis_changeRow : function() {
 			},

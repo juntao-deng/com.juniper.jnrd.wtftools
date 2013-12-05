@@ -38,21 +38,51 @@ define(["../uipattern/buttonmanager"], function(){
   	  			AppUtil.navigateTo(appid, null, {callback : callback});
   	  		 });
   	 	},
+  	 	navigateToStack : function(url, reqData, options){
+  	 		var stacks = 1;
+  	 		var currApp = $app;
+  	 		while(!currApp.baseApp){
+  	 			if(currApp.stackApp)
+  	 				stacks ++;
+  	 			currApp = currApp.parent;
+  	 		}
+  	 		var stackIndex = 100 * stacks;
+  	 		var	container = $('#sys_home_content_part');
+  	 		var width = container.innerWidth();
+  	 		var height = container.innerHeight();
+  	 		var div = $("<div></div>").css(
+  	 										{"z-index": stackIndex, "background": "#FFF", 
+  	 										"position": "absolute", "left": "0px", "top": "0px", 
+  	 										"width":(width + "px"), "min-height": (height + "px")
+  	 										}
+  	 									);
+  	 		container.append(div);
+  	 		div.fadeIn("slow");
+  	 		options.container = div;
+  	 		options.stackApp = true;
+  	 		AppUtil.navigateTo(url, reqData, options);
+  	 	},
   	 	navigateTo : function(url, reqData, options) {
   	 		if(options == null)
   	 			options = {};
-  	 		var container = $('#sys_home_content_part');
+  	 		var container = options.container;
+  	 		if(container == null)
+  	 			container = $('#sys_home_content_part');
 			if(container.length == 0){
 				container = $("#sys_design_home_content_part");
 			}
-			
+			options.baseApp = true;
 			AppUtil.doNavigateTo(url, reqData, options, container);
 			var title = options.title;
 			if(title == null || title == ""){
 				var pathInfo = url.split("/");
 				title = FwBase.Wtf.Lang.Utils.capitalize(pathInfo[pathInfo.length - 1]);
 			}
-			AppUtil.updateTitle({title: title});
+			if(options.stackApp){
+				AppUtil.appendTitle({title: title, url: url});
+			}
+			else
+				AppUtil.updateTitle({title: title, url: url});
 	 	},
 	 	
 	 	doNavigateTo : function(url, reqData, options, container) {
@@ -74,6 +104,8 @@ define(["../uipattern/buttonmanager"], function(){
 			requireUtil(htmlArr, function(html){
 				var app = new AppUtil(url);
 				app.webroot = pathInfo[0];
+				app.baseApp = options.baseApp;
+				app.stackApp = options.stackApp;
 				if(options)
 					app.parent = options.parent;
 				app.dialog = options.dialog;
@@ -134,10 +166,25 @@ define(["../uipattern/buttonmanager"], function(){
   			var titleZone = $('#sys_page_title');
   			if(titleZone.length > 0)
   				titleZone.html(titleInfo.title);
-  			var breadcrumb = $("#sys_app_breadcrumb_last");
+  			$("#sys_app_breadcrumb li:gt(1)").remove();
+  			var breadcrumb = $("#sys_app_breadcrumb li:eq(1)");
+  			breadcrumb.originalUrl = titleInfo.url;
   			if(breadcrumb.length > 0)
   				breadcrumb.html(titleInfo.title);
   		},
+  		
+  		appendTitle : function(titleInfo, url){
+  			var titleZone = $('#sys_page_title');
+  			if(titleZone.length > 0)
+  				titleZone.html(titleInfo.title);
+  			var last = $("#sys_app_breadcrumb li:last");
+  			last.html("<a href=\"javascript:AppUtil.lookupInStack('" + last[0].originalUrl + "')\">" + last.html() + "</a><span class=\"divider\">/</span>");
+  			var newAdd = last.clone();
+  			newAdd.html(titleInfo.title);
+  			newAdd[0].originalUrl = titleInfo.url;
+  			$("#sys_app_breadcrumb").append(newAdd);
+  		},
+  		
 	 	navigateToDialog : function(url, reqData, options){
 	 		requireComponent(['dialog'], function(){
 		 		var dialog = FwBase.Wtf.View.Controls.Dialog.getDialog();
@@ -488,7 +535,7 @@ define(["../uipattern/buttonmanager"], function(){
   	 				return this.modelMap[arguments[0]];
   	 			var obj = arguments[0];
   	 			if(!(obj instanceof Model))
-  	 				obj = new Model(arguments[0].id, obj);
+  	 				obj = new Model(arguments[0].id, obj, arguments[0].idAttribute);
   	 			obj.ctx = this;
   	 			this.modelMap[arguments[0].id] = obj;
   	 		}
@@ -603,8 +650,8 @@ define(["../uipattern/buttonmanager"], function(){
   	 	 * will cause current dialog be closed
   	 	 */
   	 	close : function() {
-  	 		if($app.dialog)
-  	 			$app.dialog.close();
+  	 		if(this.dialog)
+  	 			this.dialog.close();
   	 		else
   	 			this.clean();
   	 	},

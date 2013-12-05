@@ -48,9 +48,9 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 						if(typeof newValue == "string")
 							newValue = newValue.split(",");
 					}
-					this.fireChange(newValue, value);
 					this.input.val(newValue);
 					this.input.trigger("liszt:updated");
+					this.fireChange(newValue, value);
 				}
 			},
 			fireChange : function(value, oldValue) {

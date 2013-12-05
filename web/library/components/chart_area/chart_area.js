@@ -29,7 +29,19 @@ define(["base/base", "highcharts"], function(charts){
 				this.setDefault({title: 'Area Chart', width: '100%', height: '200'});
 			},
 			postInit : function() {
-				this.chart = this.el.children("#chart_area").highcharts({
+				this.model = this.ctx.model(this.metadata.model);
+				if(this.model){
+					this.listenTo(this.model, "clear", this.lis_clearPage);
+					this.listenTo(this.model, "add", this.lis_addRow);
+					this.listenTo(this.model, "remove", this.lis_deleteRow);
+					this.listenTo(this.model, "change", this.lis_changeRow);
+					this.listenTo(this.model, "pagechange", this.lis_pageChange);
+					this.listenTo(this.model, "pagination", this.lis_pagination);
+					this.listenTo(this.model, "selection", this.lis_selection);
+					this.listenTo(this.model, "syncover", this.lis_syncover);
+				}
+				//this.chartEle.highcharts
+				this.el.children("#chart_area").highcharts({
 			            chart: {
 			                type: 'area'
 			            },
@@ -52,7 +64,7 @@ define(["base/base", "highcharts"], function(charts){
 			                },
 			                labels: {
 			                    formatter: function() {
-			                        return this.value / 1000;
+			                        return this.value;
 			                    }
 			                }
 			            },
@@ -73,13 +85,29 @@ define(["base/base", "highcharts"], function(charts){
 			            },
 			            series : this.metadata.series
 			        });
+				this.chart = this.el.children("#chart_area").highcharts();
 			},
-			data : function(data) {
-				this.chart.setData(data);
+			datas : function(data) {
+				for(var i = 0; i < data.length; i ++){
+					this.chart.series[i].update(data[i], false);
+				}
+				this.chart.redraw();
+			},
+			/* listeners begin*/
+			lis_syncover : function(options) {
+				var key = options.key;
+				if(key == this.model.currentKey){
+					var rows = this.model.rows();
+					var datas = calculateDatas(this, rows);
+					this.datas(datas);
+				}
 			}
 		}
 	);
 	
+	function calculateDatas(chartObj, rows){
+		return [{name: 'Maximized', data:rows[0].get('values')}, {name: 'Assigned', data:rows[1].get('values')}, {name: 'Used', data:rows[2].get('values')}];
+	}
 
 	return FwBase.Wtf.View.Controls.Chart_area;
 });

@@ -11,12 +11,15 @@ define(function(){
 	 	if(this.metadata.url){
 			this.url(this.metadata.url);
 		}
-	 	
+	 	var idAttribute = metadata.idAttribute;
+	 	if(idAttribute == null || idAttribute == "" || idAttribute == FwBase.Wtf.Model.defaults.idAttribute)
+			 metadata.idAttribute = "";
 	 };
 	 FwBase.Wtf.Model.DEFAULT_KEY = "SYS_DEFAULT_KEY";
 	 FwBase.Wtf.Model.defaults = {
 	 	pageSize : 10,
-	 	resturlbase: 'rest'
+	 	resturlbase: 'rest',
+	 	idAttribute : 'id'
 	 };
 	 
 	//use backbones extend method to add events function
@@ -33,9 +36,7 @@ define(function(){
 		init : function(key){
 			if(key)
 				this.currentKey = key;
-			if(!this.stores[this.currentKey]){
-				this.stores[this.currentKey] = new FwBase.Wtf.Model.Store(this, this.currentKey, 0);
-			}
+			this.reload();
 		},
 		toInit : function(){
 			if(!this.metadata.lazyInit)
@@ -52,6 +53,10 @@ define(function(){
 	 	},
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
+	 	},
+	 	
+	 	rows : function(key, index){
+	 		return this.store(key).page(index).rows();
 	 	},
 	 	/**
 	 	 * reload data for current store, current page. using current client parameters
@@ -147,6 +152,11 @@ define(function(){
 	 		var options = {add: false, selection: arguments[0]};
 	 		this.trigger("selection", options);
 	 	},
+	 	fireSyncOver : function() {
+	 		var collection = arguments[0];
+	 		var options = {key: collection.store.key, pageIndex: collection.pageIndex};
+	 		this.trigger("syncover", options);
+	 	},
 	 	/*Fire events end*/
 	 	
 	 	/*private methods start*/
@@ -181,7 +191,7 @@ define(function(){
 	 	this.pages = {};
 	 	this.key = key;
 	 	this.currentPage = currentPage;
-	 	this.reload();
+//	 	this.reload();
 	 };
 	 _.extend(FwBase.Wtf.Model.Store.prototype, Backbone.Events);
 	 
@@ -194,7 +204,10 @@ define(function(){
 	 			cp = this.currentPage;
 	 			this.fireClear();
 	 		}
-	 		var rowList = new FwBase.Wtf.Model.RowList(cp);
+	 		var idAttribute = this.model.metadata.idAttribute;
+	 		if(idAttribute != "")
+	 			getRowListByType(idAttribute);
+	 		var rowList = new FwBase.Wtf.Model["RowList" + idAttribute](cp);
 	 		rowList.setParent(this, this.model);
 	 		this.pages[cp] = rowList;
 	 		this.listenTo(rowList, 'add', this.fireAddRow);
@@ -202,6 +215,7 @@ define(function(){
       		this.listenTo(rowList, 'reset', this.fireClear);
       		this.listenTo(rowList, 'pagechange', this.firePageChange);
       		this.listenTo(rowList, 'pagination', this.firePagination);
+      		this.listenTo(rowList, 'sync', this.fireSyncOver);
       		if(this.model.metadata.url != null && this.model.metadata.autoload){
       			rowList.fetch();
       		}
@@ -245,11 +259,16 @@ define(function(){
 	 	},
 	 	firePagination: function() {
 	 		this.model.firePagination.apply(this.model, arguments);
+	 	},
+	 	fireSyncOver: function() {
+	 		this.model.fireSyncOver.apply(this.model, arguments);
 	 	}
 	 	/*fire event end*/
 	 });
 	 
+	 
 	 FwBase.Wtf.Model.Row = Backbone.Model.extend({
+		 idAttribute : FwBase.Wtf.Model.defaults.idAttribute,
 		 sync : function() {
 			 var dataset = this.collection.dataset;
 			 var url = dataset.transurl;
@@ -257,26 +276,6 @@ define(function(){
 		 	 this.url = url;
 		 	 if(type == "DELETE")
 		 		 this.url = this.url + "/" + this.id;
-//			 		if(type == "GET"){
-//			 			this.url = url + "/ctx/s_page=" + this.store.currentPage + "," + this.dataset.metadata.pageSize; 
-//			 		}
-//			 		var filters = null;//this.model.filters();
-//			 		filters = [{key:'a', value:'d', joint:'='}, {key:'x', value:'y', joint:'like'}];
-//			 		if(filters != null && filters.length > 0){
-//			 			this.url += ";s_filter=" + $.toJSON(filters);
-//			 		}
-		 		
-//			 		var success = arguments[2].success;
-//			 		arguments[2].success = function() {
-//			 			var respObj = arguments[0];
-//			 			if(typeof respObj.totalRecords == 'undefined')
-//			 				success.apply(this, arguments);
-//			 			else{
-//			 				arguments[0] = respObj.records;
-//			 				success.apply(this, arguments);
-//			 			}
-//			 		}
-		 		
 		 	if(window.clientMode){
 		 		this.syncFromClient.apply(this, arguments);
 		 	}
@@ -461,4 +460,16 @@ define(function(){
     		return xhr;
 	 	}
 	 });
+	 
+	 
+	 function getRowListByType(idAttribute){
+		 if(FwBase.Wtf.Model["RowList" + idAttribute] == null){
+			 FwBase.Wtf.Model["Row" + idAttribute] = FwBase.Wtf.Model.Row.extend({
+				 idAttribute : idAttribute
+			 });
+			 FwBase.Wtf.Model["RowList" + idAttribute] = FwBase.Wtf.Model.RowList.extend({
+				 model : FwBase.Wtf.Model["Row" + idAttribute]
+			 });
+		 }
+	 }
 });

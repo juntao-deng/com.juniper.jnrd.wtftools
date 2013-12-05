@@ -99,6 +99,7 @@ input, textarea, .uneditable-input {
 
 .control-group .controls{
 	line-height: 10px;
+	overflow:hidden;
 }
 
 .control-group .control-label{
@@ -312,7 +313,7 @@ Choosen plugin css changes
 
 .btn-toolbar {
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 4px;
   margin-bottom: 5px;
 }
 

@@ -21,7 +21,12 @@ define(["base/base", "css!./sidenav"], function(base){
 				pItem.append(this.itemtemplate(item));
 				var currItem = pItem.find("a").last();
 				currItem.click(function(){
-					FwBase.Wtf.Application.navigateTo($(this).attr('href'), null, {title: $(this).html()});
+					var title = $(this).html();
+					if(title == "Monitored Servers"){
+						FwBase.Wtf.Application.navigateToStack($(this).attr('href'), null, {title: $(this).html()});
+					}
+					else
+						FwBase.Wtf.Application.navigateTo($(this).attr('href'), null, {title: $(this).html()});
 					return false;
 				});
 			},
