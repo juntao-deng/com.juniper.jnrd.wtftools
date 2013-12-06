@@ -421,8 +421,13 @@ define(["../uipattern/buttonmanager"], function(){
 	 			var wtfType = $(this).attr('wtftype');
 	 			if(wtfType == 'container' || wtfType == 'widget')
 	 				return;
+	 			
+	 			//TODO, need a common loader
 	 			if(wtfType.startWith('input')){
 	 				typeList.push("input_base");
+	 			}
+	 			else if(wtfType.startWith('chart')){
+	 				typeList.push("chart_base");
 	 			}
 	 			if(!_.contains(typeList, wtfType))
 	 				typeList.push(wtfType);
