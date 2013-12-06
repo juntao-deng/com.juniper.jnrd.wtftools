@@ -1,4 +1,4 @@
-package net.juniper.space.utils;
+package net.juniper.jmp.utils;
 
 import java.util.List;
 

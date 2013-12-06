@@ -1,4 +1,5 @@
-package net.juniper.space.core.locator;
+package net.juniper.jmp.core.locator;
+
 
 public class LocalServiceProvider implements ServiceProvider {
 	@Override

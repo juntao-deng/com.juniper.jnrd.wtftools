@@ -1,9 +1,9 @@
-package net.juniper.space.core.servlet;
+package net.juniper.jmp.core.servlet;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import net.juniper.space.core.locator.SpringWebContextHelper;
+import net.juniper.jmp.core.locator.SpringWebContextHelper;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 /**

@@ -1,4 +1,4 @@
-package net.juniper.space.core.locator;
+package net.juniper.jmp.core.locator;
 
 import org.springframework.web.context.WebApplicationContext;
 

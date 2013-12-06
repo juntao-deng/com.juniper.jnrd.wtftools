@@ -1,4 +1,4 @@
-package net.juniper.wtf.core.util;
+package net.juniper.jmp.core.util;
 
 import java.util.List;
 

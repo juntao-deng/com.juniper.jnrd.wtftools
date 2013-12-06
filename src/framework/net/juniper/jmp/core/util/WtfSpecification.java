@@ -1,4 +1,4 @@
-package net.juniper.wtf.core.util;
+package net.juniper.jmp.core.util;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

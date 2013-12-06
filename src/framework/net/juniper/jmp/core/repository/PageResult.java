@@ -1,4 +1,4 @@
-package net.juniper.wtf.core.repository;
+package net.juniper.jmp.core.repository;
 
 import java.util.ArrayList;
 import java.util.List;

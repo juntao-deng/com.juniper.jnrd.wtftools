@@ -1,4 +1,4 @@
-package net.juniper.space.utils;
+package net.juniper.jmp.utils;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +42,7 @@ public class SpecificationWrapper<T, K> implements Specification<K> {
 	@Override
 	public Predicate toPredicate(Root<K> root, CriteriaQuery<?> query,
 			CriteriaBuilder cb) {
-		MoRoot<T, K> moRoot = new MoRoot<T, K>(root);
+		Root<T> moRoot = null;//new RootImpl<T>(cb, null);
 		return specification.toPredicate(moRoot, query, cb);
 	}
 
