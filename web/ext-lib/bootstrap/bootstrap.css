@@ -1623,7 +1623,7 @@ select:focus:required:invalid:focus {
 }
 .input-append,
 .input-prepend {
-  margin-bottom: 5px;
+  margin-bottom: 0px;
   font-size: 0;
   white-space: nowrap;
 }

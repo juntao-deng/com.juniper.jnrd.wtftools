@@ -5,8 +5,8 @@
 		{{}}}
 		<div class="controls" style="margin-left:{{= (labelWidth != 0)? (labelWidth + 10) : 0}}px">
 			<div class="input-append">
- 				<input class="m-wrap" type="text" data-trigger="hover" placeholder="{{= (typeof placeHolder == 'undefined') ? "" : placeHolder}}"/>
-  				<button class="btn" type="button">Go!</button>
+ 				<input class="m-wrap" type="text" data-trigger="hover" placeholder="{{= (typeof placeHolder == 'undefined') ? "" : placeHolder}}"  {{= (width != null && width != "") ? ("style=\"width:" + width + "px\"") : ""}}/>
+  				<button class="btn" type="button">Go</button>
 			</div>
 			{{if(typeof hint != 'undefined'){}}
 				<span class="help-inline">{{= hint}}</span>

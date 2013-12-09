@@ -7,7 +7,7 @@ define(function(){
 	 	this.currentKey = FwBase.Wtf.Model.DEFAULT_KEY;
 	 	this.stores = {};
 	 	this.tranurl = null;
-	 	this.matrixParamObj = {};
+	 	this.reqParamObj = {};
 	 	if(this.metadata.url){
 			this.url(this.metadata.url);
 		}
@@ -54,7 +54,18 @@ define(function(){
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
 	 	},
-	 	
+	 	createRow : function() {
+	 		return this.page().createRow();
+	 	},
+	 	row : function() {
+	 		if(arguments.length == 0){
+	 			var row = this.createRow();
+	 			this.page().add(row);
+	 		}
+	 		if(typeof arguments[0] == "object"){
+	 			this.page().add(row);
+	 		}
+	 	},
 	 	rows : function(key, index){
 	 		return this.store(key).page(index).rows();
 	 	},
@@ -69,9 +80,17 @@ define(function(){
 	 	 * @param 1.  ids, can be "rowid" or array of rowid :[rowid1, rowid2] or index of row index
 	 	 */
 	 	select : function(ids) {
+	 		if(arguments.length == 0)
+	 			return this.page().selections;
 	 		return this.page().select(ids);
 	 	},
-	 	
+	 	save : function() {
+	 		var selections = this.select();
+	 		if(selections != null && selections.ids.length > 0){
+	 			var row = selections.rows[0];
+	 			row.save();
+	 		}
+	 	},
 	 	selectCrossPage : function(ids){
 	 		alert("not implemented");
 	 	},
@@ -108,22 +127,22 @@ define(function(){
 	 	/**
 	 	 * add or get matrix parameter for restrul api
 	 	 */
-	 	matrixParam : function() {
+	 	reqParam : function() {
 	 		if(arguments.length == 2){
-	 			this.matrixParamObj[arguments[0]] = arguments[1];
+	 			this.reqParamObj[arguments[0]] = arguments[1];
 	 		}
 	 		else{
-	 			return this.matrixParamObj[arguments[0]];
+	 			return this.reqParamObj[arguments[0]];
 	 		}
 	 	},
-	 	matrixParams : function() {
-	 		return this.matrixParamObj;
+	 	reqParams : function() {
+	 		return this.reqParamObj;
 	 	},
 	 	/**
 	 	 * remvoe matrix parameter
 	 	 */
-	 	removeMatrixParam : function(key) {
-	 		delete this.matrixParamObj[key];
+	 	removeReqParam : function(key) {
+	 		delete this.reqParamObj[key];
 	 	},
 	 	
 	 	/*Fire events start */
@@ -269,20 +288,24 @@ define(function(){
 	 
 	 FwBase.Wtf.Model.Row = Backbone.Model.extend({
 		 idAttribute : FwBase.Wtf.Model.defaults.idAttribute,
-		 sync : function() {
-			 var dataset = this.collection.dataset;
-			 var url = dataset.transurl;
-		 	 var type = methodMap[arguments[0]];
-		 	 this.url = url;
-		 	 if(type == "DELETE")
-		 		 this.url = this.url + "/" + this.id;
-		 	if(window.clientMode){
-		 		this.syncFromClient.apply(this, arguments);
-		 	}
-		 	else{
-		 		Backbone.sync.apply(this, arguments);
-		 	}
+		 initialize : function() {
+			 this.page = arguments[1].collection;
+			 this.urlRoot = this.page.dataset.transurl;
 		 }
+//		 sync : function() {
+//			 var dataset = this.collection.dataset;
+//			 var url = dataset.transurl;
+//		 	 var type = methodMap[arguments[0]];
+//		 	 this.url = url;
+//		 	 if(type == "DELETE")
+//		 		 this.url = this.url + "/" + this.id;
+//		 	if(window.clientMode){
+//		 		this.syncFromClient.apply(this, arguments);
+//		 	}
+//		 	else{
+//		 		Backbone.sync.apply(this, arguments);
+//		 	}
+//		 }
 	 });
 	 
 	 methodMap = {
@@ -305,6 +328,10 @@ define(function(){
 	 	setParent: function(store, dataset) {
 	 		this.store = store;
 	 		this.dataset = dataset;
+	 	},
+	 	createRow : function() {
+	 		//TODO emit set Default value event
+	 		return new this.model({}, {collection: this});
 	 	},
 	 	rows : function(){
 	 		return this.models;
@@ -360,7 +387,7 @@ define(function(){
  				return false;
 	 	}, 
 	 	doSelectByIndex: function(index) {
- 			if(this.selections.indexOf(index) != -1){
+	 		if(_.indexOf(this.selections.indices, index) != -1){
  				return true;
  			}
  			var model = this.at(index);
@@ -368,6 +395,7 @@ define(function(){
  				var id = model.id;
  				this.selections.ids.push(id);
  				this.selections.indices.push(index);
+ 				this.selections.rows.push(model);
  				return true;
  			}
  			else
@@ -376,37 +404,46 @@ define(function(){
 	 	unselect : function() {
 	 		
 	 	},
-	 	action : function(actionName, options){
-	 		if(options == null)
-	 			options = {};
-	 		var url = this.dataset.transurl;
-	 		var type = "create";
-	 		this.url = url + "/action/" + actionName;
-	 		
-	 		if(window.clientMode){
-	 			this.syncFromClient.call(this, type, this, options);
-	 		}
-	 		else{
-	 			Backbone.sync.call(this, type, this, options);
-	 		}
-	 	},
+//	 	action : function(actionName, options){
+//	 		if(options == null)
+//	 			options = {};
+//	 		var url = this.dataset.transurl;
+//	 		var type = "create";
+//	 		this.url = url + "/action/" + actionName;
+//	 		
+//	 		if(window.clientMode){
+//	 			this.syncFromClient.call(this, type, this, options);
+//	 		}
+//	 		else{
+//	 			Backbone.sync.call(this, type, this, options);
+//	 		}
+//	 	},
 	 	sync : function() {
 	 		var url = this.dataset.transurl;
 	 		var type = methodMap[arguments[0]];
 	 		this.url = url;
+	 		var qm = false;
 	 		if(type == "GET"){
-	 			this.url = url + "/ctx/s_page=" + this.pageIndex + "," + this.dataset.metadata.pageSize; 
+	 			qm = true;
+	 			this.url = url + "?s_page=" + this.pageIndex + "," + this.dataset.metadata.pageSize; 
 	 		}
 	 		var filters = this.dataset.filters();
 	 		if(filters != null && filters.length > 0){
-	 			this.url += ";";
+	 			if(!qm){
+	 				this.url += "?";
+	 				qm = true;
+	 			}
 	 			this.url += "s_filter=" + $.toJSON(filters);
 	 		}
-	 		var matrixParams = this.dataset.matrixParams();
-	 		if(matrixParams != null && !_.isEmpty(matrixParams)){
-	 			for(var i in matrixParams){
+	 		var reqPrams = this.dataset.reqParams();
+	 		if(reqPrams != null && !_.isEmpty(reqPrams)){
+	 			if(!qm){
+	 				this.url += "?";
+	 				qm = true;
+	 			}
+	 			for(var i in reqPrams){
 	 				this.url += ";";
-	 				this.url += (i + "=" + matrixParams[i]);
+	 				this.url += (i + "=" + reqPrams[i]);
 	 			}
 	 		}
 	 		

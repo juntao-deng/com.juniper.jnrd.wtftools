@@ -1,13 +1,14 @@
 define(["base/base"], function(base){
 	FwBase.Wtf.View.Controls.Form = function(){
-		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 		this.elements = [];
+		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
 	};
 	$.extend(FwBase.Wtf.View.Controls.Form.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, {
 		template: _.template($('#sys_atom_controls_form').html()),
 		postInit : function(){
 			this.elements = [];
 			buildDefaultElements(this.metadata.elements);
+			this.originalReadOnlys = buildOriginalReadOnlys(this.metadata.elements);
 			this.model = this.ctx.model(this.metadata.model);
 			if(this.model){
 				this.listenTo(this.model, "clear", this.clearPage);
@@ -19,16 +20,19 @@ define(["base/base"], function(base){
 				this.listenTo(this.model, "selection", this.lis_selection);
 			}
 			var oThis = this;
-			var requireArr = getRequiresInputs(this.metadata);
-			requireComponent(requireArr, function(){
-				for(var i = 0; i < oThis.metadata.elements.length; i ++){
-					var elemeta = oThis.metadata.elements[i];
-					elemeta.labelWidth = oThis.metadata.labelWidth;
-					var container = oThis.el.find(".formelement#" + elemeta.name);
-					oThis.elements.push(new FwBase.Wtf.View.Controls[Util.capitalize(elemeta.editorType)](container, elemeta, elemeta.name));
-				}
+			//var requireArr = getRequiresInputs(this.metadata);
+			//requireComponent(requireArr, function(){
+			for(var i = 0; i < this.metadata.elements.length; i ++){
+				var elemeta = this.metadata.elements[i];
+				elemeta.labelWidth = this.metadata.labelWidth;
+				var container = this.el.find(".formelement#" + elemeta.name);
+				elemeta.editable = false;
+				var ele = new FwBase.Wtf.View.Controls[Util.capitalize(elemeta.editorType)](container, elemeta, elemeta.name);
+				this.elements.push(ele);
+				this.listenTo(ele, 'valuechange', this.lis_ele_valuechange);
+			}
 				
-			});
+//			});
 		},
 		makeDefault : function() {
 			this.setDefault({rows: 2});
@@ -90,8 +94,17 @@ define(["base/base"], function(base){
 				else{
 					value = row.get(elemeta.name);
 				}
-				this.elements[i].value(value);
+				var element = this.elements[i];
+				if(this.originalReadOnlys[element.id] == null){
+					element.editable(true);
+				}
+				element.value(value);
 			}
+		},
+		lis_ele_valuechange : function(options) {
+			var value = options.source.value();
+			var row = this.model.select().rows[0];
+			row.set(options.source.id, value);
 		},
 		/*Listeners end*/
 		mockMetadata : function() {
@@ -154,6 +167,18 @@ define(["base/base"], function(base){
 			if(elements[i].name.indexOf('.') != -1)
 				elements[i].name = elements[i].name.replaceAll('.', "_");
 		}
+	};
+	
+	function buildOriginalReadOnlys(elements){
+		if(elements == null)
+			return {};
+		var arr = {};
+		for(var i = 0; i < elements.length; i ++){
+			var element = elements[i];
+			if(!element.editable)
+				arr[element.id] = element;
+		}
+		return arr;
 	};
 	
 	var multiDropdownData = {

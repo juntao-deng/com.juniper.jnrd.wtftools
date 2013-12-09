@@ -8,6 +8,9 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 		{		
 			template: _.template($('#sys_atom_controls_menu').html()),
 			postInit : function() {
+				if(this.metadata.handler){
+					eval("this.handler = new " + this.metadata.handler + "();");
+				}
 				//just for 3 levels
 				for(var i = 0; i < this.metadata.groups.length; i ++){
 					var group = this.metadata.groups[i];
@@ -47,13 +50,15 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 			},
 			makeDefault : function(){
 				this.setDefault({style: "inverse", buttonMode: FwBase.Wtf.Global.Configuration.buttonMode});
-				this.setDefault({handler : FwBase.Wtf.UIPattern.Handler.CrudUIHandler});
+				this.setDefault({handler : "FwBase.Wtf.UIPattern.Handler.CrudUIHandler"});
 				if(this.metadata.style == "")
 					this.metadata.cssclass = "btn";
 				else
 					this.metadata.cssclass = "btn btn-" + this.metadata.style;
 			},
 			createMenuItem : function(pre, itemmetadata) {
+				if(itemmetadata.divider)
+					return;
 				var menuitem = new FwBase.Wtf.View.Controls.MenuItem(this, itemmetadata, this.el, pre);
 				this.menuitems.push(menuitem);
 				return menuitem;
@@ -68,8 +73,8 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 			itemClicked : function(ctx) {
 				var source = {source : this, trigger : ctx.source, eventCtx : ctx.eventCtx};
 				this.trigger("click", source);
-				if(!source.eventCtx.stop && this.metadata.handler){
-					this.metadata.handler.call(this, source);
+				if(!source.eventCtx.stop && this.handler){
+					this.handler.handle.call(this, source);
 				}
 			}
 		}

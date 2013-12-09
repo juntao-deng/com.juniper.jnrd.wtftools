@@ -1,20 +1,32 @@
 package net.juniper.jmp.core.ctx;
 
+import net.juniper.jmp.core.util.ParamHelper;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ApiContextInfo {
 	private IRequest request;
+	private PagingContext pagingContext;
 	public ApiContextInfo(IRequest request){
 		this.request = request;
 	}
 	
-	public <T>Specification<T> getSpecification(Class<T> entityClazz){
-		return readFromRequest(entityClazz);
+	private Specification<?> getSpecification(){
+		return ParamHelper.extractSpecification(request);
 	}
 	
-	private <T>Specification<T> readFromRequest(Class<T> entityClazz) {
-		String uri = request.getURI();
-//		PathSegment seg = new PageSegment
-		return null;
+	private Pageable getPageable() {
+		return ParamHelper.extractPageableInfo(request);
+	}
+	
+	public PagingContext getPageContext() {
+		if(pagingContext == null){
+			pagingContext = new PagingContext();
+			pagingContext.setPageable(getPageable());
+			pagingContext.setSpec(getSpecification());
+		}
+		return pagingContext;
 	}
 }
+

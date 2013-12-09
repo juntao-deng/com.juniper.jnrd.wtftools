@@ -22,11 +22,7 @@ define(["base/base", "css!./sidenav"], function(base){
 				var currItem = pItem.find("a").last();
 				currItem.click(function(){
 					var title = $(this).html();
-					if(title == "Monitored Servers"){
-						FwBase.Wtf.Application.navigateToStack($(this).attr('href'), null, {title: $(this).html()});
-					}
-					else
-						FwBase.Wtf.Application.navigateTo($(this).attr('href'), null, {title: $(this).html()});
+					FwBase.Wtf.Application.navigateTo($(this).attr('href'), null, {title: title});
 					return false;
 				});
 			},

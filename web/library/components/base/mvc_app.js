@@ -263,7 +263,7 @@ define(["../uipattern/buttonmanager"], function(){
 					var id = group[j].id;
 					var widget = new FwBase.Wtf.Widget(id);
 					$app.widget(widget);
-					container.ctx = widget;
+					container[0].ctx = widget;
 					containers.push(container);
 				}
 				requireUtil(modelJsArr, function(){
@@ -422,21 +422,21 @@ define(["../uipattern/buttonmanager"], function(){
 	 			if(wtfType == 'container' || wtfType == 'widget')
 	 				return;
 	 			
-	 			//TODO, need a common loader
-	 			if(wtfType.startWith('input')){
-	 				typeList.push("input_base");
-	 			}
-	 			else if(wtfType.startWith('chart')){
-	 				typeList.push("chart_base");
-	 			}
-	 			if(!_.contains(typeList, wtfType))
-	 				typeList.push(wtfType);
+	 			var dependency = getComponentDependences(wtfType);
+	 			typeList = typeList.concat(dependency);
+	 			typeList.push(wtfType);
 //	 			requireList.push(wtfType + "/" + wtfType);
 //	 			requireHtmlList.push(prefix + "!" + wtfType + "/" + wtfType + ".html");
 	 		});
  			requireComponent(typeList, function(){
 				for(var i = 0; i < containers.length; i ++){
 					var container = containers[i];
+					var ctx = null;
+					if(container[0].ctx){
+						ctx = container[0].ctx;
+					}
+					else
+						ctx = $app;
 					container.find("[wtftype]").each(function(){
 						if($(this).attr('wtfdone') != null)
 							return;
@@ -449,13 +449,6 @@ define(["../uipattern/buttonmanager"], function(){
 							alert("id can not be null for element with wtftype:" + wtfType);
 							return;
 						}
-						var ctx = null;
-						if(container.ctx){
-							ctx = container.ctx;
-							container.ctx = null;
-						}
-						else
-							ctx = $app;
 						
 						var objMeta = ctx.metadata(id);
 						var attMeta = null;
@@ -477,6 +470,10 @@ define(["../uipattern/buttonmanager"], function(){
 						var ctrl = new FwBase.Wtf.View.Controls[capStr]($(this), objMeta, id);
 						ctx.component(ctrl);
 					});
+				}
+				for(var i = 0; i < containers.length; i ++){
+					var container = containers[i];
+					container[0].ctx = null;
 				}
 				if(callbacks.widgetCallback)
 					callbacks.widgetCallback();
@@ -638,17 +635,23 @@ define(["../uipattern/buttonmanager"], function(){
   	 		return _.values(this.widgetMap);
   	 	},
   	 	
-  	 	metadata : function(metadata){
+  	 	metadata : function(){
   	 		if(arguments.length == 1){
   	 			if(arguments[0] == null)
   	 				return null;
   	 			if(typeof arguments[0] == "string")
   	 				return this.metadataMap[arguments[0]];
-  	 			this.metadataMap[arguments[0].id] = arguments[0];
+  	 			this.metadataMap[arguments[0].id] = this.mergeMetadata(this.metadataMap[arguments[0].id], arguments[0]);
   	 		}
-  	 		else if(arguments.length == 2){
+  	 		else if(arguments.length >= 2){
   	 			var obj = arguments[1];
-  	 			this.metadataMap[arguments[0]] = obj;
+  	 			//clear
+  	 			if(arguments[2]){
+  	 				this.metadataMap[arguments[0]] = obj;
+  	 			}
+  	 			else{
+  	 				this.metadataMap[arguments[0]] = this.mergeMetadata(this.metadataMap[arguments[0]], obj);
+  	 			}
   	 		}
   	 	},
   	 	/**
@@ -661,6 +664,11 @@ define(["../uipattern/buttonmanager"], function(){
   	 			this.clean();
   	 	},
   	 	/*private*/
+  	 	mergeMetadata : function(orig, curr){
+  	 		if(orig == null)
+  	 			return curr;
+  	 		return $.extend(orig, curr);
+  	 	},
   	 	clean : function() {
   	 		$app.dialog = null;
   	 		if($app.parent){

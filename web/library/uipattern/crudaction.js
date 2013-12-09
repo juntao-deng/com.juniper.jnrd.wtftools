@@ -10,11 +10,13 @@ define(function(){
 		var width = param.eventCtx.width ? param.eventCtx.width : UIPattern.defaults.dialogWidth;
 		var height = param.eventCtx.height ? param.eventCtx.height : UIPattern.defaults.dialogHeight;
 		var url = param.eventCtx.url;
+		var title = param.eventCtx.title || "Add";
 		if(url == null || url == ""){
 			var appid = this.ctx.id;
 			url = appid + "/" + UIPattern.defaults.editform;
 		}
-		AppUtil.navigateToDialog(url, null, {width: width, height : height});
+		
+		AppUtil.navigateToDialog(url, null, {width: width, height : height, title: title});
 	};
 	
 	FwBase.Wtf.UIPattern.Action.EditAction = function() {

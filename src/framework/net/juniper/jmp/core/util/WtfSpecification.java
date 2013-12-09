@@ -9,14 +9,14 @@ import net.sf.json.JSONObject;
 
 import org.springframework.data.jpa.domain.Specification;
 
-public class WtfSpecification<T> implements Specification<T> {
+public class WtfSpecification implements Specification {
 	private JSONObject filter;
 	public WtfSpecification(JSONObject filter){
 		this.filter = filter;
 	}
 	@Override
-	public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query,
-			CriteriaBuilder builder) {
+	public Predicate toPredicate(Root root, CriteriaQuery query,
+			CriteriaBuilder cb) {
 		return null;
 	}
 

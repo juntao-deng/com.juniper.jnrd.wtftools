@@ -8,6 +8,7 @@ define(["input_base/input_base"], function(inputbase){
 			mockMetadata : function(){
 			},
 			makeDefaultFurther : function() {
+				this.metadata.width = "100";
 			}
 		}
 	);

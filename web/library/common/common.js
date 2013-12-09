@@ -163,3 +163,16 @@ function getWtfTempLoaderIframe(){
 	window.wtfTempLoaderContainer.push(iframe);
 	return iframe;
 }
+
+function getComponentDependences(type) {
+	if(type.startWith('input'))
+		return ['input_base'];
+	else if(type.startWith('chart'))
+		return ['chart_base'];
+	else if(type == 'form'){
+		return ['input_base', 'input', 'input_autocomplete', 'input_checkbox', 'input_checkboxgroup', 'input_date', 'input_daterange', 'input_datetime',
+		        'input_dropdown', 'input_file', 'input_highlight', 'input_integer', 'input_ip', 'input_radiogroup', 'input_search', 'input_select', 
+		        'input_textarea', 'input_toggle'];
+	}
+	return [];
+}

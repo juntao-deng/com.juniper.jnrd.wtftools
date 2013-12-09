@@ -61,7 +61,8 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 		try {
 			List<T> content = convertFromEntity2Mo(entityPage.getContent(), clazz);
 			//had to find it using reflect
-			Field f = entityPage.getClass().getField("pageable");
+			Field f = entityPage.getClass().getDeclaredField("pageable");
+			f.setAccessible(true);
 			Pageable pageable = (Pageable) f.get(entityPage);
 			Page<T> result = new PageImpl<T>(content, pageable, entityPage.getTotalElements());
 			return result;
@@ -78,7 +79,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return null;
 		try {
 			K entity = clazz.newInstance();
-			BeanUtils.copyProperties(entity, mo);
+			BeanUtils.copyProperties(mo, entity);
 			return entity;
 		} 
 		catch (Exception e) {
@@ -93,7 +94,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return null;
 		try {
 			T mo = clazz.newInstance();
-			BeanUtils.copyProperties(mo, entity);
+			BeanUtils.copyProperties(entity, mo);
 			return mo;
 		} 
 		catch (Exception e) {
