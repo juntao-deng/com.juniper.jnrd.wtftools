@@ -20,16 +20,33 @@ define(function(){
 	};
 	
 	FwBase.Wtf.UIPattern.Action.EditAction = function() {
-		alert("edit");
+		var width = param.eventCtx.width ? param.eventCtx.width : UIPattern.defaults.dialogWidth;
+		var height = param.eventCtx.height ? param.eventCtx.height : UIPattern.defaults.dialogHeight;
+		var url = param.eventCtx.url;
+		var title = param.eventCtx.title || "Add";
+		if(url == null || url == ""){
+			var appid = this.ctx.id;
+			url = appid + "/" + UIPattern.defaults.editform;
+		}
+		
+		var itemId = param.eventCtx.itemId;
+		if(itemId == null){
+			var centerModel = $app.model('center_model');
+			if(centerModel != null){
+				var row = centerModel.select().rows[0];
+				if(row == null){
+					return;
+				}
+				itemId = row.id;
+			}
+		}
+		AppUtil.navigateToDialog(url, {itemId: itemId}, {width: width, height : height, title: title});
 	};
 	
 	FwBase.Wtf.UIPattern.Action.DelAction = function() {
 		alert("delete");
 	};
-	FwBase.Wtf.UIPattern.Action.SaveAction = function() {
-		alert("save");
-	};
-	
+
 	FwBase.Wtf.UIPattern.Action.Export2CsvAction = function() {
 		
 	};

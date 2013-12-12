@@ -29,8 +29,8 @@ define(function(){
 		makeDefault : function(metadata){
 			if(!metadata.pageSize)
 				metadata.pageSize = FwBase.Wtf.Model.defaults.pageSize;
-			if(metadata.autoload == null)
-				metadata.autoload = true;
+			if(metadata.autoSelect == null)
+				metadata.autoSelect = false;
 			return metadata;
 		},
 		init : function(key){
@@ -60,10 +60,10 @@ define(function(){
 	 	row : function() {
 	 		if(arguments.length == 0){
 	 			var row = this.createRow();
-	 			this.page().add(row);
+	 			this.page().row(row);
 	 		}
 	 		if(typeof arguments[0] == "object"){
-	 			this.page().add(row);
+	 			this.page().row(row);
 	 		}
 	 	},
 	 	rows : function(key, index){
@@ -84,11 +84,12 @@ define(function(){
 	 			return this.page().selections;
 	 		return this.page().select(ids);
 	 	},
-	 	save : function() {
+	 	save : function(options) {
 	 		var selections = this.select();
 	 		if(selections != null && selections.ids.length > 0){
 	 			var row = selections.rows[0];
-	 			row.save();
+	 			this.listenToOnce(row, 'error', this.fireModelError);
+	 			row.save(null, options);
 	 		}
 	 	},
 	 	selectCrossPage : function(ids){
@@ -175,6 +176,24 @@ define(function(){
 	 		var collection = arguments[0];
 	 		var options = {key: collection.store.key, pageIndex: collection.pageIndex};
 	 		this.trigger("syncover", options);
+	 		if(this.metadata.autoSelect){
+	 			if(this.page().rows().length > 0)
+	 				this.select(0);
+	 		}
+	 	},
+	 	fireModelError : function() {
+	 		var errorMsg = arguments[1].responseText;
+	 		//TODO JSON
+	 		//if(errorMsg.startWith('{')
+	 		var row = arguments[0];
+	 		var options = {row: arguments[0], errorMsg: errorMsg};
+	 		this.trigger('error', options);
+	 	},
+	 	fireCellChange : function() {
+	 		var row = arguments[0];
+	 		var changed = row.changed;
+	 		var options = {row: arguments[0], changedAttr: changed};
+	 		this.trigger('cellchange', options);
 	 	},
 	 	/*Fire events end*/
 	 	
@@ -216,28 +235,15 @@ define(function(){
 	 
 	 $.extend(FwBase.Wtf.Model.Store.prototype, {
 	 	reload : function(index) {
-	 		var cp = null;
-	 		if(index != null)
-	 			cp = index;
-	 		else{
-	 			cp = this.currentPage;
-	 			this.fireClear();
-	 		}
-	 		var idAttribute = this.model.metadata.idAttribute;
-	 		if(idAttribute != "")
-	 			getRowListByType(idAttribute);
-	 		var rowList = new FwBase.Wtf.Model["RowList" + idAttribute](cp);
-	 		rowList.setParent(this, this.model);
-	 		this.pages[cp] = rowList;
-	 		this.listenTo(rowList, 'add', this.fireAddRow);
-	 		this.listenTo(rowList, 'remove', this.fireDelRow);
-      		this.listenTo(rowList, 'reset', this.fireClear);
-      		this.listenTo(rowList, 'pagechange', this.firePageChange);
-      		this.listenTo(rowList, 'pagination', this.firePagination);
-      		this.listenTo(rowList, 'sync', this.fireSyncOver);
-      		if(this.model.metadata.url != null && this.model.metadata.autoload){
-      			rowList.fetch();
-      		}
+//	 		var cp = index;
+//	 		if(cp == null){
+//	 			cp = this.currentPage;
+////	 			this.fireClear();
+//	 		}
+	 		var p = this.page(index);
+	 		//if(this.model.metadata.url != null && this.model.metadata.autoload){
+      		p.fetch();
+      		//}
 	 	},
 	 	reset : function() {
 	 		for(var i in this.pages){
@@ -259,9 +265,27 @@ define(function(){
 	 		}
 	 	},
 	 	page : function(index){
-	 		if(index)
-	 			return this.pages[i];
-	 		return this.pages[this.currentPage];
+	 		var cp = index;
+	 		if(cp == null)
+	 			cp = this.currentPage;
+	 		var p = this.pages[cp];
+	 		if(p == null){
+		 		var idAttribute = this.model.metadata.idAttribute;
+		 		if(idAttribute != "")
+		 			getRowListByType(idAttribute);
+		 		var rowList = new FwBase.Wtf.Model["RowList" + idAttribute](cp);
+		 		rowList.setParent(this, this.model);
+		 		this.pages[cp] = rowList;
+		 		this.listenTo(rowList, 'add', this.fireAddRow);
+		 		this.listenTo(rowList, 'remove', this.fireDelRow);
+	      		this.listenTo(rowList, 'reset', this.fireClear);
+	      		this.listenTo(rowList, 'pagechange', this.firePageChange);
+	      		this.listenTo(rowList, 'pagination', this.firePagination);
+	      		this.listenTo(rowList, 'sync', this.fireSyncOver);
+	      		p = rowList;
+	      		this.pages[cp] = p;
+	 		}
+	 		return p;
 	 	},
 	 	/*fire event start*/
 	 	fireAddRow : function() {
@@ -291,6 +315,7 @@ define(function(){
 		 initialize : function() {
 			 this.page = arguments[1].collection;
 			 this.urlRoot = this.page.dataset.transurl;
+			 this.page.listenTo(this, 'change', this.page.fireCellChange);
 		 }
 //		 sync : function() {
 //			 var dataset = this.collection.dataset;
@@ -333,6 +358,9 @@ define(function(){
 	 		//TODO emit set Default value event
 	 		return new this.model({}, {collection: this});
 	 	},
+	 	row : function(row) {
+	 		this.add(row);
+	 	},
 	 	rows : function(){
 	 		return this.models;
 	 	},
@@ -343,32 +371,31 @@ define(function(){
 	 		if(arguments.length == 2){
 	 			clear = arguments[1];
 	 		}
-	 		if(clear){
-	 			this.selections.ids = [];
-	 			this.selections.indices = [];
-	 			this.selections.rows = [];
-	 		}
+	 		var newSelections = {ids: [], indices: [], rows: []};
+	 		var hasChanged = false;
 	 		if(typeof arguments[0] == "string"){
-	 			this.doSelectById(arguments[0]);
+	 			hasChanged = this.doSelectById(arguments[0], newSelections);
 	 		}
 	 		else if(typeof arguments[0] == "number"){
-	 			this.doSelectByIndex(arguments[0]);
+	 			hasChanged = this.doSelectByIndex(arguments[0], newSelections);
 	 		}
 	 		else if(typeof arguments[0] == "array"){
 	 			var arr = arguments[0];
 	 			for(var i = 0; i < arr.length; i ++){
 	 				if(typeof arr[i] == "string")
-	 					this.doSelectById(arr[i]);
+	 					hasChanged = hasChanged || this.doSelectById(arr[i], newSelections);
 	 				else
-	 					this.doSelectByIndex(arr[i]);
+	 					hasChanged = hasChanged || this.doSelectByIndex(arr[i], newSelections);
 	 			}
 	 		}
-	 		this.dataset.fireSelection.apply(this.dataset, [this.selections]);
+	 		this.selections = newSelections;
+	 		if(!clear){
+	 			//TODO merge
+	 		}
+	 		if(hasChanged)
+	 			this.dataset.fireSelection.apply(this.dataset, [this.selections]);
 	 	},
-	 	doSelectById: function(id) {
- 			if(_.indexOf(this.selections.ids, id) != -1){
- 				return true;
- 			}
+	 	doSelectById: function(id, newSelections) {
  			var model = this.get(id);
  			if(model != null){
  				var models = this.models;
@@ -378,25 +405,22 @@ define(function(){
  						break;
  				}
  				var id = model.id;
- 				this.selections.ids.push(id);
- 				this.selections.indices.push(i);
- 				this.selections.rows.push(model);
- 				return true;
+ 				newSelections.ids.push(id);
+ 				newSelections.indices.push(i);
+ 				newSelections.rows.push(model);
+ 				return _.indexOf(this.selections.ids, id) == -1;
  			}
  			else
  				return false;
 	 	}, 
-	 	doSelectByIndex: function(index) {
-	 		if(_.indexOf(this.selections.indices, index) != -1){
- 				return true;
- 			}
+	 	doSelectByIndex: function(index, newSelections) {
  			var model = this.at(index);
  			if(model != null){
  				var id = model.id;
- 				this.selections.ids.push(id);
- 				this.selections.indices.push(index);
- 				this.selections.rows.push(model);
- 				return true;
+ 				newSelections.ids.push(id);
+ 				newSelections.indices.push(index);
+ 				newSelections.rows.push(model);
+ 				return _.indexOf(this.selections.indices, index) == -1;
  			}
  			else
  				return false;
@@ -404,20 +428,14 @@ define(function(){
 	 	unselect : function() {
 	 		
 	 	},
-//	 	action : function(actionName, options){
-//	 		if(options == null)
-//	 			options = {};
-//	 		var url = this.dataset.transurl;
-//	 		var type = "create";
-//	 		this.url = url + "/action/" + actionName;
-//	 		
-//	 		if(window.clientMode){
-//	 			this.syncFromClient.call(this, type, this, options);
-//	 		}
-//	 		else{
-//	 			Backbone.sync.call(this, type, this, options);
-//	 		}
-//	 	},
+	 	
+	 	/* fire event start*/
+	 	fireCellChange: function() {
+	 		this.dataset.fireCellChange.apply(this.dataset, arguments);
+	 	},
+	 	/* fire event end*/
+	 	
+	 	/* override start*/
 	 	sync : function() {
 	 		var url = this.dataset.transurl;
 	 		var type = methodMap[arguments[0]];
@@ -442,7 +460,7 @@ define(function(){
 	 				qm = true;
 	 			}
 	 			for(var i in reqPrams){
-	 				this.url += ";";
+	 				this.url += "&";
 	 				this.url += (i + "=" + reqPrams[i]);
 	 			}
 	 		}
@@ -469,6 +487,7 @@ define(function(){
 	 			Backbone.sync.apply(this, arguments);
 	 		}
 	 	},
+	 	/*override end*/
 	 	syncFromClient : function(method, model, options) {
 	 		var type = methodMap[method];
    			// Default JSON-request options.

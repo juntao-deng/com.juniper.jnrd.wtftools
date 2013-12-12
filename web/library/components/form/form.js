@@ -18,6 +18,7 @@ define(["base/base"], function(base){
 				this.listenTo(this.model, "pagechange", this.pageChange);
 				this.listenTo(this.model, "pagination", this.pagination);
 				this.listenTo(this.model, "selection", this.lis_selection);
+				this.listenTo(this.model, "error", this.lis_modelerror)
 			}
 			var oThis = this;
 			//var requireArr = getRequiresInputs(this.metadata);
@@ -35,7 +36,7 @@ define(["base/base"], function(base){
 //			});
 		},
 		makeDefault : function() {
-			this.setDefault({rows: 2});
+			this.setDefault({rows: 2, editable: true});
 			var elements = this.metadata.elements;
 			if(elements != null){
 				for(var i = 0; i < elements.length; i ++){
@@ -84,19 +85,25 @@ define(["base/base"], function(base){
 				return;
 			}
 			var row = options.selection.rows[0];
+			if(row == null)
+				return;
 			for(var i = 0; i <this.elements.length; i ++){
 				var elemeta = this.metadata.elements[i];
 				var value = null;
 				if(elemeta.oriName){
 					var pair = elemeta.oriName.split(".");
-					value = row.get(pair[0])[pair[1]];
+					var valueObj = row.get(pair[0]);
+					if(valueObj != null)
+						value = valueObj[pair[1]];
 				}
 				else{
 					value = row.get(elemeta.name);
 				}
 				var element = this.elements[i];
-				if(this.originalReadOnlys[element.id] == null){
-					element.editable(true);
+				if(this.metadata.editable){
+					if(this.originalReadOnlys[element.id] == null){
+						element.editable(true);
+					}
 				}
 				element.value(value);
 			}
@@ -105,6 +112,16 @@ define(["base/base"], function(base){
 			var value = options.source.value();
 			var row = this.model.select().rows[0];
 			row.set(options.source.id, value);
+		},
+		lis_modelerror : function(options) {
+//			this.el.find('.alert').alert();		<div class="alert alert-error alert-block fade in" style="display:none">
+			
+//			            <button type="button" class="close" data-dismiss="alert">&times;</button>
+//			            
+//			                        <strong>Error:</strong> Some fields error
+//			                        
+//			                                </div>
+			this.el.find('.alert').show();
 		},
 		/*Listeners end*/
 		mockMetadata : function() {

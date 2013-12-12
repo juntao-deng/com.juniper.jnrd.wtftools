@@ -20,6 +20,10 @@ public class ApiContextInfo {
 		return ParamHelper.extractPageableInfo(request);
 	}
 	
+	public IRequest getRequest() {
+		return request;
+	}
+	
 	public PagingContext getPageContext() {
 		if(pagingContext == null){
 			pagingContext = new PagingContext();

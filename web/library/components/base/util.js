@@ -20,6 +20,15 @@ define(["base/mvcbase"], function(){
 			return false;
 		return true;
 	 };
+	 
+	 String.prototype.lengthb = function() {
+	 	return this.replace(/[^\x00-\xff]/g, "**").length;
+	 };
+
+	 String.prototype.replaceAll = function(AFindText, ARepText) {
+	 	raRegExp = new RegExp(AFindText, "g");
+	 	return this.replace(raRegExp, ARepText);
+	 };
 	
 	 FwBase.Wtf.Lang = {};
 	 window.Util = FwBase.Wtf.Lang.Utils = {

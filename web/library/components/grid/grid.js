@@ -9,10 +9,9 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				buildDefaultColumns(this.metadata.columns);
 				this.model = this.ctx.model(this.metadata.model);
 				if(this.model){
-					this.listenTo(this.model, "clear", this.lis_clearPage);
 					this.listenTo(this.model, "add", this.lis_addRow);
 					this.listenTo(this.model, "remove", this.lis_deleteRow);
-					this.listenTo(this.model, "change", this.lis_changeRow);
+					this.listenTo(this.model, "cellchange", this.lis_cellChange);
 					this.listenTo(this.model, "pagechange", this.lis_pageChange);
 					this.listenTo(this.model, "pagination", this.lis_pagination);
 					this.listenTo(this.model, "selection", this.lis_selection);
@@ -108,16 +107,21 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				else
 					this.gridObj.addRowData(id, row.toJSON(), 'before', this.model.page().at(index), false);
 			},
-			lis_changeRow : function() {
+			lis_cellChange : function(options) {
+				var row = options.row;
+				var index = options.index;
+				var id = row.id;
+				if(id == null)
+					id = row.cid;
+				var row = options.row;
+				var changedAttr = options.changedAttr;
+				this.gridObj.setRowData(id, changedAttr);
 			},
 			lis_deleteRow : function(obj) {
 				var row = obj.row;
 				this.gridObj.delRowData(row.cid);
 			},
 			lis_unselectRow : function() {
-			},
-			lis_clearPage : function() {
-				this.gridObj.clearGridData();
 			},
 			lis_pageChange : function(){
 				this.gridObj.clearGridData();

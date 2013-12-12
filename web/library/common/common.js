@@ -63,7 +63,7 @@ function getSysArray(prefix){
 requirejs.config(window.globalRequireConfig);
 
 requirejs(['jquery'], function(){
-	var requireArr = ['underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
+	var requireArr = ['underscore', 'backbone', 'bootstrap', 'jqueryui', 'jqueryjson', 'text', 'html', 'css', 'base/util', 'base/mvcbase', 'css!bootstrap.css', 'css!fontawesome.css', 'css!jqueryuibootstrap.css', "css!../common/common"];
 	requirejs(requireArr, function() {
 			var arr = [];
 			if(window.extendArr)
