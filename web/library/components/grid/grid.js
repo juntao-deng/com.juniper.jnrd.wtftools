@@ -119,7 +119,10 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			},
 			lis_deleteRow : function(obj) {
 				var row = obj.row;
-				this.gridObj.delRowData(row.cid);
+				var id = row.id;
+				if(id == null)
+					id = row.cid;
+				this.gridObj.delRowData(id);
 			},
 			lis_unselectRow : function() {
 			},

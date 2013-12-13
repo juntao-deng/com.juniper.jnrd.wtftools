@@ -35,7 +35,7 @@ define(["../uipattern/buttonmanager"], function(){
   	  				return;
   	  			}
   	  			$(this).attr('wtfdone', 'done');
-  	  			AppUtil.navigateTo(appid, null, {callback : callback});
+  	  			AppUtil.navigateTo(appid, null, {callback : callback, homeApp : true});
   	  		 });
   	 	},
   	 	popStack : function() {
@@ -91,9 +91,12 @@ define(["../uipattern/buttonmanager"], function(){
 		 		options.parent = $app;
 		 		options.dialog = dialog;
 		 		AppUtil.doNavigateTo(url, reqData, options, container);
+		 		dialog.ctx = $app;
 	 		});
 	 	},
   	 	navigateTo : function(url, reqData, options) {
+  	 		if(window.$app != null && !$app.homeApp)
+  	 			$app.close();
   	 		if(options == null)
   	 			options = {};
   	 		var container = options.container;
@@ -105,6 +108,7 @@ define(["../uipattern/buttonmanager"], function(){
 			if(options.baseApp == null)
 				options.baseApp = true;
 			AppUtil.doNavigateTo(url, reqData, options, container);
+			$app.homeApp = options.homeApp;
 			var title = options.title;
 			if(title == null || title == ""){
 				var pathInfo = url.split("/");
@@ -701,6 +705,11 @@ define(["../uipattern/buttonmanager"], function(){
   	 	 * will cause current dialog be closed
   	 	 */
   	 	close : function() {
+  	 		var eventCtx = {};
+  	 		var options = {source: this, eventCtx: eventCtx};
+  	 		this.trigger("closing", options);
+  	 		if(options.eventCtx.stop == true)
+  	 			return;
   	 		if(this.dialog)
   	 			this.dialog.close();
   	 		else{
@@ -708,6 +717,8 @@ define(["../uipattern/buttonmanager"], function(){
   	 				this.stackContainer.remove();
   	 			this.clean();
   	 		}
+  	 		options = {source: this, eventCtx: {}};
+  	 		this.trigger("closed", options);
   	 	},
   	 	/*private*/
   	 	mergeMetadata : function(orig, curr){
@@ -717,6 +728,14 @@ define(["../uipattern/buttonmanager"], function(){
   	 	},
   	 	clean : function() {
   	 		this.dialog = null;
+  	 		var components = this.components();
+  	 		for(var i = 0; i < components.length; i ++)
+  	 			components[i].destroy();
+  	 		//TODO need further clean
+//  	 		this.componentsMap = null;
+//  	 		this.modelsMap = null;
+//  	 		this.widgetMap = null;
+  	 		
   	 		if($app === this){
 	  	 		if($app.parent){
 	  	 			$app = $app.parent;

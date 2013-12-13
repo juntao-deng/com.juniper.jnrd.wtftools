@@ -92,8 +92,9 @@ define(["base/listener"], function(){
 			this.create();
 		},
 		destroy : function() {
+			this.off();
 			this.data = null;
-			this.el.html("");
+			this.el.remove();
 		},
 		/**
 		 * return all accepted events, for designer
