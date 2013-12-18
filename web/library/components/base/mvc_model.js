@@ -273,8 +273,8 @@ define(function(){
 		 		var idAttribute = this.model.metadata.idAttribute;
 		 		if(idAttribute != "")
 		 			getRowListByType(idAttribute);
-		 		var rowList = new FwBase.Wtf.Model["RowList" + idAttribute](cp);
-		 		rowList.setParent(this, this.model);
+		 		var rowList = new FwBase.Wtf.Model["RowList" + idAttribute]();
+		 		rowList.setParent(cp, this, this.model);
 		 		this.pages[cp] = rowList;
 		 		this.listenTo(rowList, 'add', this.fireAddRow);
 		 		this.listenTo(rowList, 'remove', this.fireDelRow);
@@ -345,12 +345,13 @@ define(function(){
 	  */
 	 FwBase.Wtf.Model.RowList = Backbone.Collection.extend({
 	 	model : FwBase.Wtf.Model.Row,
-	 	constructor : function(pageIndex) {
-	 		this.pageIndex = pageIndex;
+	 	constructor : function() {
+	 		this.pageIndex = 0;
 	 		this.selections = {ids:[], indices:[], rows: []};
 	 		Backbone.Collection.apply(this, arguments);
 	 	},
-	 	setParent: function(store, dataset) {
+	 	setParent: function(index, store, dataset) {
+	 		this.pageIndex = index;
 	 		this.store = store;
 	 		this.dataset = dataset;
 	 	},
