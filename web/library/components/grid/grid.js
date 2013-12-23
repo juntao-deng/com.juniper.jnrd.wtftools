@@ -16,7 +16,8 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					this.listenTo(this.model, "pagination", this.lis_pagination);
 					this.listenTo(this.model, "selection", this.lis_selection);
 				}
-				this.paginationEle = this.el.children("#table_pagination_" + this.instance);
+				this.paginationId = "#table_pagination_" + this.instance;
+				this.paginationEle = this.el.children(this.paginationId);
 				var pageSize = this.metadata.pagination? this.metadata.pagination.rowNum : null;
 				this.gridObj = this.el.children('#table' + this.instance).jqGrid({
 					datatype: "json",
@@ -61,9 +62,27 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					});
 				}
 				
+				this.createNavBar();
 				
 //				this.gridObj.jqGrid('navGrid', this.paginationEle).jqGrid('navButtonAdd', this.paginationEle, { caption:"NewButton", buttonicon:"ui-icon-newwin", onClickButton:null, position: "last", title:"", cursor: "pointer"});
-				//this.gridObj.jqGrid('navGrid', this.paginationEle ,{add:true,del:false,edit:false,position:'right'});
+//				this.gridObj.jqGrid('navGrid', paginationId ,{add:false,del:false,edit:false,view:false,position:'left'});
+			},
+			createNavBar : function(){
+				this.navBar = this.paginationEle.find(this.paginationId + "_left");
+				var div = $("<div></div>");
+				this.navBar.append(div);
+				var attr = {
+						display: "inline-block",
+						marginLeft : "20px"
+				};
+				var oThis = this;
+				var search = $('<div><i class="icon-search"></i></div>').css(attr);
+				var refresh = $('<div><i class="icon-refresh"></i></div>').css(attr).click(function(){
+					if(oThis.model)
+						oThis.model.reload();
+				});
+				div.append(search);
+				div.append(refresh);
 			},
 			repaint : function(obj) {
 				this.gridObj.clearGridData();

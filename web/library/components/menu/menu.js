@@ -76,6 +76,14 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 				if(!source.eventCtx.stop && this.handler){
 					this.handler.handle.call(this, source);
 				}
+			},
+			
+			updateState : function(trigger) {
+				if(this.statemgr)
+					this.statemgr.updateState(trigger);
+				for(var i = 0; i < this.menuitems.length; i ++){
+					this.menuitems[i].updateState(trigger);
+				}
 			}
 		}
 	);
@@ -87,18 +95,78 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 		this.parentEl = parentEl;
 		this.pre = pre;
 		this.create();
+		this.visibleAttr = true;
+		this.enableAttr = true;
+		if(this.metadata.visible == false)
+			this.visible(false);
+		if(this.metadata.enable == false)
+			this.enable(false);
 	};
 	$.extend(FwBase.Wtf.View.Controls.MenuItem.prototype, FwBase.Wtf.View.Controls.Listener.prototype, {
 		create : function() {
 			this.el = this.parentEl.find("#" + this.pre + this.id);
 			var oThis = this;
 			this.el.click(function(){
+				if(oThis.enableAttr == false)
+					return;
 				var ctx = {source : oThis, eventCtx : {}};
 				oThis.trigger("click", ctx);
 				if(!ctx.eventCtx.stop)
 					oThis.menubar.itemClicked(ctx);
 				return false;
 			});
+			
+			if(this.metadata.statemgr){
+				if(typeof this.metadata.statemgr == 'string'){
+					this.statemgr = eval("(new " + this.metadata.statemgr + "(this, this.menubar.ctx, this.menubar.ctx.stateManager()))");
+				}
+				else{
+					if(typeof this.metadata.statemgr == 'function'){
+						this.statemgr = new this.metadata.statemgr(this, this.menubar.ctx, this.menubar.ctx.stateManager());
+					}
+					var mgrClass = this.metadata.statemgr.func;
+					if(mgrClass != null){
+						this.statemgr = new mgrClass(this, this.menubar.ctx, this.menubar.ctx.stateManager());
+						this.statemgr.setOptions(this.metadata.statemgr.params);
+					}
+				}
+			}
+		},
+		visible : function() {
+			if(arguments.length == 0)
+				return this.visibleAttr;
+			else{
+				if(arguments[0] == this.visibleAttr)
+					return;
+				if(arguments[0]){
+					this.visibleAttr = true;
+					this.el.show();
+				}
+				else{
+					this.visibleAttr = false;
+					this.el.hide();
+				}
+			}
+		},
+		enable : function() {
+			if(arguments.length == 0)
+				return this.visibleAttr;
+			else{
+				if(arguments[0] == this.enableAttr)
+					return;
+				if(arguments[0]){
+					this.enableAttr = true;
+					this.el.removeClass("disabled");
+				}
+				else{
+					this.enableAttr = false;
+					this.el.addClass("disabled");
+				}
+			}
+		},
+		updateState : function(trigger) {
+			if(this.statemgr)
+				this.statemgr.updateState(trigger);
 		}
 	});
 	return FwBase.Wtf.View.Controls.Menu;

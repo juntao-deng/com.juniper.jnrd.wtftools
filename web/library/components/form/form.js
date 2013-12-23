@@ -14,7 +14,7 @@ define(["base/base"], function(base){
 				this.listenTo(this.model, "clear", this.clearPage);
 				this.listenTo(this.model, "add", this.addRow);
 				this.listenTo(this.model, "remove", this.deleteRow);
-				this.listenTo(this.model, "change", this.changeRow);
+				this.listenTo(this.model, "cellchange", this.lis_cellChange);
 				this.listenTo(this.model, "pagechange", this.pageChange);
 				this.listenTo(this.model, "pagination", this.pagination);
 				this.listenTo(this.model, "selection", this.lis_selection);
@@ -62,7 +62,27 @@ define(["base/base"], function(base){
 			else
 				this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index), false);
 		},
-		lis_changeRow : function() {
+		lis_cellChange : function(options) {
+			var row = options.row;
+			var changedAttr = options.changedAttr;
+			
+			for(var i = 0; i <this.elements.length; i ++){
+				var elemeta = this.metadata.elements[i];
+				var value = undefined;
+				if(elemeta.oriName){
+					var pair = elemeta.oriName.split(".");
+					var valueObj = changedAttr[pair[0]];
+					if(valueObj != null)
+						value = valueObj[pair[1]];
+				}
+				else{
+					value = changedAttr[elemeta.name];
+				}
+				if(value != undefined){
+					var element = this.elements[i];
+					element.value(value);
+				}
+			}
 		},
 		lis_deleteRow : function(obj) {
 			var row = obj.row;

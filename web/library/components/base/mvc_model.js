@@ -80,9 +80,12 @@ define(function(){
 	 	 * @param 1.  ids, can be "rowid" or array of rowid :[rowid1, rowid2] or index of row index
 	 	 */
 	 	select : function(ids) {
-	 		if(arguments.length == 0)
-	 			return this.page().selections;
+//	 		if(arguments.length == 0)
+//	 			return this.page().selections;
 	 		return this.page().select(ids);
+	 	},
+	 	selections : function() {
+	 		return this.page().selections;
 	 	},
 	 	save : function(options) {
 	 		var selections = this.select();

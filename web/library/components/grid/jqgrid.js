@@ -8867,320 +8867,320 @@ $.jgrid.extend({
 			}
 		});
 	},
-	navGrid : function (elem, o, pEdit,pAdd,pDel,pSearch, pView) {
-		o = $.extend({
-			edit: true,
-			editicon: "ui-icon-pencil",
-			add: true,
-			addicon:"ui-icon-plus",
-			del: true,
-			delicon:"ui-icon-trash",
-			search: true,
-			searchicon:"ui-icon-search",
-			refresh: true,
-			refreshicon:"ui-icon-refresh",
-			refreshstate: 'firstpage',
-			view: false,
-			viewicon : "ui-icon-document",
-			position : "left",
-			closeOnEscape : true,
-			beforeRefresh : null,
-			afterRefresh : null,
-			cloneToTop : false,
-			alertwidth : 200,
-			alertheight : 'auto',
-			alerttop: null,
-			alertleft: null,
-			alertzIndex : null
-		}, $.jgrid.nav, o ||{});
-		return this.each(function() {
-			if(this.nav) {return;}
-			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
-			$t = this, twd, tdw;
-			if(!$t.grid || typeof elem !== 'string') {return;}
-			if ($("#"+alertIDs.themodal)[0] === undefined) {
-				if(!o.alerttop && !o.alertleft) {
-					if (window.innerWidth !== undefined) {
-						o.alertleft = window.innerWidth;
-						o.alerttop = window.innerHeight;
-					} else if (document.documentElement !== undefined && document.documentElement.clientWidth !== undefined && document.documentElement.clientWidth !== 0) {
-						o.alertleft = document.documentElement.clientWidth;
-						o.alerttop = document.documentElement.clientHeight;
-					} else {
-						o.alertleft=1024;
-						o.alerttop=768;
-					}
-					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
-					o.alerttop = o.alerttop/2-25;
-				}
-				$.jgrid.createModal(alertIDs,
-					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
-					{ 
-						gbox:"#gbox_"+$.jgrid.jqID($t.p.id),
-						jqModal:true,
-						drag:true,
-						resize:true,
-						caption:o.alertcap,
-						top:o.alerttop,
-						left:o.alertleft,
-						width:o.alertwidth,
-						height: o.alertheight,
-						closeOnEscape:o.closeOnEscape, 
-						zIndex: o.alertzIndex
-					},
-					"#gview_"+$.jgrid.jqID($t.p.id),
-					$("#gbox_"+$.jgrid.jqID($t.p.id))[0],
-					true
-				);
-			}
-			var clone = 1, i,
-			onHoverIn = function () {
-				if (!$(this).hasClass('ui-state-disabled')) {
-					$(this).addClass("ui-state-hover");
-				}
-			},
-			onHoverOut = function () {
-				$(this).removeClass("ui-state-hover");
-			};
-			if(o.cloneToTop && $t.p.toppager) {clone = 2;}
-			for(i = 0; i<clone; i++) {
-				var tbd,
-				navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
-				sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
-				pgid, elemids;
-				if(i===0) {
-					pgid = elem;
-					elemids = $t.p.id;
-					if(pgid === $t.p.toppager) {
-						elemids += "_top";
-						clone = 1;
-					}
-				} else {
-					pgid = $t.p.toppager;
-					elemids = $t.p.id+"_top";
-				}
-				if($t.p.direction === "rtl") {$(navtbl).attr("dir","rtl").css("float","right");}
-				if (o.add) {
-					pAdd = pAdd || {};
-					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.addicon+"'></span>"+o.addtext+"</div>");
-					$("tr",navtbl).append(tbd);
-					$(tbd,navtbl)
-					.attr({"title":o.addtitle || "",id : pAdd.id || "add_"+elemids})
-					.click(function(){
-						if (!$(this).hasClass('ui-state-disabled')) {
-							if ($.isFunction( o.addfunc )) {
-								o.addfunc.call($t);
-							} else {
-								$($t).jqGrid("editGridRow","new",pAdd);
-							}
-						}
-						return false;
-					}).hover(onHoverIn, onHoverOut);
-					tbd = null;
-				}
-				if (o.edit) {
-					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pEdit = pEdit || {};
-					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.editicon+"'></span>"+o.edittext+"</div>");
-					$("tr",navtbl).append(tbd);
-					$(tbd,navtbl)
-					.attr({"title":o.edittitle || "",id: pEdit.id || "edit_"+elemids})
-					.click(function(){
-						if (!$(this).hasClass('ui-state-disabled')) {
-							var sr = $t.p.selrow;
-							if (sr) {
-								if($.isFunction( o.editfunc ) ) {
-									o.editfunc.call($t, sr);
-								} else {
-									$($t).jqGrid("editGridRow",sr,pEdit);
-								}
-							} else {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
-								$("#jqg_alrt").focus();
-							}
-						}
-						return false;
-					}).hover(onHoverIn, onHoverOut);
-					tbd = null;
-				}
-				if (o.view) {
-					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pView = pView || {};
-					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.viewicon+"'></span>"+o.viewtext+"</div>");
-					$("tr",navtbl).append(tbd);
-					$(tbd,navtbl)
-					.attr({"title":o.viewtitle || "",id: pView.id || "view_"+elemids})
-					.click(function(){
-						if (!$(this).hasClass('ui-state-disabled')) {
-							var sr = $t.p.selrow;
-							if (sr) {
-								if($.isFunction( o.viewfunc ) ) {
-									o.viewfunc.call($t, sr);
-								} else {
-									$($t).jqGrid("viewGridRow",sr,pView);
-								}
-							} else {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
-								$("#jqg_alrt").focus();
-							}
-						}
-						return false;
-					}).hover(onHoverIn, onHoverOut);
-					tbd = null;
-				}
-				if (o.del) {
-					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pDel = pDel || {};
-					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.delicon+"'></span>"+o.deltext+"</div>");
-					$("tr",navtbl).append(tbd);
-					$(tbd,navtbl)
-					.attr({"title":o.deltitle || "",id: pDel.id || "del_"+elemids})
-					.click(function(){
-						if (!$(this).hasClass('ui-state-disabled')) {
-							var dr;
-							if($t.p.multiselect) {
-								dr = $t.p.selarrrow;
-								if(dr.length===0) {dr = null;}
-							} else {
-								dr = $t.p.selrow;
-							}
-							if(dr){
-								if($.isFunction( o.delfunc )){
-									o.delfunc.call($t, dr);
-								}else{
-									$($t).jqGrid("delGridRow",dr,pDel);
-								}
-							} else  {
-								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});$("#jqg_alrt").focus();
-							}
-						}
-						return false;
-					}).hover(onHoverIn, onHoverOut);
-					tbd = null;
-				}
-				if(o.add || o.edit || o.del || o.view) {$("tr",navtbl).append(sep);}
-				if (o.search) {
-					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					pSearch = pSearch || {};
-					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.searchicon+"'></span>"+o.searchtext+"</div>");
-					$("tr",navtbl).append(tbd);
-					$(tbd,navtbl)
-					.attr({"title":o.searchtitle  || "",id:pSearch.id || "search_"+elemids})
-					.click(function(){
-						if (!$(this).hasClass('ui-state-disabled')) {
-							if($.isFunction( o.searchfunc )) {
-								o.searchfunc.call($t, pSearch);
-							} else {
-								$($t).jqGrid("searchGrid",pSearch);
-							}
-						}
-						return false;
-					}).hover(onHoverIn, onHoverOut);
-					if (pSearch.showOnLoad && pSearch.showOnLoad === true) {
-						$(tbd,navtbl).click();
-					}
-					tbd = null;
-				}
-				if (o.refresh) {
-					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
-					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.refreshicon+"'></span>"+o.refreshtext+"</div>");
-					$("tr",navtbl).append(tbd);
-					$(tbd,navtbl)
-					.attr({"title":o.refreshtitle  || "",id: "refresh_"+elemids})
-					.click(function(){
-						if (!$(this).hasClass('ui-state-disabled')) {
-							if($.isFunction(o.beforeRefresh)) {o.beforeRefresh.call($t);}
-							$t.p.search = false;
-							try {
-								var gID = $t.p.id;
-								$t.p.postData.filters ="";
-								try {
-								$("#fbox_"+$.jgrid.jqID(gID)).jqFilter('resetFilter');
-								} catch(ef) {}
-								if($.isFunction($t.clearToolbar)) {$t.clearToolbar.call($t,false);}
-							} catch (e) {}
-							switch (o.refreshstate) {
-								case 'firstpage':
-									$($t).trigger("reloadGrid", [{page:1}]);
-									break;
-								case 'current':
-									$($t).trigger("reloadGrid", [{current:true}]);
-									break;
-							}
-							if($.isFunction(o.afterRefresh)) {o.afterRefresh.call($t);}
-						}
-						return false;
-					}).hover(onHoverIn, onHoverOut);
-					tbd = null;
-				}
-				tdw = $(".ui-jqgrid").css("font-size") || "11px";
-				$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
-				twd = $(navtbl).clone().appendTo("#testpg2").width();
-				$("#testpg2").remove();
-				$(pgid+"_"+o.position,pgid).append(navtbl);
-				if($t.p._nvtd) {
-					if(twd > $t.p._nvtd[0] ) {
-						$(pgid+"_"+o.position,pgid).width(twd);
-						$t.p._nvtd[0] = twd;
-					}
-					$t.p._nvtd[1] = twd;
-				}
-				tdw =null;twd=null;navtbl =null;
-				this.nav = true;
-			}
-		});
-	},
-	navButtonAdd : function (elem, p) {
-		p = $.extend({
-			caption : "newButton",
-			title: '',
-			buttonicon : 'ui-icon-newwin',
-			onClickButton: null,
-			position : "last",
-			cursor : 'pointer'
-		}, p ||{});
-		return this.each(function() {
-			if( !this.grid)  {return;}
-			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
-			var findnav = $(".navtable",elem)[0], $t = this;
-			if (findnav) {
-				if( p.id && $("#"+$.jgrid.jqID(p.id), findnav)[0] !== undefined )  {return;}
-				var tbd = $("<td></td>");
-				if(p.buttonicon.toString().toUpperCase() === "NONE") {
-                    $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+p.caption+"</div>");
-				} else	{
-					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'><span class='ui-icon "+p.buttonicon+"'></span>"+p.caption+"</div>");
-				}
-				if(p.id) {$(tbd).attr("id",p.id);}
-				if(p.position==='first'){
-					if(findnav.rows[0].cells.length ===0 ) {
-						$("tr",findnav).append(tbd);
-					} else {
-						$("tr td:eq(0)",findnav).before(tbd);
-					}
-				} else {
-					$("tr",findnav).append(tbd);
-				}
-				$(tbd,findnav)
-				.attr("title",p.title  || "")
-				.click(function(e){
-					if (!$(this).hasClass('ui-state-disabled')) {
-						if ($.isFunction(p.onClickButton) ) {p.onClickButton.call($t,e);}
-					}
-					return false;
-				})
-				.hover(
-					function () {
-						if (!$(this).hasClass('ui-state-disabled')) {
-							$(this).addClass('ui-state-hover');
-						}
-					},
-					function () {$(this).removeClass("ui-state-hover");}
-				);
-			}
-		});
-	},
+//	navGrid : function (elem, o, pEdit,pAdd,pDel,pSearch, pView) {
+//		o = $.extend({
+//			edit: true,
+//			editicon: "ui-icon-pencil",
+//			add: true,
+//			addicon:"ui-icon-plus",
+//			del: true,
+//			delicon:"ui-icon-trash",
+//			search: true,
+//			searchicon:"ui-icon-search",
+//			refresh: true,
+//			refreshicon:"ui-icon-refresh",
+//			refreshstate: 'firstpage',
+//			view: false,
+//			viewicon : "ui-icon-document",
+//			position : "left",
+//			closeOnEscape : true,
+//			beforeRefresh : null,
+//			afterRefresh : null,
+//			cloneToTop : false,
+//			alertwidth : 200,
+//			alertheight : 'auto',
+//			alerttop: null,
+//			alertleft: null,
+//			alertzIndex : null
+//		}, $.jgrid.nav, o ||{});
+//		return this.each(function() {
+//			if(this.nav) {return;}
+//			var alertIDs = {themodal: 'alertmod_' + this.p.id, modalhead: 'alerthd_' + this.p.id,modalcontent: 'alertcnt_' + this.p.id},
+//			$t = this, twd, tdw;
+//			if(!$t.grid || typeof elem !== 'string') {return;}
+//			if ($("#"+alertIDs.themodal)[0] === undefined) {
+//				if(!o.alerttop && !o.alertleft) {
+//					if (window.innerWidth !== undefined) {
+//						o.alertleft = window.innerWidth;
+//						o.alerttop = window.innerHeight;
+//					} else if (document.documentElement !== undefined && document.documentElement.clientWidth !== undefined && document.documentElement.clientWidth !== 0) {
+//						o.alertleft = document.documentElement.clientWidth;
+//						o.alerttop = document.documentElement.clientHeight;
+//					} else {
+//						o.alertleft=1024;
+//						o.alerttop=768;
+//					}
+//					o.alertleft = o.alertleft/2 - parseInt(o.alertwidth,10)/2;
+//					o.alerttop = o.alerttop/2-25;
+//				}
+//				$.jgrid.createModal(alertIDs,
+//					"<div>"+o.alerttext+"</div><span tabindex='0'><span tabindex='-1' id='jqg_alrt'></span></span>",
+//					{ 
+//						gbox:"#gbox_"+$.jgrid.jqID($t.p.id),
+//						jqModal:true,
+//						drag:true,
+//						resize:true,
+//						caption:o.alertcap,
+//						top:o.alerttop,
+//						left:o.alertleft,
+//						width:o.alertwidth,
+//						height: o.alertheight,
+//						closeOnEscape:o.closeOnEscape, 
+//						zIndex: o.alertzIndex
+//					},
+//					"#gview_"+$.jgrid.jqID($t.p.id),
+//					$("#gbox_"+$.jgrid.jqID($t.p.id))[0],
+//					true
+//				);
+//			}
+//			var clone = 1, i,
+//			onHoverIn = function () {
+//				if (!$(this).hasClass('ui-state-disabled')) {
+//					$(this).addClass("ui-state-hover");
+//				}
+//			},
+//			onHoverOut = function () {
+//				$(this).removeClass("ui-state-hover");
+//			};
+//			if(o.cloneToTop && $t.p.toppager) {clone = 2;}
+//			for(i = 0; i<clone; i++) {
+//				var tbd,
+//				navtbl = $("<table cellspacing='0' cellpadding='0' border='0' class='ui-pg-table navtable' style='float:left;table-layout:auto;'><tbody><tr></tr></tbody></table>"),
+//				sep = "<td class='ui-pg-button ui-state-disabled' style='width:4px;'><span class='ui-separator'></span></td>",
+//				pgid, elemids;
+//				if(i===0) {
+//					pgid = elem;
+//					elemids = $t.p.id;
+//					if(pgid === $t.p.toppager) {
+//						elemids += "_top";
+//						clone = 1;
+//					}
+//				} else {
+//					pgid = $t.p.toppager;
+//					elemids = $t.p.id+"_top";
+//				}
+//				if($t.p.direction === "rtl") {$(navtbl).attr("dir","rtl").css("float","right");}
+//				if (o.add) {
+//					pAdd = pAdd || {};
+//					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+//					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.addicon+"'></span>"+o.addtext+"</div>");
+//					$("tr",navtbl).append(tbd);
+//					$(tbd,navtbl)
+//					.attr({"title":o.addtitle || "",id : pAdd.id || "add_"+elemids})
+//					.click(function(){
+//						if (!$(this).hasClass('ui-state-disabled')) {
+//							if ($.isFunction( o.addfunc )) {
+//								o.addfunc.call($t);
+//							} else {
+//								$($t).jqGrid("editGridRow","new",pAdd);
+//							}
+//						}
+//						return false;
+//					}).hover(onHoverIn, onHoverOut);
+//					tbd = null;
+//				}
+//				if (o.edit) {
+//					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+//					pEdit = pEdit || {};
+//					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.editicon+"'></span>"+o.edittext+"</div>");
+//					$("tr",navtbl).append(tbd);
+//					$(tbd,navtbl)
+//					.attr({"title":o.edittitle || "",id: pEdit.id || "edit_"+elemids})
+//					.click(function(){
+//						if (!$(this).hasClass('ui-state-disabled')) {
+//							var sr = $t.p.selrow;
+//							if (sr) {
+//								if($.isFunction( o.editfunc ) ) {
+//									o.editfunc.call($t, sr);
+//								} else {
+//									$($t).jqGrid("editGridRow",sr,pEdit);
+//								}
+//							} else {
+//								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
+//								$("#jqg_alrt").focus();
+//							}
+//						}
+//						return false;
+//					}).hover(onHoverIn, onHoverOut);
+//					tbd = null;
+//				}
+//				if (o.view) {
+//					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+//					pView = pView || {};
+//					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.viewicon+"'></span>"+o.viewtext+"</div>");
+//					$("tr",navtbl).append(tbd);
+//					$(tbd,navtbl)
+//					.attr({"title":o.viewtitle || "",id: pView.id || "view_"+elemids})
+//					.click(function(){
+//						if (!$(this).hasClass('ui-state-disabled')) {
+//							var sr = $t.p.selrow;
+//							if (sr) {
+//								if($.isFunction( o.viewfunc ) ) {
+//									o.viewfunc.call($t, sr);
+//								} else {
+//									$($t).jqGrid("viewGridRow",sr,pView);
+//								}
+//							} else {
+//								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});
+//								$("#jqg_alrt").focus();
+//							}
+//						}
+//						return false;
+//					}).hover(onHoverIn, onHoverOut);
+//					tbd = null;
+//				}
+//				if (o.del) {
+//					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+//					pDel = pDel || {};
+//					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.delicon+"'></span>"+o.deltext+"</div>");
+//					$("tr",navtbl).append(tbd);
+//					$(tbd,navtbl)
+//					.attr({"title":o.deltitle || "",id: pDel.id || "del_"+elemids})
+//					.click(function(){
+//						if (!$(this).hasClass('ui-state-disabled')) {
+//							var dr;
+//							if($t.p.multiselect) {
+//								dr = $t.p.selarrrow;
+//								if(dr.length===0) {dr = null;}
+//							} else {
+//								dr = $t.p.selrow;
+//							}
+//							if(dr){
+//								if($.isFunction( o.delfunc )){
+//									o.delfunc.call($t, dr);
+//								}else{
+//									$($t).jqGrid("delGridRow",dr,pDel);
+//								}
+//							} else  {
+//								$.jgrid.viewModal("#"+alertIDs.themodal,{gbox:"#gbox_"+$.jgrid.jqID($t.p.id),jqm:true});$("#jqg_alrt").focus();
+//							}
+//						}
+//						return false;
+//					}).hover(onHoverIn, onHoverOut);
+//					tbd = null;
+//				}
+//				if(o.add || o.edit || o.del || o.view) {$("tr",navtbl).append(sep);}
+//				if (o.search) {
+//					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+//					pSearch = pSearch || {};
+//					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.searchicon+"'></span>"+o.searchtext+"</div>");
+//					$("tr",navtbl).append(tbd);
+//					$(tbd,navtbl)
+//					.attr({"title":o.searchtitle  || "",id:pSearch.id || "search_"+elemids})
+//					.click(function(){
+//						if (!$(this).hasClass('ui-state-disabled')) {
+//							if($.isFunction( o.searchfunc )) {
+//								o.searchfunc.call($t, pSearch);
+//							} else {
+//								$($t).jqGrid("searchGrid",pSearch);
+//							}
+//						}
+//						return false;
+//					}).hover(onHoverIn, onHoverOut);
+//					if (pSearch.showOnLoad && pSearch.showOnLoad === true) {
+//						$(tbd,navtbl).click();
+//					}
+//					tbd = null;
+//				}
+//				if (o.refresh) {
+//					tbd = $("<td class='ui-pg-button ui-corner-all'></td>");
+//					$(tbd).append("<div class='ui-pg-div'><span class='ui-icon "+o.refreshicon+"'></span>"+o.refreshtext+"</div>");
+//					$("tr",navtbl).append(tbd);
+//					$(tbd,navtbl)
+//					.attr({"title":o.refreshtitle  || "",id: "refresh_"+elemids})
+//					.click(function(){
+//						if (!$(this).hasClass('ui-state-disabled')) {
+//							if($.isFunction(o.beforeRefresh)) {o.beforeRefresh.call($t);}
+//							$t.p.search = false;
+//							try {
+//								var gID = $t.p.id;
+//								$t.p.postData.filters ="";
+//								try {
+//								$("#fbox_"+$.jgrid.jqID(gID)).jqFilter('resetFilter');
+//								} catch(ef) {}
+//								if($.isFunction($t.clearToolbar)) {$t.clearToolbar.call($t,false);}
+//							} catch (e) {}
+//							switch (o.refreshstate) {
+//								case 'firstpage':
+//									$($t).trigger("reloadGrid", [{page:1}]);
+//									break;
+//								case 'current':
+//									$($t).trigger("reloadGrid", [{current:true}]);
+//									break;
+//							}
+//							if($.isFunction(o.afterRefresh)) {o.afterRefresh.call($t);}
+//						}
+//						return false;
+//					}).hover(onHoverIn, onHoverOut);
+//					tbd = null;
+//				}
+//				tdw = $(".ui-jqgrid").css("font-size") || "11px";
+//				$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
+//				twd = $(navtbl).clone().appendTo("#testpg2").width();
+//				$("#testpg2").remove();
+//				$(pgid+"_"+o.position,pgid).append(navtbl);
+//				if($t.p._nvtd) {
+//					if(twd > $t.p._nvtd[0] ) {
+//						$(pgid+"_"+o.position,pgid).width(twd);
+//						$t.p._nvtd[0] = twd;
+//					}
+//					$t.p._nvtd[1] = twd;
+//				}
+//				tdw =null;twd=null;navtbl =null;
+//				this.nav = true;
+//			}
+//		});
+//	},
+//	navButtonAdd : function (elem, p) {
+//		p = $.extend({
+//			caption : "newButton",
+//			title: '',
+//			buttonicon : 'ui-icon-newwin',
+//			onClickButton: null,
+//			position : "last",
+//			cursor : 'pointer'
+//		}, p ||{});
+//		return this.each(function() {
+//			if( !this.grid)  {return;}
+//			if( typeof elem === "string" && elem.indexOf("#") !== 0) {elem = "#"+$.jgrid.jqID(elem);}
+//			var findnav = $(".navtable",elem)[0], $t = this;
+//			if (findnav) {
+//				if( p.id && $("#"+$.jgrid.jqID(p.id), findnav)[0] !== undefined )  {return;}
+//				var tbd = $("<td></td>");
+//				if(p.buttonicon.toString().toUpperCase() === "NONE") {
+//                    $(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'>"+p.caption+"</div>");
+//				} else	{
+//					$(tbd).addClass('ui-pg-button ui-corner-all').append("<div class='ui-pg-div'><span class='ui-icon "+p.buttonicon+"'></span>"+p.caption+"</div>");
+//				}
+//				if(p.id) {$(tbd).attr("id",p.id);}
+//				if(p.position==='first'){
+//					if(findnav.rows[0].cells.length ===0 ) {
+//						$("tr",findnav).append(tbd);
+//					} else {
+//						$("tr td:eq(0)",findnav).before(tbd);
+//					}
+//				} else {
+//					$("tr",findnav).append(tbd);
+//				}
+//				$(tbd,findnav)
+//				.attr("title",p.title  || "")
+//				.click(function(e){
+//					if (!$(this).hasClass('ui-state-disabled')) {
+//						if ($.isFunction(p.onClickButton) ) {p.onClickButton.call($t,e);}
+//					}
+//					return false;
+//				})
+//				.hover(
+//					function () {
+//						if (!$(this).hasClass('ui-state-disabled')) {
+//							$(this).addClass('ui-state-hover');
+//						}
+//					},
+//					function () {$(this).removeClass("ui-state-hover");}
+//				);
+//			}
+//		});
+//	},
 	navSeparatorAdd:function (elem,p) {
 		p = $.extend({
 			sepclass : "ui-separator",

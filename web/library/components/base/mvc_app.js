@@ -1,4 +1,4 @@
-define(["../uipattern/buttonmanager"], function(){
+define(["../uipattern/statemanager"], function(){
 	 window.AppUtil = FwBase.Wtf.Application = function(id){
   		 this.id = id;
   		 this.viewMap = {};
@@ -57,24 +57,31 @@ define(["../uipattern/buttonmanager"], function(){
 			if(lastStackApp == null)
 				lastStackApp = currApp;
   	 		var stackIndex = 100 * stacks;
-  	 		var	container = $('#sys_home_content_part');
-  	 		var width = container.innerWidth();
-  	 		var height = container.innerHeight();
-  	 		var div = $("<div></div>").css(
+  	 		var refPart = $('#sys_home_content_part');
+  	 		var	container = refPart.parent();
+  	 		var width = refPart.innerWidth();
+  	 		var height = refPart.innerHeight();
+  	 		var div = $('<div class="container-fluid"></div>').css(
   	 										{"z-index": stackIndex, "background": "#FFF", 
-  	 										"position": "absolute", "left": "0px", "top": "0px", 
-  	 										"width":(width + "px"), "min-height": (height + "px")
+  	  	 										"width":(width + "px"), "position": "absolute", "left": "0px", "top": "0px", "min-height": (height + "px")
   	 										}
   	 									);
   	 		container.append(div);
   	 		div.fadeIn("slow");
-  	 		options.container = div;
+//  	 		options.container = div;
   	 		options.stackApp = true;
   	 		options.parent = lastStackApp;
   	 		options.baseApp = false;
-  	 		AppUtil.navigateTo(url, reqData, options);
+  	 		AppUtil.doNavigateTo(url, reqData, options, div);
   	 		div.attr('id', "stack_container_" + $app.uniqueId);
   	 		$app.stackContainer = div;
+  	 		
+			var title = options.title;
+			if(title == null || title == ""){
+				var pathInfo = url.split("/");
+				title = FwBase.Wtf.Lang.Utils.capitalize(pathInfo[pathInfo.length - 1]);
+			}
+			AppUtil.appendTitle({title: title, url: url, uniqueId: $app.uniqueId});
   	 	},
   	 	navigateToDialog : function(url, reqData, options){
   	 		options = options || {};
@@ -95,8 +102,11 @@ define(["../uipattern/buttonmanager"], function(){
 	 		});
 	 	},
   	 	navigateTo : function(url, reqData, options) {
-  	 		if(window.$app != null && !$app.homeApp)
+  	 		var papp = window.$app;
+  	 		while(papp != null && !papp.homeApp){
+  	 			papp = $app.parent;
   	 			$app.close();
+  	 		}
   	 		if(options == null)
   	 			options = {};
   	 		var container = options.container;
@@ -114,11 +124,8 @@ define(["../uipattern/buttonmanager"], function(){
 				var pathInfo = url.split("/");
 				title = FwBase.Wtf.Lang.Utils.capitalize(pathInfo[pathInfo.length - 1]);
 			}
-			if(options.stackApp){
-				AppUtil.appendTitle({title: title, url: url, uniqueId: $app.uniqueId});
-			}
-			else
-				AppUtil.updateTitle({title: title, url: url, uniqueId: $app.uniqueId});
+			
+			AppUtil.updateTitle({title: title, url: url, uniqueId: $app.uniqueId});
 	 	},
 	 	
 	 	doNavigateTo : function(url, reqData, options, container) {
@@ -185,6 +192,7 @@ define(["../uipattern/buttonmanager"], function(){
 					 			models[i].toInit();
 					 		if(container.notifyContentChange)
 								container.notifyContentChange();
+					 		$app.stateManager().initState();
 					 		$app.trigger('loaded');
 	 					});
 					};
@@ -562,19 +570,6 @@ define(["../uipattern/buttonmanager"], function(){
 	 		else
 	 			this.requestData = arguments[0];
 	 	},
-//  	 	view : function(view){
-//  	 		if(typeof view == "string")
-//  	 			return this.viewMap[view];
-//  	 		this.viewMap[view.id] = view;
-//  	 	},
-//  	 	removeView : function(viewId) {
-//  	 		return this.viewMap[viewId];
-//  	 	},
-//  	 	destroyView : function(viewId){
-//  	 		var view = this.removeView(viewId);
-//  	 		if(view)
-//  	 			view.destroy();
-//  	 	},
   	 	
   	 	model : function(){
   	 		if(arguments.length == 1){
@@ -619,8 +614,6 @@ define(["../uipattern/buttonmanager"], function(){
   	 				return null;
   	 			if(typeof arguments[0] == "string")
   	 				return this.componentsMap[arguments[0]];
-  	 			if(arguments[0].stateful)
-  	 				this.installButtonManager();
   	 			if(this.componentsMap[arguments[0].id] != null){
   	 				alert("The component id: '" + arguments[0].id + "' already exists.");
   	 				return;
@@ -630,8 +623,6 @@ define(["../uipattern/buttonmanager"], function(){
   	 		}
   	 		else if(arguments.length == 2){
   	 			var obj = arguments[1];
-  	 			if(obj.stateful)
-  	 				this.installButtonManager();
   	 			if(this.componentsMap[arguments[0]] != null){
   	 				alert("The component id: '" + arguments[0] + "' already exists.");
   	 				return;
@@ -657,11 +648,6 @@ define(["../uipattern/buttonmanager"], function(){
   	 		return _.values(this.componentsMap);
   	 	},
   	 	
-  	 	installButtonManager: function(){
-  	 		if(this.buttonManager == null){
-  	 			this.buttonManager = new FwBase.Wtf.View.ButtonStateManager();
-  	 		}
-  	 	},
   	 	widget : function(widget){
   	 		if(arguments.length == 1){
   	 			if(arguments[0] == null)
@@ -700,6 +686,11 @@ define(["../uipattern/buttonmanager"], function(){
   	 				this.metadataMap[arguments[0]] = this.mergeMetadata(this.metadataMap[arguments[0]], obj);
   	 			}
   	 		}
+  	 	},
+  	 	
+  	 	stateManager : function() {
+  	 		this.stateMgr = new AppStateManager(this);
+  	 		return this.stateMgr;
   	 	},
   	 	/**
   	 	 * will cause current dialog be closed

@@ -37,6 +37,23 @@ define(["base/listener"], function(){
 				this.visible(false);
 			if(!this.metadata.enable)
 				this.enable(false);
+			if(this.metadata.statemgr){
+				if(typeof this.metadata.statemgr == 'string'){
+					this.statemgr = new this.metadata.stagemgr(this, this.ctx, this.ctx.stateManager());
+				}
+				else{
+//					if(typeof this.metadata.statemgr == 'function'){
+//						this.statemgr = this.metadata.statemgr;
+//					}
+//					else{
+					var mgrClass = this.metadata.statemgr.func;
+					if(mgrClass != null){
+						this.statemgr = new mgrClass(this, this.ctx, this.ctx.stateManager);
+						this.statemgr.setOptions(this.metadata.statemgr.params);
+					}
+//					}
+				}
+			}
 		},
 		paint : function() {
 			return this.template($.extend(null, this.metadata, {instanceId: this.instance, compId: this.id}));
@@ -95,6 +112,10 @@ define(["base/listener"], function(){
 			this.off();
 			this.data = null;
 			this.el.remove();
+		},
+		updateState : function(trigger) {
+			if(this.statemgr)
+				this.statemgr.updateState(trigger);
 		},
 		/**
 		 * return all accepted events, for designer
