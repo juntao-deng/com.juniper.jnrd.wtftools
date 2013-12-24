@@ -15,6 +15,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					this.listenTo(this.model, "pagechange", this.lis_pageChange);
 					this.listenTo(this.model, "pagination", this.lis_pagination);
 					this.listenTo(this.model, "selection", this.lis_selection);
+					this.listenTo(this.model, "syncover", this.lis_syncover);
 				}
 				this.paginationId = "#table_pagination_" + this.instance;
 				this.paginationEle = this.el.children(this.paginationId);
@@ -57,8 +58,8 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					var oThis = this;
 					this.gridObj.bind("jqGridPageChange", function(){
 						var pageIndex = arguments[1].pageIndex;
-						var pageSize = arguments[1].pageSize;
-						oThis.model.requestPage({pageIndex: pageIndex, pageSize: pageSize, forceUpdate: true});
+//						var pageSize = arguments[1].pageSize;
+						oThis.model.currentPage(null, pageIndex);
 					});
 				}
 				
@@ -116,6 +117,8 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			/*Fire events end*/
 			/*Listeners start, private */
 			lis_addRow : function(obj) {
+				if(obj.page.synching)
+					return;
 				var row = obj.row;
 				var index = obj.index;
 				var id = row.id;
@@ -152,6 +155,20 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				this.gridObj.setPagination(pagination);
 			},
 			lis_selection : function(selections) {
+			},
+			lis_syncover : function(options) {
+				if(!options.current)
+					return;
+				var rows = this.model.rows();
+				if(rows == null || rows.length == 0)
+					return;
+				for(var i = 0; i < rows.length; i ++){
+					var row = rows[i];
+					var id = row.id;
+					if(id == null)
+						id = row.cid;
+					this.gridObj.addRowData(id, row.toJSON(), null, null, false);
+				}
 			}
 			/*Listeners end*/
 		}

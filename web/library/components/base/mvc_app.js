@@ -1,4 +1,4 @@
-define(["../uipattern/statemanager"], function(){
+define(['backbone', "../uipattern/statemanager"], function(){
 	 window.AppUtil = FwBase.Wtf.Application = function(id){
   		 this.id = id;
   		 this.viewMap = {};

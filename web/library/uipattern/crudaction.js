@@ -33,7 +33,7 @@ define(function(){
 		if(itemId == null){
 			var centerModel = $app.model('center_model');
 			if(centerModel != null){
-				var row = centerModel.select().rows[0];
+				var row = centerModel.selections().rows[0];
 				if(row == null){
 					return;
 				}

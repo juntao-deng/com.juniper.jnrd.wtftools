@@ -366,3 +366,7 @@ Choosen plugin css changes
 .extend_zone{
 	display:inline-block;
 }
+
+table{
+	border-collapse: separate;
+}

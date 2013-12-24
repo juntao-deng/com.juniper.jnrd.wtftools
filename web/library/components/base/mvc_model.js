@@ -1,4 +1,4 @@
-define(function(){
+define(["backbone"], function(){
 	 window.Model = FwBase.Wtf.Model = function(id, metadata){
 		this.id = id;
 		if(metadata == null)
@@ -54,6 +54,20 @@ define(function(){
 	 	page : function(key, index){
 	 		return this.store(key).page(index);
 	 	},
+	 	currentPage : function(key, index){
+	 		if(arguments.length == 0)
+	 			return this.store(key).currentPage();
+//	 		var pageSize = options.pageSize;
+//	 		if(pageSize != null && pageSize != this.metadata.pageSize){
+//	 			this.pageSize(pageSize);
+//	 		}
+	 		key = key || this.currentKey;
+	 		var store = this.store(key);
+	 		store.currentPage(index);
+	 		this.currentKey = key;
+	 		
+//	 		store.requestPage(options);
+	 	},
 	 	createRow : function() {
 	 		return this.page().createRow();
 	 	},
@@ -88,7 +102,7 @@ define(function(){
 	 		return this.page().selections;
 	 	},
 	 	save : function(options) {
-	 		var selections = this.select();
+	 		var selections = this.selections();
 	 		if(selections != null && selections.ids.length > 0){
 	 			var row = selections.rows[0];
 	 			this.listenToOnce(row, 'error', this.fireModelError);
@@ -103,15 +117,6 @@ define(function(){
 	 			this.stores[i].reset();
 	 			delete this.stores[i];
 	 		}
-	 	},
-	 	requestPage : function(options){
-	 		var pageSize = options.pageSize;
-	 		if(pageSize != null && pageSize != this.metadata.pageSize){
-	 			this.pageSize(pageSize);
-	 		}
-	 		var key = options.currentKey || this.currentKey;
-	 		var store = this.store(key);
-	 		store.requestPage(options);
 	 	},
 	 	pageSize : function(pageSize) {
 	 		if(pageSize == this.metadata.pageSize)
@@ -151,8 +156,7 @@ define(function(){
 	 	
 	 	/*Fire events start */
 	 	fireAddRow : function(){
-	 		var index = arguments[2].at;
-	 		this.trigger("add", {row : arguments[0], index : index});
+	 		this.trigger("add", arguments[0]);
 	 	},
 	 	fireDelRow : function(){
 	 		this.trigger("remove", {row : arguments[0]});
@@ -176,8 +180,8 @@ define(function(){
 	 		this.trigger("selection", options);
 	 	},
 	 	fireSyncOver : function() {
-	 		var collection = arguments[0];
-	 		var options = {key: collection.store.key, pageIndex: collection.pageIndex};
+	 		var options = arguments[0];
+//	 		var options = {key: collection.store.key, pageIndex: collection.pageIndex};
 	 		this.trigger("syncover", options);
 	 		if(this.metadata.autoSelect){
 	 			if(this.page().rows().length > 0)
@@ -231,7 +235,7 @@ define(function(){
 	 	this.model = model;
 	 	this.pages = {};
 	 	this.key = key;
-	 	this.currentPage = currentPage;
+	 	this.currPage = currentPage;
 //	 	this.reload();
 	 };
 	 _.extend(FwBase.Wtf.Model.Store.prototype, Backbone.Events);
@@ -245,12 +249,13 @@ define(function(){
 //	 		}
 	 		var p = this.page(index);
 	 		//if(this.model.metadata.url != null && this.model.metadata.autoload){
+	 		p.synching = true;
       		p.fetch();
       		//}
 	 	},
 	 	reset : function() {
 	 		for(var i in this.pages){
-	 			if(i == this.currentPage){
+	 			if(i == this.currPage){
 	 				this.pages[i].reset([]);
 	 			}
 	 			delete this.pages[i];
@@ -270,7 +275,7 @@ define(function(){
 	 	page : function(index){
 	 		var cp = index;
 	 		if(cp == null)
-	 			cp = this.currentPage;
+	 			cp = this.currPage;
 	 		var p = this.pages[cp];
 	 		if(p == null){
 		 		var idAttribute = this.model.metadata.idAttribute;
@@ -290,9 +295,20 @@ define(function(){
 	 		}
 	 		return p;
 	 	},
+	 	currentPage : function(index){
+	 		if(arguments.length == 0)
+	 			return this.currPage;
+	 		var page = this.page(index);
+	 		if(this.model.currentKey != this.key || this.currPage != index){
+	 			this.firePageChange();
+	 		}
+	 		this.currPage = index;
+	 		this.reload(this.currPage);
+	 	},
 	 	/*fire event start*/
 	 	fireAddRow : function() {
-	 		this.model.fireAddRow.apply(this.model, arguments);
+	 		var attr = {row: arguments[0], page: arguments[1], current: (this.model.currentKey == this.key && this.currPage == arguments[1].pageIndex), index: arguments[2].at};
+	 		this.model.fireAddRow.call(this.model, attr);
 	 	},
 	 	fireDelRow : function() {
 	 		this.model.fireDelRow.apply(this.model, arguments);
@@ -307,7 +323,10 @@ define(function(){
 	 		this.model.firePagination.apply(this.model, arguments);
 	 	},
 	 	fireSyncOver: function() {
-	 		this.model.fireSyncOver.apply(this.model, arguments);
+	 		var page = arguments[0];
+	 		page.synching = false;
+	 		var attr = {key: page.store.key, pageIndex: page.pageIndex, current: (this.model.currentKey == this.key && this.currPage == page.pageIndex)};
+	 		this.model.fireSyncOver.call(this.model, attr);
 	 	}
 	 	/*fire event end*/
 	 });

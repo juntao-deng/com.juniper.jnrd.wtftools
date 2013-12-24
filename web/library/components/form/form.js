@@ -130,7 +130,7 @@ define(["base/base"], function(base){
 		},
 		lis_ele_valuechange : function(options) {
 			var value = options.source.value();
-			var row = this.model.select().rows[0];
+			var row = this.model.selections().rows[0];
 			row.set(options.source.id, value);
 		},
 		lis_modelerror : function(options) {
