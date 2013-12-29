@@ -1,21 +1,16 @@
-package net.juniper.space.models.home;
+package net.juniper.jmp.mainui.home;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@Entity
-@Table (name="wtf_navgroup")
 @XmlRootElement(name = "navgroup")  
 @XmlType(propOrder = {"id", "name", "icon", "url"})  
-@XmlAccessorType(XmlAccessType.FIELD)  
-
-public class NavGroup extends NavType{
+@XmlAccessorType(XmlAccessType.PROPERTY)  
+public class NavGroupMO extends NavType {
 	@Id
 	private String id;
 	@NotNull

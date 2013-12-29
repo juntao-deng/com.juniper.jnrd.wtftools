@@ -68,20 +68,26 @@ define(["backbone"], function(){
 	 		
 //	 		store.requestPage(options);
 	 	},
-	 	createRow : function() {
-	 		return this.page().createRow();
-	 	},
 	 	row : function() {
 	 		if(arguments.length == 0){
 	 			var row = this.createRow();
-	 			this.page().row(row);
+	 			var page = this.page();
+	 			this.fireBeforeRowAdded(page, row);
+	 			page.row(row);
+	 			return row;
 	 		}
 	 		if(typeof arguments[0] == "object"){
 	 			this.page().row(row);
 	 		}
+	 		else{
+	 			return this.page().row(arguments[0]);
+	 		}
 	 	},
 	 	rows : function(key, index){
 	 		return this.store(key).page(index).rows();
+	 	},
+	 	removeRow : function(ids){
+	 		this.page().removeRow(ids);
 	 	},
 	 	/**
 	 	 * reload data for current store, current page. using current client parameters
@@ -188,6 +194,10 @@ define(["backbone"], function(){
 	 				this.select(0);
 	 		}
 	 	},
+	 	fireSynching : function() {
+	 		var options = arguments[0];
+	 		this.trigger("synching", options);
+	 	},
 	 	fireModelError : function() {
 	 		var errorMsg = arguments[1].responseText;
 	 		//TODO JSON
@@ -202,9 +212,16 @@ define(["backbone"], function(){
 	 		var options = {row: arguments[0], changedAttr: changed};
 	 		this.trigger('cellchange', options);
 	 	},
+	 	fireBeforeRowAdded : function(){
+	 		var options = {page: arguments[0], row: arguments[1]};
+	 		this.trigger("beforeadd", options);
+	 	},
 	 	/*Fire events end*/
 	 	
 	 	/*private methods start*/
+	 	createRow : function() {
+	 		return this.page().createRow();
+	 	},
 	 	url : function(url){
 	 		if(!url.startWith('/')){
 	 			var ctx = $app.webroot;
@@ -249,7 +266,7 @@ define(["backbone"], function(){
 //	 		}
 	 		var p = this.page(index);
 	 		//if(this.model.metadata.url != null && this.model.metadata.autoload){
-	 		p.synching = true;
+	 		this.fireSynching(p);
       		p.fetch();
       		//}
 	 	},
@@ -327,6 +344,12 @@ define(["backbone"], function(){
 	 		page.synching = false;
 	 		var attr = {key: page.store.key, pageIndex: page.pageIndex, current: (this.model.currentKey == this.key && this.currPage == page.pageIndex)};
 	 		this.model.fireSyncOver.call(this.model, attr);
+	 	},
+	 	fireSynching: function(){
+	 		var page = arguments[0];
+	 		page.synching = true;
+	 		var attr = {key: page.store.key, pageIndex: page.pageIndex, current: (this.model.currentKey == this.key && this.currPage == page.pageIndex)};
+	 		this.model.fireSynching.call(this.model, attr);
 	 	}
 	 	/*fire event end*/
 	 });
@@ -381,8 +404,17 @@ define(["backbone"], function(){
 	 		//TODO emit set Default value event
 	 		return new this.model({}, {collection: this});
 	 	},
+	 	removeRow : function(ids){
+	 		
+	 	},
 	 	row : function(row) {
-	 		this.add(row);
+	 		if(typeof row == "object")
+	 			this.add(row);
+	 		else if(typeof row == "string"){
+	 			return this.get(row);
+	 		}
+	 		else
+	 			return this.at(row);
 	 	},
 	 	rows : function(){
 	 		return this.models;

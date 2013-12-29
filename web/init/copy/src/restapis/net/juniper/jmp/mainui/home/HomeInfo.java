@@ -1,8 +1,7 @@
-package net.juniper.space.models.home;
-
+package net.juniper.jmp.mainui.home;
 import java.util.List;
 
-import net.juniper.space.sys.SessionBean;
+import net.juniper.jmp.mainui.sys.SessionBean;
 
 public class HomeInfo {
 	private List<NavType> navList;

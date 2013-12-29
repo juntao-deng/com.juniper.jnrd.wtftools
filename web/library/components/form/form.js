@@ -18,7 +18,8 @@ define(["base/base"], function(base){
 				this.listenTo(this.model, "pagechange", this.pageChange);
 				this.listenTo(this.model, "pagination", this.pagination);
 				this.listenTo(this.model, "selection", this.lis_selection);
-				this.listenTo(this.model, "error", this.lis_modelerror)
+				this.listenTo(this.model, "error", this.lis_modelerror);
+				this.listenTo(this.model, "beforeadd", this.lis_beforeadd)
 			}
 			var oThis = this;
 			//var requireArr = getRequiresInputs(this.metadata);
@@ -61,6 +62,15 @@ define(["base/base"], function(base){
 				this.gridObj.addRowData(row.cid, row.toJSON(), null, null, false);
 			else
 				this.gridObj.addRowData(row.cid, row.toJSON(), 'before', this.model.page().at(index), false);
+		},
+		lis_beforeadd : function(options){
+			var row = options.row;
+			for(var i = 0; i <this.elements.length; i ++){
+				var elemeta = this.metadata.elements[i];
+				if(elemeta.defaultValue && row.get(elemeta.name) == null){
+					row.set(elemeta.name, elemeta.defaultValue);
+				}
+			}
 		},
 		lis_cellChange : function(options) {
 			var row = options.row;

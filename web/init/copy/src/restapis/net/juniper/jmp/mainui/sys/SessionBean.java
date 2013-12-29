@@ -1,4 +1,4 @@
-package net.juniper.space.sys;
+package net.juniper.jmp.mainui.sys;
 
 import java.util.Date;
 

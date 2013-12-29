@@ -16,6 +16,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					this.listenTo(this.model, "pagination", this.lis_pagination);
 					this.listenTo(this.model, "selection", this.lis_selection);
 					this.listenTo(this.model, "syncover", this.lis_syncover);
+					this.listenTo(this.model, "synching", this.lis_synching);
 				}
 				this.paginationId = "#table_pagination_" + this.instance;
 				this.paginationEle = this.el.children(this.paginationId);
@@ -32,7 +33,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				    viewrecords: true,
 				    hidegrid:false,
 				    altRows: this.metadata.altRows,
-				    multiselect: this.metadata.multiselect,
+				    multiselect: this.metadata.multiSelect,
 				    emptyrecords: "No records to view",
 				    loadtext: "Loading...",
 					pgtext : "Page {0} of {1}",
@@ -97,7 +98,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			makeDefault : function() {
 				if(this.metadata.height)
 					this.metadata.minHeight = null;
-				this.setDefault({pagination: {rowNum : 10, rowList: [10, 15, 30]}, minHeight : 300, altRows : false, multiselect : false, autowidth: true, editable : false, multiSort : true});
+				this.setDefault({pagination: {rowNum : 10, rowList: [10, 15, 30]}, minHeight : 300, altRows : false, multiSelect : false, autowidth: true, editable : false, multiSort : true});
 			},
 			mockMetadata : function() {
 				var modelId = this.id + "MockModel";
@@ -111,7 +112,9 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				this.objOwner.model.select(arguments[1]);
 			},
 			fireOnDblClickRow : function() {
-				var options = {source: this.objOwner, eventCtx: {}, rowIndex: (arguments[2] - 1), rowId: arguments[1], row: null};
+				var rowId = arguments[1];
+				var row = this.objOwner.model.row(rowId);
+				var options = {source: this.objOwner, eventCtx: {}, rowIndex: (arguments[2] - 1), rowId: rowId, row: row};
 				this.objOwner.trigger('dblclick', options);
 			},
 			/*Fire events end*/
@@ -155,6 +158,9 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				this.gridObj.setPagination(pagination);
 			},
 			lis_selection : function(selections) {
+			},
+			lis_synching : function(){
+				this.gridObj.clearGridData();
 			},
 			lis_syncover : function(options) {
 				if(!options.current)

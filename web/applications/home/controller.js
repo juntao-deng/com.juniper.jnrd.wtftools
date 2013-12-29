@@ -1,4 +1,19 @@
 wdefine(function(){
+	$(window).resize(function() {
+		resizeSideBar();
+	});
+	
+	function resizeSideBar() {
+		var total = $(window).height();
+		$('#sys_hometable').parent().siblings("DIV").each(function(){
+			total = total - $(this).outerHeight();
+		});
+		
+		$('#sys_hometable tr:eq(0) td:eq(0) #sidenavdiv').css('min-height', total);
+	}
+	
+	resizeSideBar();
+	
 	$app.on('loaded', function(){
 		FwBase.Wtf.Application.navigateTo(window.mainCtx + "/dashboard");
 	});

@@ -5,7 +5,7 @@
 <reloadable>true</reloadable>
 <redirectLogger>false</redirectLogger>
 <updateXml>true</updateXml>
-<warLocation>/home/juntaod/Dev/tomcat/webapps/wtf.war</warLocation>
+<warLocation>/home/juntaod/Desktop/httpserver/tomcat/webapps/wtf.war</warLocation>
 <extraInfo></extraInfo>
 <webPath>/wtf</webPath>
 </tomcatProjectProperties>

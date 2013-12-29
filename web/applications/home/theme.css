@@ -1,3 +1,9 @@
+.hometable{
+}
+.sidebar-nav .nav-list.collapse.in:last-child {
+  border-bottom: none;
+}
+
 .brand { font-family: georgia, serif; }
 .brand .first {
     color: #ccc;

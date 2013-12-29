@@ -4,19 +4,19 @@
             <li><a href="#" class="hidden-phone visible-tablet visible-desktop" role="button">Settings</a></li>
             <li id="fat-menu" class="dropdown">
               	<a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                   	<i class="icon-user"></i> Space UI Team
+                   	<i class="icon-user"></i> Administrator
                     <i class="icon-caret-down"></i>
                 </a>
                 <ul class="dropdown-menu">
                     <li><a tabindex="-1" href="#">My Account</a></li>
                     <li class="divider"></li>
-                    <li><a tabindex="-1" class="visible-phone" href="#">Settings</a></li>
+                    <li><a tabindex="-1" class="visible-phone" href="javascript:void(0);">Settings</a></li>
                     <li class="divider visible-phone"></li>
                     <li><a tabindex="-1" href="sign-in.html">Logout</a></li>
                 </ul>
              </li>
         </ul>
-        <a class="brand" href="index.html"><span class="first">Junos</span> <span class="second"> New UI</span></a>
+        <a class="brand" href="index.html"><span class="first">Junos Space</span> <span class="second"> Monitor Console</span></a>
    </div>
 </div>
 <div class="page_content">
@@ -25,9 +25,9 @@
 	 * patch for layout,have to use table to layout 2 columns here.if use display:table-cell, will cause display errors in IE8, can't fix it. if use float, will conflict with row-fluid 
 	 */
 	 -->
-	<table class="hometable">
+	<table id="sys_hometable" class="hometable">
 		<tr>
-			<td class="td1">
+			<td class="td1" style="background:#f6f6f6">
 				<div class="sidebar" id="homesidenav" wtftype="sidenav"></div>
 			</td>
 			<td class="td2">

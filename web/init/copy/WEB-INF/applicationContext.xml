@@ -18,8 +18,8 @@
         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd  
         http://www.springframework.org/schema/jee   
         http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
-    <context:component-scan base-package="net.juniper.space.services.impl" />
- 	<jpa:repositories base-package="net.juniper.space.dao" entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="transactionManager"/> 
+    <context:component-scan base-package="net.juniper.jmp" />
+ 	<jpa:repositories base-package="net.juniper.jmp" entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="transactionManager"/> 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
