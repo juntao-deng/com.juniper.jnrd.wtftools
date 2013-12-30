@@ -49,7 +49,7 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 				this.metadata.groups = groups;
 			},
 			makeDefault : function(){
-				this.setDefault({style: "inverse", buttonMode: FwBase.Wtf.Global.Configuration.buttonMode});
+				this.setDefault({groups:[], style: "inverse", buttonMode: FwBase.Wtf.Global.Configuration.buttonMode});
 				this.setDefault({handler : "FwBase.Wtf.UIPattern.Handler.CrudUIHandler"});
 				if(this.metadata.style == "")
 					this.metadata.cssclass = "btn";
