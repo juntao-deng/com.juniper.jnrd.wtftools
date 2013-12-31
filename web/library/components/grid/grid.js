@@ -109,7 +109,14 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			},
 			/*Fire events start, private*/
 			fireOnSelectRow : function() {
-				this.objOwner.model.select(arguments[1]);
+				var sel = arguments[2];
+				var id = arguments[1];
+				if(sel){
+					this.objOwner.model.select(id, !this.objOwner.metadata.multiSelect);
+				}
+				else{
+					this.objOwner.model.unselect(id);
+				}
 			},
 			fireOnDblClickRow : function() {
 				var rowId = arguments[1];

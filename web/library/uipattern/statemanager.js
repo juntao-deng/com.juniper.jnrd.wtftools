@@ -30,6 +30,11 @@ define(function(){
   	 						stateObjs[j].updateState(trigger);
   	 					}
   	 				});
+  	 				trigger.on("unselection", function(){
+  	 					for(var j = 0; j < stateObjs.length; j ++){
+  	 						stateObjs[j].updateState(trigger);
+  	 					}
+  	 				});
   	 			}
   	 		}
   	 	}

@@ -98,14 +98,19 @@ define(["backbone"], function(){
 	 	/**
 	 	 * Select rows in current store
 	 	 * @param 1.  ids, can be "rowid" or array of rowid :[rowid1, rowid2] or index of row index
+	 	 * @param 2. clear , if clear before selections. default true.
 	 	 */
-	 	select : function(ids) {
-//	 		if(arguments.length == 0)
-//	 			return this.page().selections;
-	 		return this.page().select(ids);
+	 	select : function() {
+	 		var ids = arguments[0];
+	 		var clear = arguments[1] == null? true : arguments[1];
+	 		this.page().select(ids, clear);
 	 	},
 	 	selections : function() {
 	 		return this.page().selections;
+	 	},
+	 	unselect : function() {
+	 		var ids = arguments[0];
+	 		this.page().unselect(ids);
 	 	},
 	 	save : function(options) {
 	 		var selections = this.selections();
@@ -184,6 +189,10 @@ define(["backbone"], function(){
 	 	fireSelection : function() {
 	 		var options = {add: false, selection: arguments[0]};
 	 		this.trigger("selection", options);
+	 	},
+	 	fireUnSelection : function() {
+	 		var options = {add: false, selection: arguments[0]};
+	 		this.trigger("unselection", options);
 	 	},
 	 	fireSyncOver : function() {
 	 		var options = arguments[0];
@@ -426,8 +435,15 @@ define(["backbone"], function(){
 	 		if(arguments.length == 2){
 	 			clear = arguments[1];
 	 		}
-	 		var newSelections = {ids: [], indices: [], rows: []};
+	 		var newSelections = null;
+	 		if(clear){
+	 			newSelections = {ids: [], indices: [], rows: []};
+	 		}	
+	 		else{
+	 			newSelections = this.selections;
+	 		}
 	 		var hasChanged = false;
+//	 		var newSelections = this.selections;
 	 		if(typeof arguments[0] == "string"){
 	 			hasChanged = this.doSelectById(arguments[0], newSelections);
 	 		}
@@ -443,10 +459,8 @@ define(["backbone"], function(){
 	 					hasChanged = hasChanged || this.doSelectByIndex(arr[i], newSelections);
 	 			}
 	 		}
-	 		this.selections = newSelections;
-	 		if(!clear){
-	 			//TODO merge
-	 		}
+	 		if(clear)
+	 			this.selections = newSelections;
 	 		if(hasChanged)
 	 			this.dataset.fireSelection.apply(this.dataset, [this.selections]);
 	 	},
@@ -459,11 +473,13 @@ define(["backbone"], function(){
  					if(models[i] == model)
  						break;
  				}
+ 				var changed = _.indexOf(this.selections.ids, id) == -1;
  				var id = model.id;
- 				newSelections.ids.push(id);
+ 				newSelections.ids.push("" + id);
  				newSelections.indices.push(i);
  				newSelections.rows.push(model);
- 				return _.indexOf(this.selections.ids, id) == -1;
+// 				return _.indexOf(this.selections.ids, id) == -1;
+ 				return changed;
  			}
  			else
  				return false;
@@ -471,17 +487,54 @@ define(["backbone"], function(){
 	 	doSelectByIndex: function(index, newSelections) {
  			var model = this.at(index);
  			if(model != null){
+ 				var changed = _.indexOf(this.selections.indices, index) == -1;
  				var id = model.id;
- 				newSelections.ids.push(id);
+ 				newSelections.ids.push("" + id);
  				newSelections.indices.push(index);
  				newSelections.rows.push(model);
- 				return _.indexOf(this.selections.indices, index) == -1;
+// 				return _.indexOf(this.selections.indices, index) == -1;
+ 				return changed;
  			}
  			else
  				return false;
 	 	},
+	 	doUnSelectById: function(id) {
+			var index = _.indexOf(this.selections.ids, id);
+			if(index == -1)
+				return false;
+			this.selections.ids.splice(index, 1);
+			this.selections.indices.splice(index, 1);
+			this.selections.rows.splice(index, 1);
+			return true;
+	 	},
+	 	doUnSelectByIndex: function(id) {
+			var index = _.indexOf(this.selections.indices, id);
+			if(index == -1)
+				return false;
+			this.selections.ids.splice(index, 1);
+			this.selections.indices.splice(index, 1);
+			this.selections.rows.splice(index, 1);
+			return true;
+	 	}, 
 	 	unselect : function() {
-	 		
+	 		var hasChanged = false;
+	 		if(typeof arguments[0] == "string"){
+	 			hasChanged = this.doUnSelectById(arguments[0]);
+	 		}
+	 		else if(typeof arguments[0] == "number"){
+	 			hasChanged = this.doUnSelectByIndex(arguments[0]);
+	 		}
+	 		else if(typeof arguments[0] == "array"){
+	 			var arr = arguments[0];
+	 			for(var i = 0; i < arr.length; i ++){
+	 				if(typeof arr[i] == "string")
+	 					hasChanged = hasChanged || this.doUnSelectById(arr[i]);
+	 				else
+	 					hasChanged = hasChanged || this.doUnSelectByIndex(arr[i]);
+	 			}
+	 		}
+	 		if(hasChanged)
+	 			this.dataset.fireUnSelection.apply(this.dataset, [this.selections]);
 	 	},
 	 	
 	 	/* fire event start*/
