@@ -43,7 +43,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 					multiSort : this.metadata.multiSort,
 					viewsortcols : [true, 'vertical', true],
 //					onSelectRow : this.fireOnSelectRow,
-					onSelectAll : this.fireOnSelectAll,
+//					onSelectAll : this.fireOnSelectAll,
 					beforeSelectRow: this.fireOnBeforeSelectRow,
 					onCellSelect : this.fireOnCellSelect,
 					ondblClickRow : this.fireOnDblclickRow,
@@ -53,6 +53,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				});
 				this.gridObj[0].objOwner = this;
 				this.gridObj.bind('jqGridSelectRow', this.fireOnSelectRow);
+				this.gridObj.bind('jqGridSelectAll', this.fireOnSelectAll);
 				this.gridObj.bind('jqGridDblClickRow', this.fireOnDblClickRow);
 				if(this.model){
 					this.model.pageSize(pageSize == null ? -1 : pageSize);
@@ -116,6 +117,16 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 				}
 				else{
 					this.objOwner.model.unselect(id);
+				}
+			},
+			fireOnSelectAll : function() {
+				var sel = arguments[2];
+				var ids = arguments[1];
+				if(sel){
+					this.objOwner.model.select(ids, !this.objOwner.metadata.multiSelect);
+				}
+				else{
+					this.objOwner.model.unselect(ids);
 				}
 			},
 			fireOnDblClickRow : function() {

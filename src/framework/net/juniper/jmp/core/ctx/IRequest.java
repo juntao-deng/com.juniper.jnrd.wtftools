@@ -8,4 +8,5 @@ public interface IRequest {
 	public String[] getParameters(String key);
 	public String getParameter(String key);
 	public Map<String, String[]> getParameterMap();
+	public String getRemoteAddress();
 }

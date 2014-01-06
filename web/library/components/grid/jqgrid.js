@@ -2959,13 +2959,17 @@ $.jgrid.extend({
 							$("#"+$.jgrid.jqID(selection), "#"+$.jgrid.jqID(fid)).addClass("ui-state-highlight");
 						}
 						stat = true;
-					} else {
-						stat = false;
-					}
-					$t.p.selrow = pt.id;
-					if( onsr ) { 
-						$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
-						if( $t.p.onSelectRow) { $t.p.onSelectRow.call($t, pt.id, stat, e); }
+					} 
+//					else {
+//						stat = false;
+//					}
+					//modified, on trigger selection event
+					if(stat){
+						$t.p.selrow = pt.id;
+						if( onsr ) { 
+							$($t).triggerHandler("jqGridSelectRow", [pt.id, stat, e]);
+							if( $t.p.onSelectRow) { $t.p.onSelectRow.call($t, pt.id, stat, e); }
+						}
 					}
 				}
 			} else {
@@ -3700,6 +3704,8 @@ $.jgrid.extend({
 		return this.each(function(){
 			var $t = this;
 			if(!$t.grid) {return;}
+			//added
+			$t.setHeadCheckBox(false);
 			if(typeof clearfooter !== 'boolean') { clearfooter = false; }
 			if($t.p.deepempty) {$("#"+$.jgrid.jqID($t.p.id)+" tbody:first tr:gt(0)").remove();}
 			else {

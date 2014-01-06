@@ -274,6 +274,7 @@ define(["backbone"], function(){
 ////	 			this.fireClear();
 //	 		}
 	 		var p = this.page(index);
+	 		p.reset();
 	 		//if(this.model.metadata.url != null && this.model.metadata.autoload){
 	 		this.fireSynching(p);
       		p.fetch();
@@ -416,6 +417,11 @@ define(["backbone"], function(){
 	 	removeRow : function(ids){
 	 		
 	 	},
+	 	reset : function() {
+	 		this.selections.ids = [];
+	 		this.selections.indices = [];
+	 		this.selections.rows = [];
+	 	},
 	 	row : function(row) {
 	 		if(typeof row == "object")
 	 			this.add(row);
@@ -450,13 +456,13 @@ define(["backbone"], function(){
 	 		else if(typeof arguments[0] == "number"){
 	 			hasChanged = this.doSelectByIndex(arguments[0], newSelections);
 	 		}
-	 		else if(typeof arguments[0] == "array"){
+	 		else if(arguments[0] instanceof Array){
 	 			var arr = arguments[0];
 	 			for(var i = 0; i < arr.length; i ++){
 	 				if(typeof arr[i] == "string")
-	 					hasChanged = hasChanged || this.doSelectById(arr[i], newSelections);
+	 					hasChanged = this.doSelectById(arr[i], newSelections) || hasChanged;
 	 				else
-	 					hasChanged = hasChanged || this.doSelectByIndex(arr[i], newSelections);
+	 					hasChanged = this.doSelectByIndex(arr[i], newSelections) || hasChanged;
 	 			}
 	 		}
 	 		if(clear)
@@ -524,13 +530,13 @@ define(["backbone"], function(){
 	 		else if(typeof arguments[0] == "number"){
 	 			hasChanged = this.doUnSelectByIndex(arguments[0]);
 	 		}
-	 		else if(typeof arguments[0] == "array"){
+	 		else if(arguments[0] instanceof Array){
 	 			var arr = arguments[0];
 	 			for(var i = 0; i < arr.length; i ++){
 	 				if(typeof arr[i] == "string")
-	 					hasChanged = hasChanged || this.doUnSelectById(arr[i]);
+	 					hasChanged = this.doUnSelectById(arr[i]) || hasChanged;
 	 				else
-	 					hasChanged = hasChanged || this.doUnSelectByIndex(arr[i]);
+	 					hasChanged = this.doUnSelectByIndex(arr[i]) || hasChanged;
 	 			}
 	 		}
 	 		if(hasChanged)

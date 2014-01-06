@@ -34,4 +34,12 @@ public class ApiContext {
 		String sessionId = threadLocal.get().getRequest().getSessionId();
 		return CacheManager.getInstance().getStrongCache(sessionId);
 	}
+	
+	public static String getSessionId() {
+		return threadLocal.get().getRequest().getSessionId();
+	}
+	
+	public static ClientInfo getClientInfo() {
+		return threadLocal.get().getClientInfo();
+	}
 }

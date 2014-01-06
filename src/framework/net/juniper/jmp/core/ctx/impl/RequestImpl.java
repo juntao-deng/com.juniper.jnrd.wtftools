@@ -37,4 +37,9 @@ public class RequestImpl implements IRequest {
 		return request.getParameterMap();
 	}
 
+	@Override
+	public String getRemoteAddress() {
+		return request.getRemoteAddr();
+	}
+
 }

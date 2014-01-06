@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class ApiContextInfo {
 	private IRequest request;
 	private PagingContext pagingContext;
+	private ClientInfo clientInfo;
 	public ApiContextInfo(IRequest request){
 		this.request = request;
 	}
@@ -31,6 +32,15 @@ public class ApiContextInfo {
 			pagingContext.setSpec(getSpecification());
 		}
 		return pagingContext;
+	}
+
+	public ClientInfo getClientInfo() {
+		if(clientInfo == null){
+			clientInfo = new ClientInfo();
+			String clientIp = request.getRemoteAddress();
+			clientInfo.setClientIp(clientIp);
+		}
+		return clientInfo;
 	}
 }
 
