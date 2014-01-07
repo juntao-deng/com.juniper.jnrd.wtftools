@@ -83,8 +83,16 @@ define(["backbone"], function(){
 	 			return this.page().row(arguments[0]);
 	 		}
 	 	},
-	 	rows : function(key, index){
-	 		return this.store(key).page(index).rows();
+	 	rows : function(key, index, ids){
+	 		var tkey = key;
+	 		var tindex = index;
+	 		var tids = ids;
+	 		if(tkey instanceof Array){
+	 			tkey = null;
+	 			tindex = null;
+	 			tids = tkey;
+	 		}
+	 		return this.store(tkey).page(tindex).rows(tids);
 	 	},
 	 	removeRow : function(ids){
 	 		this.page().removeRow(ids);
@@ -106,7 +114,12 @@ define(["backbone"], function(){
 	 		this.page().select(ids, clear);
 	 	},
 	 	selections : function() {
-	 		return this.page().selections;
+	 		var selections = this.page().selections;
+	 		var cloneSel = {};
+	 		cloneSel.ids = selections.ids.slice(0);
+	 		cloneSel.rows = selections.rows.slice(0);
+	 		cloneSel.indices = selections.indices.slice(0);
+	 		return cloneSel;
 	 	},
 	 	unselect : function() {
 	 		var ids = arguments[0];
@@ -372,20 +385,6 @@ define(["backbone"], function(){
 			 this.urlRoot = this.page.dataset.transurl;
 			 this.page.listenTo(this, 'change', this.page.fireCellChange);
 		 }
-//		 sync : function() {
-//			 var dataset = this.collection.dataset;
-//			 var url = dataset.transurl;
-//		 	 var type = methodMap[arguments[0]];
-//		 	 this.url = url;
-//		 	 if(type == "DELETE")
-//		 		 this.url = this.url + "/" + this.id;
-//		 	if(window.clientMode){
-//		 		this.syncFromClient.apply(this, arguments);
-//		 	}
-//		 	else{
-//		 		Backbone.sync.apply(this, arguments);
-//		 	}
-//		 }
 	 });
 	 
 	 methodMap = {
@@ -415,7 +414,18 @@ define(["backbone"], function(){
 	 		return new this.model({}, {collection: this});
 	 	},
 	 	removeRow : function(ids){
-	 		
+	 		this.unselect(ids);
+	 		var models = this.rows(ids);
+	 		var tids = [];
+	 		for(var i = 0; i < models.length; i ++){
+	 			tids.push(models[i].id);
+	 		}
+	 		var oThis = this;
+	 		var success = function() {
+	 			oThis.remove(models);
+	 		};
+	 		var options = {deleteIds: tids, success: success};
+	 		this.sync('delete', this, options);
 	 	},
 	 	reset : function() {
 	 		this.selections.ids = [];
@@ -432,7 +442,22 @@ define(["backbone"], function(){
 	 			return this.at(row);
 	 	},
 	 	rows : function(){
-	 		return this.models;
+	 		var ids = arguments[0];
+	 		if(ids == null)
+	 			return this.models;
+	 		var models = [];
+	 		for(var i = 0; i < ids.length; i ++){
+	 			var id = ids[i];
+	 			var model = null;
+	 			if(typeof id == "string"){
+	 				model = this.get(id);
+	 			}
+	 			else{
+	 				model = this.at(id);
+	 			}
+	 			models.push(model);
+	 		}
+	 		return models;
 	 	},
 	 	select : function(){
 	 		if(arguments.length == 0)
@@ -554,18 +579,19 @@ define(["backbone"], function(){
 	 		var url = this.dataset.transurl;
 	 		var type = methodMap[arguments[0]];
 	 		this.url = url;
+	 		var options = arguments[2];
 	 		var qm = false;
 	 		if(type == "GET"){
 	 			qm = true;
 	 			this.url = url + "?s_page=" + this.pageIndex + "," + this.dataset.metadata.pageSize; 
-	 		}
-	 		var filters = this.dataset.filters();
-	 		if(filters != null && filters.length > 0){
-	 			if(!qm){
-	 				this.url += "?";
-	 				qm = true;
+	 			var filters = this.dataset.filters();
+	 			if(filters != null && filters.length > 0){
+	 				this.url += "s_filter=" + $.toJSON(filters);
 	 			}
-	 			this.url += "s_filter=" + $.toJSON(filters);
+	 		}
+	 		else if(type == "DELETE"){
+	 			var tids = options.deleteIds;
+	 			this.url = url + "/" + tids.join(",");
 	 		}
 	 		var reqPrams = this.dataset.reqParams();
 	 		if(reqPrams != null && !_.isEmpty(reqPrams)){
@@ -590,7 +616,8 @@ define(["backbone"], function(){
 	 				var pagination = {pageIndex: oThis.pageIndex, pageSize: respObj.pageSize, totalRecords: respObj.totalRecords, pageCount: pageCount};
 	 				arguments[0] = respObj.records;
 	 				oThis.trigger("pagination", pagination);
-	 				success.apply(this, arguments);
+	 				if(success)
+	 					success.apply(this, arguments);
 	 			}
 	 		}
 	 		

@@ -1,4 +1,4 @@
-define(["base/base", "../../uipattern/cruduihandler"], function(base){	
+define(["base/base"], function(base){	
 	FwBase.Wtf.View.Controls.Menu = function(){
 		this.menuitems = [];
 		this.stateful = true;
@@ -8,9 +8,9 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 		{		
 			template: _.template($('#sys_atom_controls_menu').html()),
 			postInit : function() {
-				if(this.metadata.handler){
-					eval("this.handler = new " + this.metadata.handler + "();");
-				}
+//				if(this.metadata.handler){
+//					eval("this.handler = new " + this.metadata.handler + "();");
+//				}
 				//just for 3 levels
 				for(var i = 0; i < this.metadata.groups.length; i ++){
 					var group = this.metadata.groups[i];
@@ -50,7 +50,7 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 			},
 			makeDefault : function(){
 				this.setDefault({groups:[], style: "inverse", buttonMode: FwBase.Wtf.Global.Configuration.buttonMode});
-				this.setDefault({handler : "FwBase.Wtf.UIPattern.Handler.CrudUIHandler"});
+//				this.setDefault({handler : "FwBase.Wtf.UIPattern.Handler.CrudUIHandler"});
 				if(this.metadata.style == "")
 					this.metadata.cssclass = "btn";
 				else
@@ -71,11 +71,11 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 				return null;
 			},
 			itemClicked : function(ctx) {
-				var source = {source : this, trigger : ctx.source, eventCtx : ctx.eventCtx};
-				this.trigger("click", source);
-				if(!source.eventCtx.stop && this.handler){
-					this.handler.handle.call(this, source);
-				}
+//				var source = {source : this, trigger : ctx.source, eventCtx : ctx.eventCtx};
+				this.trigger("click", ctx);
+//				if(!source.eventCtx.stop && this.handler){
+//					this.handler.handle.call(this, source);
+//				}
 			},
 			
 			updateState : function(trigger) {
@@ -109,10 +109,14 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 			this.el.click(function(){
 				if(oThis.enableAttr == false)
 					return;
-				var ctx = {source : oThis, eventCtx : {}};
+				var ctx = {source : oThis.menubar, trigger: oThis, eventCtx : {}};
 				oThis.trigger("click", ctx);
-				if(!ctx.eventCtx.stop)
+				if(!ctx.eventCtx.stop){
 					oThis.menubar.itemClicked(ctx);
+					if(!ctx.eventCtx.stop && oThis.action){
+						oThis.action.execute(ctx);
+					}
+				}
 				return false;
 			});
 			
@@ -124,10 +128,31 @@ define(["base/base", "../../uipattern/cruduihandler"], function(base){
 					if(typeof this.metadata.statemgr == 'function'){
 						this.statemgr = new this.metadata.statemgr(this, this.menubar.ctx, this.menubar.ctx.stateManager());
 					}
-					var mgrClass = this.metadata.statemgr.func;
-					if(mgrClass != null){
-						this.statemgr = new mgrClass(this, this.menubar.ctx, this.menubar.ctx.stateManager());
-						this.statemgr.setOptions(this.metadata.statemgr.params);
+					else{
+						var mgrClass = this.metadata.statemgr.func;
+						if(mgrClass != null){
+							this.statemgr = new mgrClass(this, this.menubar.ctx, this.menubar.ctx.stateManager());
+							this.statemgr.setOptions(this.metadata.statemgr.params);
+						}
+					}
+				}
+			}
+			
+			if(this.metadata.action){
+				if(this.metadata.action){
+					if(typeof this.metadata.action == 'string'){
+						this.action = eval("(new " + this.metadata.action + "())");
+					}
+					else{
+						if(typeof this.metadata.action == 'function'){
+							this.action = new this.metadata.action();
+						}
+						else{
+							var actionFunc = this.metadata.action.func;
+							if(actionFunc != null){
+								this.action = new actionFunc(this.metadata.action.params);
+							}
+						}
 					}
 				}
 			}
