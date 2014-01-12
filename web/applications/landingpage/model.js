@@ -1,4 +1,0 @@
-wdefine(function(){
-	$app.model("devicesmodel", {url : "demodevices"});
-	$app.metadata("main_grid", {height: 390, model: 'devicesmodel', columns : [{"type":"string","isid":true,"name":"id","text":"Id","visible":true,"sortable":true},{"type":"string","name":"name","text":"Name","visible":true,"sortable":true},{"type":"string","name":"address","text":"Address","visible":true,"sortable":true},{"type":"string","name":"during","text":"During","visible":true,"sortable":true},{"type":"string","name":"desc","text":"Desc","visible":true,"sortable":true},{"type":"string","name":"state","text":"State","visible":true,"sortable":true},{"type":"string","name":"url","text":"Url","visible":true,"sortable":true}]});
-});
