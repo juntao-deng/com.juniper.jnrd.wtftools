@@ -79,8 +79,5 @@
             <src path="src/framework"/>
             <classpath refid="wtfbase.classpath"/>
         </javac>
-    	<jar destfile="bin/wtfbase.jar">
-    		<fileset dir="web/WEB-INF/classes"/>
-    	</jar>
     </target>
 </project>
