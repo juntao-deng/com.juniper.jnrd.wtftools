@@ -1,6 +1,6 @@
 wdefine(function(){
 	$widget.metadata('filterlabel', {text: 'Filtered by:', style: 'primary'});
-	$widget.metadata('selectedlink', {text: '0 items selected', style: 'link'});
+//	$widget.metadata('selectedlink', {text: '0 items selected', style: 'link'});
 	$widget.metadata('queryplan', {groups : [
 					                      {menus : [
 					                                {id:'filter1',name:'None', menus : [{id:'filter1',name:'Filter1', icon: 'icon-edit'},

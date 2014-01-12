@@ -57,7 +57,7 @@
 					{{}
 					
 					else{}}
-						<li id="{{= menu.id}}" class="{{= cssclass}} {{=(menu.enable == null || menu.enable)? '' : 'disabled'}} {{= lastStr}}" id="{{= menu.id}}" wtfinnertype="wtfitem">
+						<li id="{{= menu.id}}" class="{{= cssclass}} {{=(menu.enable == null || menu.enable)? '' : 'disabled'}} {{= lastStr}}" id="{{= menu.id}}" wtfinnertype="wtfitem" title="{{= menu.tip}}">
 							{{if(buttonMode == 0 || buttonMode == 1){
 								if(menu.icon && menu.icon != null){}}
 									<i class="{{= menu.icon}}"></i>

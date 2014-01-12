@@ -16,9 +16,52 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
   		applicationMap : {},
   	 	currentApplication : null,
   	 	application : function(app) {
-  	 		if(app instanceof String)
-  	 			return FwBase.Wtf.Application.applicationMap[app];
-  	 		AppUtil.applicationMap[app.id, app];
+  	 		if(typeof app == "string"){
+  	 			var appList = FwBase.Wtf.Application.applicationMap[app];
+  	 			if(appList == null || appList.length == 0)
+  	 				return null;
+  	 			var uniqueId = arguments[1];
+  	 			if(uniqueId != null){
+  	 				for(var i = 0; i < appList.length; i ++){
+  	 					if(appList[i].uniqueId == uniqueId)
+  	 						return appList[i];
+  	 				}
+  	 				return null;
+  	 			}
+  	 			else{
+  	 				if(appList.length > 0){
+  	 					alert("the unique id can not be null because there are more than 1 app with id:" + app);
+  	 					return null;
+  	 				}
+  	 				return appList[0];
+  	 			}
+  	 			
+  	 		}
+  	 		var appList = AppUtil.applicationMap[app.id];
+  	 		if(appList == null){
+  	 			appList = [];
+  	 			AppUtil.applicationMap[app.id] = appList;
+  	 		}
+  	 		appList.push(app);
+  	 	},
+  	 	applications : function() {
+  	 		var apps = [];
+  	 		for(var i in AppUtil.applicationMap){
+  	 			var appList = AppUtil.applicationMap[i];
+  	 			for(var j = 0; j < appList.length; j ++)
+  	 				apps.push(appList[j]);
+  	 		}
+  	 		return apps;
+  	 	},
+  	 	children : function(app){
+  	 		var apps = AppUtil.applications();
+  	 		var capps = [];
+  	 		for(var i = 0; i < apps.length; i ++){
+  	 			if(apps[i].parent == app){
+  	 				capps.push(apps[i]);
+  	 			}
+  	 		}
+  	 		return capps;
   	 	},
   	 	current : function(app){
   	 		if(app != null){
@@ -38,10 +81,32 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
   	  			AppUtil.navigateTo(appid, null, {callback : callback, homeApp : true});
   	  		 });
   	 	},
+  	 	removeApplication : function(app) {
+  	 		var appList = AppUtil.applicationMap[app.id];
+  	 		if(appList != null){
+  	 			for(var i = 0; i < appList.length; i ++){
+  	 				if(appList[i] === app){
+  	 					appList.splice(i, 1);
+  	 					return;
+  	 				}
+  	 			}
+  	 		}
+  	 	},
   	 	popStack : function() {
   	 		AppUtil.removeTitle($app.uniqueId);
   	 		$app.close();
   	 	},
+  	 	closeChildren : function(id, uniqueId) {
+  	 		var app = AppUtil.application(id, uniqueId);
+  	 		var children = AppUtil.children(app);
+  	 		for(var i = 0; i < children.length; i ++){
+  	 			var child = children[i];
+  	 			child.close();
+  	 			if(child.stackApp)
+  	 				AppUtil.removeTitle(child.uniqueId);
+  	 		}
+  	 	},
+  	 	
   	 	navigateToStack : function(url, reqData, options){
   	 		var stacks = 1;
   	 		var currApp = $app;
@@ -223,6 +288,7 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
   			if(breadcrumb.length > 0){
 	  			breadcrumb[0].originalUrl = titleInfo.url;
 	  			breadcrumb[0].originalTitle = titleInfo.title;
+	  			breadcrumb[0].uniqueId = titleInfo.uniqueId;
 	  			breadcrumb.attr('id', 'breadcrumb_' + titleInfo.uniqueId);
 	  			breadcrumb.html(titleInfo.title);
   			}
@@ -233,17 +299,22 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
   			if(titleZone.length > 0)
   				titleZone.html(titleInfo.title);
   			var last = $("#sys_app_breadcrumb li:last");
-  			last.html("<a href=\"javascript:AppUtil.lookupInStack('" + last[0].originalUrl + "')\">" + last.html() + "</a><span class=\"divider\">/</span>");
+  			last.html("<a>" + last.html() + "</a><span class=\"divider\">/</span>");
+  			last.bind('click', function(){
+  				AppUtil.closeChildren(this.originalUrl, this.uniqueId);
+  			});
   			var newAdd = last.clone();
   			newAdd.html(titleInfo.title);
   			newAdd[0].originalUrl = titleInfo.url;
   			newAdd[0].originalTitle = titleInfo.title;
+  			newAdd[0].uniqueId = titleInfo.uniqueId;
   			newAdd.attr('id', 'breadcrumb_' + titleInfo.uniqueId);
   			$("#sys_app_breadcrumb").append(newAdd);
   		},
   		removeTitle : function(uniqueid) {
   			var curr = $('#breadcrumb_' + uniqueid);
   			var prev = curr.prev();
+  			prev.unbind('click');
   			prev.html(prev[0].originalTitle);
   			curr.remove();
   		},
@@ -700,7 +771,10 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
   	 		var options = {source: this, eventCtx: eventCtx};
   	 		this.trigger("closing", options);
   	 		if(options.eventCtx.stop == true)
-  	 			return;
+  	 			return false;
+  	 		
+  	 		AppUtil.closeChildren(this.id, this.uniqueId);
+  	 		
   	 		if(this.dialog)
   	 			this.dialog.close();
   	 		else{
@@ -722,6 +796,7 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
   	 		var components = this.components();
   	 		for(var i = 0; i < components.length; i ++)
   	 			components[i].destroy();
+  	 		AppUtil.removeApplication(this);
   	 		//TODO need further clean
 //  	 		this.componentsMap = null;
 //  	 		this.modelsMap = null;
