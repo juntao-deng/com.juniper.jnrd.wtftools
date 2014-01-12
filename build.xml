@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="wtfbase">
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="springframework-core.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/springframework/spring-core/3.0.5.RELEASE/spring-core-3.0.5.RELEASE.jar"/>
+    </path>
+    <path id="springframework-web.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/springframework/spring-web/3.0.5.RELEASE/spring-web-3.0.5.RELEASE.jar"/>
+    </path>
+    <path id="springframework-data.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/springframework/data/spring-data-jpa/1.3.4.RELEASE/spring-data-jpa-1.3.4.RELEASE.jar"/>
+        <pathelement location="../../../3rdParty/jboss/modules/org/springframework/data/spring-data-commons/1.5.2.RELEASE/spring-data-commons-1.5.2.RELEASE.jar"/>
+    </path>
+    <path id="springframework-beans.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/springframework/spring-beans/3.0.5.RELEASE/spring-beans-3.0.5.RELEASE.jar"/>
+    </path>
+    <path id="springframework-context.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/springframework/spring-context/3.0.5.RELEASE/spring-context-3.0.5.RELEASE.jar"/>
+    </path>
+    <path id="modules-javax.servlet.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/servlet/api/main/jboss-servlet-api_3.0_spec-1.0.2.Final.jar"/>
+    </path>
+    <path id="modules-javax.validation.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/validation/api/main/validation-api-1.0.0.GA.jar"/>
+    </path>
+    <path id="modules-org.apache.commons.beanutils.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/apache/commons/beanutils/main/commons-beanutils-1.8.3.jar"/>
+    </path>
+    <path id="modules-javax.persistence.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/persistence/api/main/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+    </path>
+    <path id="modules-javax.ws.rs.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/ws/rs/api/main/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar"/>
+    </path>
+    <path id="modules-org.slf4j.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/slf4j/main/slf4j-api-1.7.2.jar"/>
+    </path>
+    <path id="3rdParty.net.sf.json.userclasspath">
+        <pathelement location="../../../3rdParty/net/sf/main/json-lib-2.4.jar"/>
+    </path>
+    <path id="wtfbase.classpath">
+        <pathelement location="web/WEB-INF/classes"/>
+        <path refid="springframework-core.userclasspath"/>
+        <path refid="springframework-web.userclasspath"/>
+        <path refid="springframework-data.userclasspath"/>
+        <path refid="springframework-beans.userclasspath"/>
+        <path refid="springframework-context.userclasspath"/>
+        <path refid="modules-javax.servlet.api.userclasspath"/>
+        <path refid="modules-javax.validation.api.userclasspath"/>
+        <path refid="modules-org.apache.commons.beanutils.userclasspath"/>
+        <path refid="modules-javax.persistence.api.userclasspath"/>
+        <path refid="modules-javax.ws.rs.api.userclasspath"/>
+        <path refid="modules-org.slf4j.userclasspath"/>
+        <path refid="3rdParty.net.sf.json.userclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="web/WEB-INF/classes"/>
+        <copy includeemptydirs="false" todir="web/WEB-INF/classes">
+            <fileset dir="src/framework">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="web/WEB-INF/classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="init" name="build">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="web/WEB-INF/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src/framework"/>
+            <classpath refid="wtfbase.classpath"/>
+        </javac>
+    	<jar destfile="bin/wtfbase.jar">
+    		<fileset dir="web/WEB-INF/classes"/>
+    	</jar>
+    </target>
+</project>
