@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/framework"/>
-	<classpathentry kind="src" path="src/resources"/>
+	<classpathentry kind="src" path="src/persist"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="net.juniper.wtf.library.container/Middleware_Library"/>
 	<classpathentry kind="con" path="net.juniper.wtf.library.container/Product_Common"/>
 	<classpathentry kind="con" path="net.juniper.wtf.library.container/ThdParty_Library"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.commons.beanutils"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.servlet.api"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-core"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-web"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-data"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.persistence.api"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.ws.rs.api"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.slf4j"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/net.sf.json"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-beans"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-context"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
