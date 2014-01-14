@@ -1,26 +1,20 @@
 package net.juniper.jmp.core.ctx;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 public class PagingContext {
-	private Specification<?> spec;
+	private Filterable filter;
 	private Pageable pageable;
 	
-	public Specification<?> getSpec() {
-		return spec;
-	}
-	public <T>Specification<T> getSpec(Class<T> entityClass) {
-		return (Specification<T>) spec;
-	}
-	
-	public void setSpec(Specification<?> spec) {
-		this.spec = spec;
-	}
 	public Pageable getPageable() {
 		return pageable;
 	}
 	public void setPageable(Pageable pageable) {
 		this.pageable = pageable;
+	}
+	public Filterable getFilter() {
+		return filter;
+	}
+	public void setFilter(Filterable filter) {
+		this.filter = filter;
 	}
 }

@@ -1,9 +1,11 @@
-package test;
+package net.juniper.jmp.persist.datasource;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
+
+import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
 
 import org.jboss.resteasy.logging.Logger;
 

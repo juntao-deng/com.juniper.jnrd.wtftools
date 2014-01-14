@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/framework"/>
+	<classpathentry kind="src" path="src/persist"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-core"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-web"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-data"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-beans"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-context"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-asm"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-orm"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-jdbc"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-tx"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-aop"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-expression"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/3rdParty.aopalliance"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/net.juniper.jmp.wtfbase"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.resteasy.resteasy-jaxrs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.commons.logging"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.commons.lang"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.servlet.api"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.validation.api"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.commons.beanutils"/>

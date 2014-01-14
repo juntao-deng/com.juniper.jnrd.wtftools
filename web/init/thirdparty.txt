@@ -13,6 +13,7 @@ springframework-expression
 net.juniper.jmp.wtfbase
 modules-org.jboss.resteasy.resteasy-jaxrs
 modules-org.apache.commons.logging
+modules-org.apache.commons.lang
 modules-javax.servlet.api
 modules-javax.validation.api
 modules-org.apache.commons.beanutils

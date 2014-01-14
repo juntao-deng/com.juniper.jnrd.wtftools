@@ -79,5 +79,7 @@
             <src path="src/framework"/>
             <classpath refid="wtfbase.classpath"/>
         </javac>
+    	<jar jarfile="bin/wtfbase.jar" basedir="web/WEB-INF/classes"/>  
+    	<jar jarfile="bin/wtfbase-sources.jar" basedir="src/framework"/>  
     </target>
 </project>

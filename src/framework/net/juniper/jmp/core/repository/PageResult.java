@@ -3,7 +3,7 @@ package net.juniper.jmp.core.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
+import net.juniper.jmp.core.ctx.Page;
 
 public class PageResult<T> {
 	private Integer pageSize;

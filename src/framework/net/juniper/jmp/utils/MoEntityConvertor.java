@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.juniper.jmp.core.ctx.Page;
+import net.juniper.jmp.core.ctx.Pageable;
+import net.juniper.jmp.core.ctx.impl.PageImpl;
+import net.juniper.jmp.core.util.BeanUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 	private Logger log = LoggerFactory.getLogger(MoEntityConvertor.class);
@@ -24,7 +25,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 				T mo = it.next();
 				K entity = clazz.newInstance();
 				result.add(entity);
-				BeanUtils.copyProperties(mo, entity);
+				BeanUtils.copyPropertiesFromMoToEntity(mo, entity);
 			}
 			return result;
 		}
@@ -44,7 +45,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 				K entity = it.next();
 				T mo = clazz.newInstance();
 				result.add(mo);
-				BeanUtils.copyProperties(entity, mo);
+				BeanUtils.copyPropertiesFromEntityToMo(entity, mo);
 			}
 			return result;
 		}
@@ -79,7 +80,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return null;
 		try {
 			K entity = clazz.newInstance();
-			BeanUtils.copyProperties(mo, entity);
+			BeanUtils.copyPropertiesFromMoToEntity(mo, entity);
 			return entity;
 		} 
 		catch (Exception e) {
@@ -94,7 +95,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return null;
 		try {
 			T mo = clazz.newInstance();
-			BeanUtils.copyProperties(entity, mo);
+			BeanUtils.copyPropertiesFromEntityToMo(entity, mo);
 			return mo;
 		} 
 		catch (Exception e) {

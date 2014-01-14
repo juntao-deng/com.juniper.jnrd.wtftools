@@ -2,9 +2,6 @@ package net.juniper.jmp.core.ctx;
 
 import net.juniper.jmp.core.util.ParamHelper;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-
 public class ApiContextInfo {
 	private IRequest request;
 	private PagingContext pagingContext;
@@ -13,7 +10,7 @@ public class ApiContextInfo {
 		this.request = request;
 	}
 	
-	private Specification<?> getSpecification(){
+	private Filterable getFilterable(){
 		return ParamHelper.extractSpecification(request);
 	}
 	
@@ -29,7 +26,7 @@ public class ApiContextInfo {
 		if(pagingContext == null){
 			pagingContext = new PagingContext();
 			pagingContext.setPageable(getPageable());
-			pagingContext.setSpec(getSpecification());
+			pagingContext.setFilter(getFilterable());
 		}
 		return pagingContext;
 	}

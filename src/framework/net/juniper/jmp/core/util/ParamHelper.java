@@ -4,15 +4,14 @@ import java.util.List;
 
 import javax.ws.rs.core.PathSegment;
 
+import net.juniper.jmp.core.ctx.Filterable;
 import net.juniper.jmp.core.ctx.IRequest;
-import net.sf.json.JSONObject;
+import net.juniper.jmp.core.ctx.Pageable;
+import net.juniper.jmp.core.ctx.Sort;
+import net.juniper.jmp.core.ctx.impl.PageRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 
 public class ParamHelper {
 	private static Logger log = LoggerFactory.getLogger(ParamHelper.class);
@@ -52,12 +51,12 @@ public class ParamHelper {
 		return page;
 	}
 	
-	public static Specification<?> extractSpecification(IRequest request){
-		String filter = request.getParameter(S_FILTER);
-		if(filter != null && !filter.equals("")){
-			JSONObject json = JSONObject.fromObject(filter);
-			return new WtfSpecification(json);
-		}
+	public static Filterable extractSpecification(IRequest request){
+//		String filter = request.getParameter(S_FILTER);
+//		if(filter != null && !filter.equals("")){
+//			JSONObject json = JSONObject.fromObject(filter);
+//			return new WtfSpecification(json);
+//		}
 		return null;
 	}
 	
