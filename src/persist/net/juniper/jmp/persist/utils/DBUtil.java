@@ -9,13 +9,13 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.constant.DBConsts;
-import net.juniper.jmp.persist.datasource.PersistenceContext;
+import net.juniper.jmp.persist.datasource.PersistenceCtx;
 import net.juniper.jmp.persist.jdbc.BlobParamType;
 import net.juniper.jmp.persist.jdbc.ClobParamType;
 import net.juniper.jmp.persist.jdbc.CrossDBConnection;
 import net.juniper.jmp.persist.jdbc.NullParamType;
-import net.juniper.jmp.persist.jdbc.SQLParameter;
 
 
 public class DBUtil {
@@ -143,7 +143,7 @@ public class DBUtil {
 		}
 
 		if (dsName == null) {
-			dsName = PersistenceContext.getUserDatasource();
+			dsName = PersistenceCtx.getCurrentDatasource();
 		}
 		return dsName;
 

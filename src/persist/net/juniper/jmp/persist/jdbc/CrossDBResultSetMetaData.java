@@ -3,252 +3,148 @@ package net.juniper.jmp.persist.jdbc;
 import java.io.Serializable;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.juniper.jmp.persist.utils.DbExceptionHelper;
 public class CrossDBResultSetMetaData  implements Serializable, ResultSetMetaData {
-    private static final long serialVersionUID = 8584900593145673266L;
+	private static final long serialVersionUID = 8688506158387290721L;
 
-    int[] columnTypes = null;
-
-    int[] isnullable = null;
-
-    String[] colTypeNames = null;
-
-    List<String> colLabels = new ArrayList<String>();
-
-    List<String> nameList = new ArrayList<String>();
-
-    private int[] Scale;
-
-    private int[] Precision;
-
-    public CrossDBResultSetMetaData(ResultSetMetaData r) {
+	public CrossDBResultSetMetaData(ResultSetMetaData r) {
         super();
-        try {
-            int columnCount = r.getColumnCount();
-            columnTypes = new int[columnCount];
-            isnullable = new int[columnCount];
-            Scale = new int[columnCount];
-            Precision = new int[columnCount];
-            width = new int[columnCount];
-            colTypeNames = new String[columnCount];
-            for (int i = 0; i < columnCount; i++) {
-                isnullable[i] = r.isNullable(i + 1);
-                columnTypes[i] = r.getColumnType(i + 1);
-                colTypeNames[i] = r.getColumnTypeName(i + 1);
-                Scale[i] = r.getScale(i + 1);
-                try {
-                    /**
-                     * ORACLE 上发现会出现 java.lang.NumberFormatException:
-                     * 4294967295， 可以忽略这个错误
-                     */
-                    Precision[i] = r.getPrecision(i + 1);
-                    width[i] = r.getColumnDisplaySize(i + 1);
-                } catch (NumberFormatException nfe) {
-                }
-                String name = (r.getColumnName(i + 1) + "").toUpperCase();
-                nameList.add(name);
-                String columnLabel = r.getColumnLabel(i + 1);
-                if (columnLabel == null) {
-                    columnLabel = name;
-                }
-                colLabels.add(columnLabel);
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-            columnTypes = null;
-        }
     }
 
-    /**
-     * getCatalogName method comment.
-     */
-    public String getCatalogName(int column) throws java.sql.SQLException {
-        return null;
-    }
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public String getColumnClassName(int column) throws java.sql.SQLException {
-        return null;
-    }
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * getColumnCount method comment.
-     */
-    public int getColumnCount() throws java.sql.SQLException {
-        if (columnTypes == null)
-            throw new java.sql.SQLException("没有行数");
-        return columnTypes.length;
-    }
+	@Override
+	public int getColumnCount() throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    /**
-     * getColumnDisplaySize method comment.
-     */
-    public int getColumnDisplaySize(int column) throws java.sql.SQLException {
-        column--;
-        if (columnTypes == null || column < 0 || columnTypes.length <= column)
-            throw new java.sql.SQLException("column < 1 or column >= column length" + (column + 1));
-        return width[column];
-    }
+	@Override
+	public boolean isAutoIncrement(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * getColumnLabel method comment.
-     */
-    public String getColumnLabel(int column) throws java.sql.SQLException {
-        column--;
-        if (columnTypes == null || column < 0 || columnTypes.length <= column)
-            throw new java.sql.SQLException("column < 1 or column >= column length" + (column + 1));
-        return (String) colLabels.get(column);
-    }
+	@Override
+	public boolean isCaseSensitive(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * getColumnName method comment.
-     */
-    public String getColumnName(int column) throws java.sql.SQLException {
-        column--;
-        if (columnTypes == null || column < 0 || columnTypes.length <= column)
-            throw new java.sql.SQLException("column < 1 or column >= column length" + (column + 1));
-        return (String) nameList.get(column);
-    }
+	@Override
+	public boolean isSearchable(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * getColumnType method comment.
-     */
-    public int getColumnType(int column) throws java.sql.SQLException {
-        column--;
-        if (columnTypes == null || column < 0 || columnTypes.length <= column)
-            throw new java.sql.SQLException("column < 1 or column >= column length" + (column + 1));
-        return columnTypes[column];
-    }
+	@Override
+	public boolean isCurrency(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * getColumnTypeName method comment.
-     */
-    public String getColumnTypeName(int column) throws java.sql.SQLException {
-        column--;
-        return colTypeNames[column];
-    }
+	@Override
+	public int isNullable(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    /**
-     * This method was created by a SmartGuide.
-     * 
-     * @param str
-     *            java.lang.String
-     */
-    public int getNameIndex(String str) {
-        return nameList.indexOf(str);
+	@Override
+	public boolean isSigned(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    }
+	@Override
+	public int getColumnDisplaySize(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    /**
-     * getPrecision method comment.
-     */
-    public int getPrecision(int column) throws java.sql.SQLException {
-        return Precision[column - 1];
-    }
+	@Override
+	public String getColumnLabel(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /**
-     * getScale method comment.
-     */
-    public int getScale(int column) throws java.sql.SQLException {
-        return Scale[column - 1];
-    }
+	@Override
+	public String getColumnName(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /**
-     * getSchemaName method comment.
-     */
-    public String getSchemaName(int column) throws java.sql.SQLException {
-        return null;
-    }
+	@Override
+	public String getSchemaName(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /**
-     * getTableName method comment.
-     */
-    public String getTableName(int column) throws java.sql.SQLException {
-        return null;
-    }
+	@Override
+	public int getPrecision(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    /**
-     * isAutoIncrement method comment.
-     */
-    public boolean isAutoIncrement(int column) throws java.sql.SQLException {
-        return false;
-    }
+	@Override
+	public int getScale(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    /**
-     * isCaseSensitive method comment.
-     */
-    public boolean isCaseSensitive(int column) throws java.sql.SQLException {
-        return false;
-    }
+	@Override
+	public String getTableName(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /**
-     * isCurrency method comment.
-     */
-    public boolean isCurrency(int column) throws java.sql.SQLException {
-        return false;
-    }
+	@Override
+	public String getCatalogName(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /**
-     * isDefinitelyWritable method comment.
-     */
-    public boolean isDefinitelyWritable(int column) throws java.sql.SQLException {
-        return false;
-    }
+	@Override
+	public int getColumnType(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    /**
-     * isNullable method comment.
-     */
-    public int isNullable(int column) throws java.sql.SQLException {
-        return 0;
-    }
+	@Override
+	public String getColumnTypeName(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /**
-     * isReadOnly method comment.
-     */
-    public boolean isReadOnly(int column) throws java.sql.SQLException {
-        return false;
-    }
+	@Override
+	public boolean isReadOnly(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * isSearchable method comment.
-     */
-    public boolean isSearchable(int column) throws java.sql.SQLException {
-        return false;
-    }
+	@Override
+	public boolean isWritable(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * isSigned method comment.
-     */
-    public boolean isSigned(int column) throws java.sql.SQLException {
-        return false;
-    }
+	@Override
+	public boolean isDefinitelyWritable(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    /**
-     * isWritable method comment.
-     */
-    public boolean isWritable(int column) throws java.sql.SQLException {
-        return false;
-    }
-
-    /**
-     * Returns a String that represents the value of this object.
-     */
-    public String toString() {
-        return super.toString();
-    }
-
-    private int[] width;
-
-    @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-
-        return false;
-    }
-
-    @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        throw DbExceptionHelper.getUnsupportedException();
-    }
+	@Override
+	public String getColumnClassName(int column) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

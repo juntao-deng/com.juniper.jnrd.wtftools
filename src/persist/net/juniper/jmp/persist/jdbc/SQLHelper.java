@@ -1,9 +1,12 @@
-package net.juniper.jmp.persist.utils;
+package net.juniper.jmp.persist.jdbc;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Map;
 
-import net.juniper.jmp.persist.jdbc.SQLParameter;
+import net.juniper.jmp.persist.SQLParameter;
+import net.juniper.jmp.persist.impl.PersistenceHelper;
+import net.juniper.jmp.persist.jdbc.trans.SqlTranslator;
 
 
 public class SQLHelper {
@@ -145,7 +148,7 @@ public class SQLHelper {
 
 	}
 	
-	public SQLParameter getSQLParam(Object entity, String names[]) {
+	public static SQLParameter getSQLParam(Object entity, String names[]) {
 		Map<String, Integer> types = PersistenceHelper.getColumnTypes(entity);
 		SQLParameter params = new SQLParameter();
 		for (int i = 0; i < names.length; i++) {
@@ -168,5 +171,51 @@ public class SQLHelper {
 
 		}
 		return params;
+	}
+	
+	public static String buildSql(Class<?> clazz, String condition, String[] fields) {
+		String pkField = PersistenceHelper.getPkField(clazz);
+		String tableName = PersistenceHelper.getTableName(clazz);
+		boolean hasPKField = false;
+		StringBuffer buffer = new StringBuffer();
+		if (fields == null)
+			buffer.append("SELECT * FROM ").append(tableName);
+		else {
+			buffer.append("SELECT ");
+			for (int i = 0; i < fields.length; i++) {
+				buffer.append(fields[i]).append(",");
+				if (fields[i].equalsIgnoreCase(pkField))
+					hasPKField = true;
+			}
+			if (!hasPKField)
+				buffer.append(pkField).append(",");
+			buffer.setLength(buffer.length() - 1);
+			buffer.append(" FROM ").append(tableName);
+		}
+		if (condition != null && condition.length() != 0) {
+			if (condition.toUpperCase().trim().startsWith("ORDER "))
+				buffer.append(" ").append(condition);
+			else
+				buffer.append(" WHERE ").append(condition);
+		}
+
+		return buffer.toString();
+	}
+	
+	public static String translate(String sql, CrossDBConnection conn) throws SQLException {
+		if (sql == null || sql.equals(""))
+			return sql;
+		
+		if (!conn.isSQLTranslatorEnabled()) {
+			return sql;
+		}
+		
+		SQLLRUCache cache = SQLCache.getInstance().getCache(conn.getDsName());
+		String trans = (String) cache.getPreparedSQL(sql);
+		if (trans == null) {
+			trans = SqlTranslator.getInstance(conn.getDbType()).getSql(sql);
+			cache.putPreparedSQL(sql, trans);
+		}
+		return trans;
 	}
 }

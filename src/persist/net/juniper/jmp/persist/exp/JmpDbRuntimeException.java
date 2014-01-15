@@ -7,4 +7,7 @@ public class JmpDbRuntimeException extends RuntimeException {
 		super(message);
 	}
 
+	public JmpDbRuntimeException(String message, Throwable e) {
+		super(message, e);
+	}
 }

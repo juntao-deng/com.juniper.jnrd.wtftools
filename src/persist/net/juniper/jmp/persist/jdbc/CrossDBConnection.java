@@ -14,317 +14,184 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.concurrent.Executor;
 
-import net.juniper.jmp.persist.datasource.DataSourceCenter;
-import net.juniper.jmp.persist.jdbc.trans.Adapter;
-import net.juniper.jmp.persist.jdbc.trans.AdapterFactory;
 import net.juniper.jmp.persist.jdbc.trans.SqlTranslator;
 import net.juniper.jmp.persist.utils.DbExceptionHelper;
-
-
-
+import net.juniper.jmp.persist.utils.SqlLogger;
+/**
+ * a connection decorator that hides the differences between all kinds of dbs.
+ * @author juntaod
+ *
+ */
+/**
+ * a connection decorator that hides the differences between all kinds of dbs.
+ * @author juntaod
+ *
+ */
 public class CrossDBConnection implements Connection {
+	/**
+	 * DataSource name
+	 */
+	private String dsName = null;
 
-	private String dataSource = null;
-
-	private Adapter adapter = null;
-
-	// 包装的connection
+	/**
+	 * real connection
+	 */
 	private Connection passthru = null;
 
-	// Statement缓冲
-	private Vector<Statement> statements = new Vector<Statement>();
+	private List<Statement> statements = Collections.synchronizedList(new ArrayList<Statement>());
 
-	// 数据库类型
+	/**
+	 * Database type
+	 */
 	private int dbType = -1;
 
-	// 数据库代码
-	private String dbCode = null;
-
-	// SQL转换器
-	private SqlTranslator translator = null;
-
-	// 是否关闭
-	private boolean closed = false;
-
-	// 在本连接中是否启动SQL翻译器
+	/**
+	 * sql translator that trans the basic sql to adapter all kinds of databases
+	 */
+	private SqlTranslator translator;
+	
+	/**
+	 * if starting sql translator
+	 */
 	private boolean enableTranslator = true;
 
+	/**
+	 * the connection's metadata
+	 */
 	private DatabaseMetaData dbmd = null;
 
-	// 翻译语句缓冲
-	private LRUCache cache = null;
-
 	/**
 	 * @param conn
 	 * @throws SQLException
 	 */
-	public CrossDBConnection(Connection conn, String dataSource) throws SQLException {
+	public CrossDBConnection(Connection conn, String dsName, int dbType) throws SQLException {
 		super();
-		this.dataSource = dataSource;
-		DataSourceCenter sourceCenter = DataSourceCenter.getInstance();
+		this.dsName = dsName;
 		passthru = conn;
-		dbType = sourceCenter.getDatabaseType(dataSource);
-		cache = SQLCache.getInstance().getCache(dataSource);
-		translator = new SqlTranslator(dbType);
-		adapter = AdapterFactory.getAdapter(dbType, passthru);
-		adapter.setNativeConn(passthru);
-	}
-
-
-	/**
-	 * @param conn
-	 * @param moduleLang
-	 *          默认为0，如果不是0就进行内码转换
-	 * @throws SQLException
-	 */
-	public CrossDBConnection(Connection conn) throws SQLException {
-		this(conn, DataSourceCenter.getInstance().getSourceName());
+		this.dbType = dbType;
 	}
 
 	public void clearWarnings() throws SQLException {
-		try {
-			// if (Trace.isEnabled())
-			// Trace.trace(getId());
-			passthru.clearWarnings();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.clearWarnings();
 	}
 
 	public void close() throws SQLException {
-		try {
-			closed = true;
-			closeStatements();
-			passthru.close();
-
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		closeStatements();
+		passthru.close();
 	}
 
 	public void commit() throws SQLException {
-		try {
-			passthru.commit();
-		} 
-		catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.commit();
 	}
 
 	public Statement createStatement() throws SQLException {
-		try {
-			CrossDBStatement st = null;
-			st = new CrossDBStatement(passthru.createStatement(), this, dbType, cache, dataSource);
-			registerStatement(st);
-			return st;
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		CrossDBStatement st = new CrossDBStatement(passthru.createStatement(), this);
+		statements.add(st);
+		return st;
 	}
 
 	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
-		try {
-			CrossDBStatement stat = new CrossDBStatement(passthru.createStatement(resultSetType, resultSetConcurrency), this, dbType, cache, dataSource);
-			registerStatement(stat);
-			return stat;
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
-
+		CrossDBStatement stat = new CrossDBStatement(passthru.createStatement(resultSetType, resultSetConcurrency), this);
+		statements.add(stat);
+		return stat;
 	}
 
 	public boolean getAutoCommit() throws SQLException {
-		try {
-			return passthru.getAutoCommit();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.getAutoCommit();
 	}
 
 	public String getCatalog() throws SQLException {
-		checkClosed();
-		try {
-			return passthru.getCatalog();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.getCatalog();
 	}
 
-	/**
-	 * 获得metadata一个connection只获取一次
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
-	public java.sql.DatabaseMetaData getMetaData() throws SQLException {
-		checkClosed();
-		try {
-			if (dbmd == null) {
-				dbmd = passthru.getMetaData();
-			}
-			return dbmd;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw translator.getSqlException(e);
+	public DatabaseMetaData getMetaData() throws SQLException {
+		if (dbmd == null) {
+			dbmd = passthru.getMetaData();
 		}
+		return dbmd;
 	}
 
-	/**
-	 * @return
-	 * @throws SQLException
-	 */
 	public int getTransactionIsolation() throws SQLException {
-		checkClosed();
-		try {
-			return passthru.getTransactionIsolation();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.getTransactionIsolation();
 	}
 
 	public Map<String, Class<?>> getTypeMap() throws SQLException {
-		checkClosed();
 		return passthru.getTypeMap();
 	}
 
 	public java.sql.SQLWarning getWarnings() throws SQLException {
-		checkClosed();
-		try {
-			return passthru.getWarnings();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.getWarnings();
 	}
 
-	/**
-	 * @return
-	 * @throws SQLException
-	 */
 	public boolean isClosed() throws SQLException {
-		checkClosed();
 		return passthru.isClosed();
 	}
 
-	/**
-	 * @return
-	 * @throws SQLException
-	 */
 	public boolean isReadOnly() throws SQLException {
-		checkClosed();
-		try {
-			return passthru.isReadOnly();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
-
+		return passthru.isReadOnly();
 	}
 
+	@Override
 	public String nativeSQL(String sql) throws SQLException {
-		checkClosed();
-		try {
-			String sqlFixed = translate(sql);
-			String val = passthru.nativeSQL(sqlFixed);
-			return val;
-		} 
-		catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		String sqlFixed = SQLHelper.translate(sql, this);
+		String val = passthru.nativeSQL(sqlFixed);
+		return val;
 	}
 
 	public CallableStatement prepareCall(String sql) throws SQLException {
-		// if (Trace.isEnabled())
-		// Trace.traceQuote(getId(), sql);
-		checkClosed();
-		try {
-			String sqlFixed = translate(sql);
-			CallableStatement s = passthru.prepareCall(sqlFixed);
-			registerStatement(s);
-			return s;
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		String sqlFixed = SQLHelper.translate(sql, this);
+		CallableStatement s = passthru.prepareCall(sqlFixed);
+		statements.add(s);
+		return s;
 	}
 
 	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		// if (Trace.isEnabled())
-		// Trace.traceQuote(getId(), sql);
-		checkClosed();
-		try {
-
-			String sqlFixed = translate(sql);
-			// if (isJdbcOdbcBug())
-			// sqlFixed = fixJdbcOdbcCharToByte(sqlFixed);
-			CallableStatement s = passthru.prepareCall(sqlFixed);
-			registerStatement(s);
-			return s;
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		String sqlFixed = SQLHelper.translate(sql, this);
+		CallableStatement s = passthru.prepareCall(sqlFixed);
+		statements.add(s);
+		return s;
 	}
 
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		checkClosed();
-		CrossDBPreparedStatement s = null;
-		String sqlFixed = translate(sql);
-		s = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed), this, sqlFixed, dbType, cache, dataSource);
-		s.setDbType(dbType);
-		registerStatement(s);
-		return s;
+		String sqlFixed = SQLHelper.translate(sql, this);
+		CrossDBPreparedStatement st = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed), this);
+		statements.add(st);
+		return st;
 	}
 
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		checkClosed();
-		CrossDBPreparedStatement s = null;
-		String sqlFixed = translate(sql);
-		s = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed, resultSetType, resultSetConcurrency), this, sqlFixed, dbType, cache, dataSource);
-		s.setDbType(dbType);
-		registerStatement(s);
-		return s;
+		String sqlFixed = SQLHelper.translate(sql, this);
+		CrossDBPreparedStatement st = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed, resultSetType, resultSetConcurrency), this);
+		statements.add(st);
+		return st;
 
 	}
 
-	protected void registerStatement(Statement s) {
-		statements.addElement(s);
-		return;
+	public String getDsName() {
+		return dsName;
 	}
-
+	
 	public void rollback() throws SQLException {
-		checkClosed();
-		try {
-			passthru.rollback();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
-
+		passthru.rollback();
 	}
 
 	public void setAutoCommit(boolean autoCommit) throws SQLException {
-		try {
-			passthru.setAutoCommit(autoCommit);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.setAutoCommit(autoCommit);
 	}
 
 	public void setCatalog(String arg0) throws SQLException {
-		try {
-			passthru.setCatalog(arg0);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.setCatalog(arg0);
 	}
 
 	public void setReadOnly(boolean arg0) throws SQLException {
-		try {
-			passthru.setReadOnly(arg0);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.setReadOnly(arg0);
 	}
 
 	public void setSqlTrans(boolean b) {
@@ -332,11 +199,7 @@ public class CrossDBConnection implements Connection {
 	}
 
 	public void setTransactionIsolation(int level) throws SQLException {
-		try {
-			passthru.setTransactionIsolation(level);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.setTransactionIsolation(level);
 	}
 
 
@@ -349,119 +212,41 @@ public class CrossDBConnection implements Connection {
 	}
 
 
-	/**
-	 * 此处插入方法说明。 创建日期：(2002-1-30 13:22:20)
-	 * 
-	 * @return boolean
-	 */
 	public boolean isSQLTranslatorEnabled() {
 		return enableTranslator;
 	}
 
-
-	/**
-	 * 此处插入方法说明。 创建日期：(2003-6-26 14:22:30)
-	 * 
-	 * @param i
-	 *          int
-	 */
-	public void setDatabaseType(int i) {
-		dbType = i;
-	}
-
-	/*
-	 * （非 Javadoc）
-	 * 
-	 * @see java.sql.Connection#getHoldability()
-	 */
 	public int getHoldability() throws SQLException {
-		checkClosed();
-		try {
-			return passthru.getHoldability();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
-
+		return passthru.getHoldability();
 	}
 
-	/*
-	 * （非 Javadoc）
-	 * 
-	 * @see java.sql.Connection#setHoldability(int)
-	 */
 	public void setHoldability(int holdability) throws SQLException {
-		try {
-			passthru.setHoldability(holdability);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
-
+		passthru.setHoldability(holdability);
 	}
 
-	/*
-	 * （非 Javadoc）
-	 * 
-	 * @see java.sql.Connection#setSavepoint()
-	 */
 	public Savepoint setSavepoint() throws SQLException {
-		try {
-			return passthru.setSavepoint();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
-
+		return passthru.setSavepoint();
 	}
 
-	/*
-	 * （非 Javadoc）
-	 * 
-	 * @see java.sql.Connection#releaseSavepoint(java.sql.Savepoint)
-	 */
 	public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-
-		try {
-			passthru.releaseSavepoint(savepoint);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
-
+		passthru.releaseSavepoint(savepoint);
 	}
 
-	/*
-	 * 
-	 */
 	public void rollback(Savepoint savepoint) throws SQLException {
-		try {
-			passthru.rollback(savepoint);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.rollback(savepoint);
 	}
 
-	/*
-	 * 
-	 */
 	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		try {
-			CrossDBStatement stat = new CrossDBStatement(passthru.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability), this, dbType, cache,
-					dataSource);
-			registerStatement(stat);
-			return stat;
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		CrossDBStatement st = new CrossDBStatement(passthru.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability), this);
+		statements.add(st);
+		return st;
 	}
 
 	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		checkClosed();
-		try {
-			String sqlFixed = translate(sql);
-			CallableStatement s = passthru.prepareCall(sqlFixed);
-			registerStatement(s);
-			return s;
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		String sqlFixed = SQLHelper.translate(sql, this);
+		CallableStatement st = passthru.prepareCall(sqlFixed);
+		statements.add(st);
+		return st;
 	}
 
 	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
@@ -469,13 +254,10 @@ public class CrossDBConnection implements Connection {
 	}
 
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		checkClosed();
-		CrossDBPreparedStatement s = null;
-		String sqlFixed = translate(sql);
-		s = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed, resultSetType, resultSetConcurrency, resultSetHoldability), this, sqlFixed, dbType, cache, dataSource);
-		s.setDbType(dbType);
-		registerStatement(s);
-		return s;
+		String sqlFixed = SQLHelper.translate(sql, this);
+		CrossDBPreparedStatement st = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed, resultSetType, resultSetConcurrency, resultSetHoldability), this);
+		statements.add(st);
+		return st;
 	}
 
 	public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
@@ -483,185 +265,81 @@ public class CrossDBConnection implements Connection {
 	}
 
 	public Savepoint setSavepoint(String name) throws SQLException {
-		try {
-			return passthru.setSavepoint(name);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.setSavepoint(name);
 	}
 
 	public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
-
 	}
 
-	/**
-	 * 得到数据库类型
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
-	public int getDatabaseType() throws SQLException {
+	public int getDbType() {
 		return dbType;
 	}
 
-	/**
-	 * @return
-	 */
-	public String getDbcode() {
-		return dbCode;
-	}
 
-	protected String translate(String sql) throws SQLException {
-		if (sql == null)
-			return null;
-		if (!isSQLTranslatorEnabled()) {
-			return sql;
-		}
-		if (sql.length() > 8000) {
-			String sqlFixed = translator.getSql(sql);
-			return sqlFixed;
-		}
-		String key = sql;
-		String result = (String) cache.getPreparedSQL(key);
-		if (result != null) {
-			return result;
-		}
-
-		sql = translator.getSql(sql);
-		cache.putPreparedSQL(key, sql);
-		return sql;
-	}
-
-	/**
-	 * 关闭所有Statement
-	 */
 	private void closeStatements() {
-		Object[] ss;
-		synchronized (statements) {
-			ss = new Object[statements.size()];
-			statements.copyInto(ss);
-		}
-		for (int i = 0; i < ss.length; i++) {
-			if (ss[i] == null || !(ss[i] instanceof CrossDBStatement)) {
-			} else {
-				try {
-					((CrossDBStatement) ss[i]).close();
-				} catch (SQLException e) {
+		Statement[] sts = statements.toArray(new Statement[0]);
+		for (int i = 0; i < sts.length; i++) {
+			if (sts[i] instanceof CrossDBStatement) {
+				try{
+					sts[i].close();
+				}
+				catch(Throwable e){
+					SqlLogger.error(e.getMessage(), e);
 				}
 			}
 		}
-		statements = new Vector<Statement>();
+		statements.clear();
+	}
+	protected void deregisterStatement(CrossDBStatement st) {
+		statements.remove(st);
 	}
 
-	/**
-	 * 检查连接是否关闭
-	 * 
-	 * @throws SQLException
-	 *           如果关闭抛出异常
-	 */
-	private void checkClosed() throws SQLException {
-		if (closed)
-			throw new SQLException("连接已经关闭");
-	}
-
-	/**
-	 * @param s
-	 */
-	protected void deregisterStatement(CrossDBStatement s) {
-		if (s == null) {
-			return;
-		}
-		if (!statements.removeElement(s)) {
-			return;
-		}
-	}
-
-	protected Adapter getAdapter() {
-		return adapter;
-	}
-
-	public Connection getPConnection() {
+	public Connection getRealConnection() {
 		return passthru;
 	}
 
 	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-		try {
-			return passthru.createArrayOf(typeName, elements);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.createArrayOf(typeName, elements);
 	}
 
 	public Blob createBlob() throws SQLException {
-		try {
-			return passthru.createBlob();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.createBlob();
 	}
 
 	@Override
 	public Clob createClob() throws SQLException {
-		try {
-			return passthru.createClob();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.createClob();
 	}
 
 	@Override
 	public NClob createNClob() throws SQLException {
-		try {
-			return passthru.createNClob();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.createNClob();
 	}
 
 	@Override
 	public SQLXML createSQLXML() throws SQLException {
-		try {
-			return passthru.createSQLXML();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.createSQLXML();
 	}
 
 	@Override
 	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-		try {
-			return passthru.createStruct(typeName, attributes);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.createStruct(typeName, attributes);
 	}
 
 	@Override
 	public Properties getClientInfo() throws SQLException {
-		try {
-			return passthru.getClientInfo();
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.getClientInfo();
 	}
 
 	@Override
 	public String getClientInfo(String name) throws SQLException {
-		try {
-			return passthru.getClientInfo(name);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.getClientInfo(name);
 	}
 
 	@Override
 	public boolean isValid(int timeout) throws SQLException {
-		try {
-			return passthru.isValid(timeout);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.isValid(timeout);
 	}
 
 	@Override
@@ -671,42 +349,23 @@ public class CrossDBConnection implements Connection {
 
 	@Override
 	public void setClientInfo(String name, String value) throws SQLClientInfoException {
-
 		passthru.setClientInfo(name, value);
-
 	}
 
 	@Override
 	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-		try {
-			passthru.setTypeMap(map);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		passthru.setTypeMap(map);
 	}
 
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		try {
-			return passthru.isWrapperFor(iface);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.isWrapperFor(iface);
 	}
 
 	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		try {
-			return passthru.unwrap(iface);
-		} catch (SQLException e) {
-			throw translator.getSqlException(e);
-		}
+		return passthru.unwrap(iface);
 	}
-
-	public String getDataSource() {
-		return dataSource;
-	}
-
 
 	@Override
 	public void setSchema(String schema) throws SQLException {
@@ -727,8 +386,7 @@ public class CrossDBConnection implements Connection {
 
 
 	@Override
-	public void setNetworkTimeout(Executor executor, int milliseconds)
-			throws SQLException {
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
 		passthru.setNetworkTimeout(executor, milliseconds);
 	}
 

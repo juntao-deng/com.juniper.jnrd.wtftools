@@ -16,15 +16,4 @@ public class JmpMySQLException extends JmpDbException {
 		super(msg, e);
 	}
 
-
-	@Override
-	public boolean isDataIntegrityViolation() {
-		return false;
-	}
-
-	@Override
-	public boolean isBadSQLGrammar() {
-		return false;
-	}
-
 }

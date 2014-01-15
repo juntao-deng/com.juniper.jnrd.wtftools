@@ -1,11 +1,4 @@
 package net.juniper.jmp.persist.jdbc;
-
-/**
- * @nopublish
- *ResultSet.java
- *  User: Кибя
- */
-
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
@@ -23,7 +16,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Map;
 
-import net.juniper.jmp.persist.jdbc.trans.Adapter;
+import net.juniper.jmp.persist.jdbc.trans.DBAdapter;
 import net.juniper.jmp.persist.jdbc.trans.SqlTranslator;
 import net.juniper.jmp.persist.utils.DbExceptionHelper;
 
@@ -37,11 +30,10 @@ public class CrossDBResultSet implements ResultSet {
 
 	private SqlTranslator trans = null;
 
-	private Adapter adapter = null;
+	private DBAdapter adapter = null;
 
 	private int nRowCount = 0;
 
-	private int maxRows = 100000;
 
 	public CrossDBResultSet() {
 		super();

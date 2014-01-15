@@ -3,242 +3,121 @@ package net.juniper.jmp.persist.jdbc;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
 import java.sql.NClob;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
+import java.sql.Ref;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
 
 import net.juniper.jmp.persist.utils.DbExceptionHelper;
 
 public class CrossDBPreparedStatement extends CrossDBStatement implements PreparedStatement {
-	int id = counter++;
-	private String sqlTemplate;
-
-	public CrossDBPreparedStatement(java.sql.PreparedStatement dummy, CrossDBConnection con, String sql, int dbtype, LRUCache cache, String dataSource) {
-		super(dummy, con, dbtype, cache, dataSource);
-		sqlTemplate = sql;
-
-	}
-
-	public CrossDBPreparedStatement(java.sql.Statement dummy, CrossDBConnection con, String sql, int dbtype, LRUCache cache, String dataSource) {
-		super(dummy, con, dbtype, cache, dataSource);
-		sqlTemplate = sql;
+	public CrossDBPreparedStatement(PreparedStatement passthru, CrossDBConnection conn) {
+		super(passthru, conn);
 	}
 
 	public void addBatch() throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).addBatch();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
-
+		((PreparedStatement)passthru).addBatch();
 	}
 
 	public void clearParameters() throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).clearParameters();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).clearParameters();
 	}
 
 	public boolean execute() throws SQLException {
-		try {
-			return ((PreparedStatement) passthru).execute();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		return ((PreparedStatement) passthru).execute();
 	}
 
 	public ResultSet executeQuery() throws SQLException {
-		try {
-			CrossDBResultSet r = new CrossDBResultSet(((java.sql.PreparedStatement) passthru).executeQuery(), this);
-			r.setMaxRows(maxRows);
-			registerResultSet(r);
-			return r;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		CrossDBResultSet rs = new CrossDBResultSet(((PreparedStatement) passthru).executeQuery(), this);
+		registerResultSet(rs);
+		return rs;
 	}
 
 	public int executeUpdate() throws SQLException {
-		try {
-			int ret = ((java.sql.PreparedStatement) passthru).executeUpdate();
-			return ret;
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		int ret = ((PreparedStatement) passthru).executeUpdate();
+		return ret;
 	}
 
-	public java.sql.ResultSetMetaData getMetaData() throws SQLException {
-		return ((java.sql.PreparedStatement) passthru).getMetaData();
+	public ResultSetMetaData getMetaData() throws SQLException {
+		return ((PreparedStatement) passthru).getMetaData();
 	}
 
-	public void setArray(int i, java.sql.Array x) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setArray(i, x);
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public void setArray(int i, Array x) throws SQLException {
+		((PreparedStatement) passthru).setArray(i, x);
 	}
 
+	@Override
 	public void setAsciiStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
-		try {
-			if (x == null) {
-				setNull(parameterIndex, Types.CLOB);
-			} else {
-				adapter.setAsciiStream(this, parameterIndex, x, length);
-			}
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setAsciiStream(parameterIndex, x, length);
 	}
 
 	public void setBigDecimal(int parameterIndex, java.math.BigDecimal x) throws SQLException {
-		
-		try {
-			((java.sql.PreparedStatement) passthru).setBigDecimal(parameterIndex, x);
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setBigDecimal(parameterIndex, x);
 	}
 
 	public void setBinaryStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
-		
-		try {
-
-			if (x == null) {
-				setNull(parameterIndex, Types.BINARY);
-			} else {
-				adapter.setBinaryStream(this, parameterIndex, x, length);
-			}
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setBinaryStream(parameterIndex, x, length);
 	}
 
-	public void setBlob(int i, java.sql.Blob x) throws SQLException {
+	public void setBlob(int i, Blob x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
 	public void setBoolean(int parameterIndex, boolean x) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setBoolean(parameterIndex, x);
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setBoolean(parameterIndex, x);
 	}
 
 	public void setByte(int parameterIndex, byte x) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setByte(parameterIndex, x);
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setByte(parameterIndex, x);
 	}
 
 	public void setBytes(int parameterIndex, byte[] x) throws SQLException {
-		try {
-			if (x == null) {
-				setNull(parameterIndex, Types.BINARY);
-			} 
-			else {
-				adapter.setBytes(this, parameterIndex, x);
-			}
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setBytes(parameterIndex, x);
 	}
 
-	public void setCharacterStream(int parameterIndex, java.io.Reader reader, int length) throws SQLException {
-		try {
-			if (reader == null) {
-				setNull(parameterIndex, Types.CLOB);
-			} 
-			else {
-				adapter.setCharacterStream(this, parameterIndex, reader, length);
-			}
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
+		((PreparedStatement) passthru).setCharacterStream(parameterIndex, reader, length);
 	}
 
-	public void setClob(int i, java.sql.Clob x) throws SQLException {
+	public void setClob(int i, Clob x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
-	public void setDate(int parameterIndex, java.sql.Date x) throws SQLException {
-		((java.sql.PreparedStatement) passthru).setDate((parameterIndex), x);
+	public void setDate(int parameterIndex, Date x) throws SQLException {
+		((PreparedStatement) passthru).setDate((parameterIndex), x);
 	}
 
-	public void setDate(int parameterIndex, java.sql.Date x, java.util.Calendar calendar) throws SQLException {
-		
-		try {
-			if (x != null) {
-				calendar = (Calendar) calendar.clone();
-				calendar.setTime(x);
-				Calendar local = Calendar.getInstance();
-				convertTime(calendar, local);
-				x = new java.sql.Date(local.getTime().getTime());
-			}
-			((java.sql.PreparedStatement) passthru).setDate(parameterIndex, x);
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public void setDate(int parameterIndex, Date date, Calendar cal) throws SQLException {
+		((PreparedStatement) passthru).setDate(parameterIndex, date, cal);
 	}
 
-	public void setDBEncoding(String encoding) {
-	}
-
-	public void setDouble(int arg0, double arg1) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setDouble(arg0, arg1);
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public void setDouble(int parameterIndex, double d) throws SQLException {
+		((PreparedStatement) passthru).setDouble(parameterIndex, d);
 	}
 
 	public void setFloat(int parameterIndex, float x) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setFloat(parameterIndex, x);
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setFloat(parameterIndex, x);
 	}
 
 	public void setInt(int parameterIndex, int x) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setInt(parameterIndex, x);
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setInt(parameterIndex, x);
 	}
 
 	public void setLong(int parameterIndex, long x) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setLong(parameterIndex, x);
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setLong(parameterIndex, x);
 	}
 
 	public void setNull(int parameterIndex, int sqlType) throws SQLException {
@@ -262,7 +141,7 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 			if (x != null && x instanceof String) {
 				setString(parameterIndex, (String) x);
 			} else {
-				((java.sql.PreparedStatement) passthru).setObject(parameterIndex, x);
+				((PreparedStatement) passthru).setObject(parameterIndex, x);
 			}
 		} catch (SQLException e) {
 			
@@ -277,7 +156,7 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 			if (x == null) {
 				setNull(parameterIndex, targetSqlType);
 			} else {
-				((java.sql.PreparedStatement) passthru).setObject(parameterIndex, x, targetSqlType);
+				((PreparedStatement) passthru).setObject(parameterIndex, x, targetSqlType);
 			}
 		} 
 		catch (SQLException e) {
@@ -291,7 +170,7 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 			if (x == null) {
 				setNull(parameterIndex, targetSqlType);
 			} else {
-				((java.sql.PreparedStatement) passthru).setObject(parameterIndex, x, targetSqlType, scale);
+				((PreparedStatement) passthru).setObject(parameterIndex, x, targetSqlType, scale);
 			}
 		} catch (SQLException e) {
 			
@@ -299,9 +178,9 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 		}
 	}
 
-	public void setRef(int i, java.sql.Ref x) throws SQLException {
+	public void setRef(int i, Ref x) throws SQLException {
 		try {
-			((java.sql.PreparedStatement) passthru).setRef(i, x);
+			((PreparedStatement) passthru).setRef(i, x);
 		} catch (SQLException e) {
 			throw trans.getSqlException(e);
 		}
@@ -309,7 +188,7 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 
 	public void setShort(int parameterIndex, short x) throws SQLException {
 		try {
-			((java.sql.PreparedStatement) passthru).setShort(parameterIndex, x);
+			((PreparedStatement) passthru).setShort(parameterIndex, x);
 		} 
 		catch (SQLException e) {
 			throw trans.getSqlException(e);
@@ -319,7 +198,7 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 	public void setString(int parameterIndex, String x) throws SQLException {
 		try {
 			if (x == null) {
-				setNull(parameterIndex, java.sql.Types.VARCHAR);
+				setNull(parameterIndex, Types.VARCHAR);
 				return;
 			}
 			adapter.setString(this, parameterIndex, x);
@@ -330,64 +209,29 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 		}
 	}
 
-	public void setTime(int parameterIndex, java.sql.Time x) throws SQLException {
+	public void setTime(int parameterIndex, Time x) throws SQLException {
 		try {
 			if (x == null) {
-				setNull(parameterIndex, java.sql.Types.TIME);
+				setNull(parameterIndex, Types.TIME);
 				return;
 			}
-			((java.sql.PreparedStatement) passthru).setTime(parameterIndex, x);
+			((PreparedStatement) passthru).setTime(parameterIndex, x);
 		} catch (SQLException e) {
 			
 			throw trans.getSqlException(e);
 		}
 	}
 
-	public void setTime(int parameterIndex, java.sql.Time x, java.util.Calendar calendar) throws SQLException {
-		
-
-		if (x != null) {
-			calendar = (Calendar) calendar.clone();
-			calendar.setTime(x);
-			Calendar local = Calendar.getInstance();
-			convertTime(calendar, local);
-			x = new java.sql.Time(local.getTime().getTime());
-		}
-		try {
-			((java.sql.PreparedStatement) passthru).setTime(parameterIndex, x);
-		} catch (SQLException e) {
-			
-			throw e;
-		}
+	public void setTime(int parameterIndex, Time x, java.util.Calendar calendar) throws SQLException {
+		((PreparedStatement) passthru).setTime(parameterIndex, x);
 	}
 
-	public void setTimestamp(int parameterIndex, java.sql.Timestamp x) throws SQLException {
-		try {
-			if (x == null) {
-				setNull(parameterIndex, java.sql.Types.TIMESTAMP);
-				return;
-			}
-			((java.sql.PreparedStatement) passthru).setTimestamp(parameterIndex, x);
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+	public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
+		((PreparedStatement) passthru).setTimestamp(parameterIndex, x);
 	}
 
-	public void setTimestamp(int parameterIndex, java.sql.Timestamp x, java.util.Calendar calendar) throws SQLException {
-		try {
-			if (x != null) {
-				calendar = (Calendar) calendar.clone();
-				calendar.setTime(x);
-				Calendar local = Calendar.getInstance();
-				convertTime(calendar, local);
-				x = new java.sql.Timestamp(local.getTime().getTime());
-			}
-			((java.sql.PreparedStatement) passthru).setTimestamp(parameterIndex, x);
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
+	public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
+		((PreparedStatement) passthru).setTimestamp(parameterIndex, x, cal);
 	}
 
 	public void setUnicodeStream(int parameterIndex, java.io.InputStream x, int arg2) throws SQLException {
@@ -395,42 +239,19 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 	}
 
 	public void setURL(int parameterIndex, URL x) throws SQLException {
-		try {
-			((java.sql.PreparedStatement) passthru).setURL(parameterIndex, x);
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		((PreparedStatement) passthru).setURL(parameterIndex, x);
 	}
 
-
-	/*
-	 * £¨·Ç Javadoc£©
-	 * 
-	 * @see java.sql.PreparedStatement#getParameterMetaData()
-	 */
 	public ParameterMetaData getParameterMetaData() throws SQLException {
-		return ((java.sql.PreparedStatement) passthru).getParameterMetaData();
-
+		return ((PreparedStatement) passthru).getParameterMetaData();
 	}
 
-	/*
-	 * £¨·Ç Javadoc£©
-	 * 
-	 * @see java.sql.Statement#getResultSetHoldability()
-	 */
 	public int getResultSetHoldability() throws SQLException {
 		return passthru.getResultSetHoldability();
-
 	}
 
-	/*
-	 * £¨·Ç Javadoc£©
-	 * 
-	 * @see java.sql.Statement#getMoreResults(int)
-	 */
 	public boolean getMoreResults(int current) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
-
 	}
 
 	public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException {
@@ -488,11 +309,11 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 			originalSqlType = Types.DOUBLE;
 		} else if (x instanceof byte[]) {
 			originalSqlType = Types.BINARY;
-		} else if (x instanceof java.sql.Date) {
+		} else if (x instanceof Date) {
 			originalSqlType = Types.DATE;
-		} else if (x instanceof java.sql.Time) {
+		} else if (x instanceof Time) {
 			originalSqlType = Types.TIME;
-		} else if (x instanceof java.sql.Timestamp) {
+		} else if (x instanceof Timestamp) {
 			originalSqlType = Types.TIMESTAMP;
 		} else {
 			return x;
@@ -538,66 +359,23 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 		to.set(Calendar.MILLISECOND, from.get(Calendar.MILLISECOND));
 	}
 
-
-//	public String getSQLString() {
-//		StringBuffer buf = new StringBuffer();
-//		int qMarkCount = 0;
-//		StringTokenizer tok = new StringTokenizer(sqlTemplate + " ", "?");
-//		while (tok.hasMoreTokens()) {
-//			String oneChunk = tok.nextToken();
-//			buf.append(oneChunk);
-//			try {
-//				Object value;
-//				if (parameterValues.size() > 1 + qMarkCount) {
-//					value = parameterValues.get(1 + qMarkCount++);
-//				} else {
-//					if (tok.hasMoreTokens()) {
-//						value = null;
-//					} else {
-//						value = "";
-//					}
-//				}
-//				buf.append("" + value);
-//			} catch (Throwable e) {
-//				buf.append("ERROR WHEN PRODUCING QUERY STRING FOR LOG." + e.toString());
-//			}
-//		}
-//		return buf.toString().trim();
-//	}
-
 	public int[] executeBatch() throws SQLException {
-		try {
-			int[] result = passthru.executeBatch();
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		return passthru.executeBatch();
 	}
 
 	@Override
 	public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException {
-
+		((PreparedStatement) passthru).setAsciiStream(parameterIndex, x);
 	}
 
 	@Override
 	public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
-
+		((PreparedStatement) passthru).setAsciiStream(parameterIndex, x, length);
 	}
 
 	@Override
 	public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException {
-		try {
-
-			if (x == null) {
-				setNull(parameterIndex, Types.BINARY);
-			} else {
-				adapter.setBinaryStream(this, parameterIndex, x, -1);
-			}
-		} catch (SQLException e) {
-			
-			throw trans.getSqlException(e);
-		}
-
+		((PreparedStatement) passthru).setBinaryStream(parameterIndex, x);
 	}
 
 	@Override

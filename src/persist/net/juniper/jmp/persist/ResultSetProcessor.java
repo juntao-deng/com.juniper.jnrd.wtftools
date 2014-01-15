@@ -1,8 +1,9 @@
 package net.juniper.jmp.persist;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import net.juniper.jmp.persist.exp.JmpDbException;
 
 public interface ResultSetProcessor{
-    public Object handleResultSet(ResultSet rs) throws SQLException;
+    public Object handleResultSet(ResultSet rs) throws JmpDbException;
 }

@@ -2,18 +2,26 @@ package net.juniper.jmp.persist.jdbc;
 
 import java.io.Serializable;
 import java.util.Map;
-
+/**
+ * Mapping Data for Entity Object
+ * @author juntaod
+ *
+ */
 public interface IMappingMeta extends Serializable {
    
-    public abstract String getPrimaryKey();
+    public String getPrimaryKey();
 
-    public abstract String getTableName();
+    public String getTableName();
 
-    public abstract FieldMeta[] getEntityFields();
+    public FieldMeta[] getEntityFields();
     
-    public abstract Map<String, Integer> getColumnMap();
+    public Map<String, Integer> getColumnMap();
     
-    public abstract String[] getValidFields();
+    public String[] getValidFields();
 
-	public abstract String[] getValidFieldsWithoutPk();
+	public String[] getValidFieldsWithoutPk();
+
+	public FieldMeta getFieldMetaByColumn(String column);
+	
+	public Object getEntity();
 }

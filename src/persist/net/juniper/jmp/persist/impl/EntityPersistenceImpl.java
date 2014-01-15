@@ -2,28 +2,24 @@ package net.juniper.jmp.persist.impl;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import net.juniper.jmp.persist.BaseProcessor;
+import javax.sql.DataSource;
+
 import net.juniper.jmp.persist.BeanListProcessor;
 import net.juniper.jmp.persist.IJmpPersistence;
+import net.juniper.jmp.persist.ResultSetProcessor;
+import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.constant.DBConsts;
 import net.juniper.jmp.persist.datasource.DataSourceCenter;
-import net.juniper.jmp.persist.datasource.PersistenceContext;
+import net.juniper.jmp.persist.datasource.PersistenceCtx;
 import net.juniper.jmp.persist.exp.JmpDbException;
+import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
 import net.juniper.jmp.persist.jdbc.CrossDBConnection;
-import net.juniper.jmp.persist.jdbc.SQLParameter;
+import net.juniper.jmp.persist.jdbc.SQLHelper;
 import net.juniper.jmp.persist.ses.DbSession;
 import net.juniper.jmp.persist.utils.DBUtil;
-import net.juniper.jmp.persist.utils.PersistenceHelper;
-import net.juniper.jmp.persist.utils.SQLHelper;
-import net.juniper.jmp.persist.utils.SqlLogger;
 
 import org.jboss.resteasy.logging.Logger;
 
@@ -33,23 +29,38 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	private String dataSource = null;
 	private DatabaseMetaData dbmd = null;
 
-	private static Map cache = new ConcurrentHashMap();
-
-	protected EntityPersistenceImpl() throws JmpDbException {
-		this.dataSource = PersistenceContext.getUserDatasource();
+	public EntityPersistenceImpl() throws JmpDbException {
+		this.dataSource = PersistenceCtx.getCurrentDatasource();
 		init();
 	}
 
-	protected EntityPersistenceImpl(String dataSource) throws JmpDbException {
+	public EntityPersistenceImpl(String dataSource) throws JmpDbException {
 		this.dataSource = dataSource;
 		init();
 	}
 	
-	public DbSession getJdbcSession() {
+	private void init() throws JmpDbException {
+		try{
+			DataSource ds = DataSourceCenter.getInstance().getDataSource(this.dataSource);
+			if(ds == null)
+				throw new JmpDbRuntimeException("can not find datasource:" + ds);
+			Connection conn = ds.getConnection();
+			int dbType = DBUtil.getDbType(conn);
+			CrossDBConnection crossDbConn = new CrossDBConnection(conn, this.dataSource, dbType);
+			session = new DbSession(crossDbConn, dbType);
+		}
+		catch(SQLException e){
+			logger.error(e.getMessage(), e);
+			throw new JmpDbException("error while get connection", e);
+		}
+	}
+	
+	@Override
+	public DbSession getDbSession() {
 		return session;
 	}
 
-
+	@Override
 	public void release() {
 		if (dbmd != null)
 			dbmd = null;
@@ -60,34 +71,35 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	}
 
+	@Override
 	public String insertWithPK(final Object entity) throws JmpDbException {
 		String pk[] = insertWithPK(new Object[] {entity});
 		return pk[0];
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see nc.jdbc.framework.ee#insertWithPK(nc.vo.pub.Object[])
-	 */
+	@Override
 	public String[] insertWithPK(final Object[] entities) throws JmpDbException {
 		return insert(entities, true);
 
 	}
+	
+	@Override
 	public String insert(final Object entity) throws JmpDbException {
 		String pk[] = insert(new Object[] {entity});
 		return pk[0];
 	}
 
-	public String[] insertWithPK(final List vos) throws JmpDbException {
-		return insertWithPK(vos.toArray(new Object[0]));
+	@Override
+	public String[] insertWithPK(final List<? extends Object> entities) throws JmpDbException {
+		return insertWithPK(entities.toArray(new Object[0]));
 	}
 
-
-	public String[] insert(final List vos) throws JmpDbException {
-		return insert(vos.toArray(new Object[0]));
+	@Override
+	public String[] insert(final List<? extends Object> entities) throws JmpDbException {
+		return insert(entities.toArray(new Object[0]));
 	}
 
+	@Override
 	public String[] insert(final Object entities[]) throws JmpDbException {
 		return insert(entities, false);
 	}
@@ -102,15 +114,13 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	
 		Object entity = entities[0];
 		
-		String tableName = getTableName(entity);
-		Map<String, Integer> types = getColmnTypes(tableName);
-
+		String tableName = PersistenceHelper.getTableName(entity);
 		String names[] = PersistenceHelper.getInsertValidNames(entity);
 		String sql = SQLHelper.getInsertSQL(tableName, names);
 
 
 		if (entities.length == 1) {
-			SQLParameter parameter = getSQLParam(entity, names, types);
+			SQLParameter parameter = SQLHelper.getSQLParam(entity, names);
 			session.executeUpdate(sql, parameter);
 		} 
 		else {
@@ -118,7 +128,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			for (int i = 0; i < entities.length; i++) {
 				if (entities[i] == null)
 					continue;
-				parameters[i] = getSQLParam(entities[i], names, types);
+				parameters[i] = SQLHelper.getSQLParam(entities[i], names);
 
 			}
 			session.addBatch(sql, parameters);
@@ -127,12 +137,8 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 		return getPks(entities, withPK, session);
 	}
-	
-	private String getTableName(Object entity){
-		return PersistenceHelper.getTableName(entity);
-	}
 
-
+	@Override
 	public int update(final Object entity) throws JmpDbException {
 		if (entity == null) {
 			throw new IllegalArgumentException("entity can not be null");
@@ -140,16 +146,19 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		return update(new Object[] {entity}, null);
 	}
 
-	public int update(final List vos) throws JmpDbException {
-		return update(vos.toArray(new Object[0]), null);
+	@Override
+	public int update(final List<? extends Object> entities) throws JmpDbException {
+		return update(entities.toArray(new Object[0]), null);
 
 	}
 
+	@Override
 	public int update(final Object[] vo) throws JmpDbException {
 		return update(vo, null);
 
 	}
 
+	@Override
 	public int update(final Object[] vo, String[] fieldNames)
 			throws JmpDbException {
 		return update(vo, fieldNames, null, null);
@@ -164,7 +173,6 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		String tableName = PersistenceHelper.getTableName(entity);
 		String pkName = PersistenceHelper.getPkField(entity);
 		String[] names;
-		Map<String, Integer> types = getColmnTypes(tableName);
 		if (fieldNames != null) {
 			names = fieldNames;
 		} 
@@ -175,7 +183,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		Object pk = PersistenceHelper.getPrimaryKey(entity);
 		String sql = SQLHelper.getUpdateSQL(tableName, names, pkName);
 		if (entities.length == 1) {
-			SQLParameter parameter = getSQLParam(entity, names, types);
+			SQLParameter parameter = SQLHelper.getSQLParam(entity, names);
 			parameter.addParam(pk);
 			if (whereClause == null)
 				row = session.executeUpdate(sql, parameter);
@@ -188,7 +196,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			for (int i = 0; i < entities.length; i++) {
 				if (entities[i] == null)
 					continue;
-				SQLParameter parameter = getSQLParam(entity, names, types);
+				SQLParameter parameter = SQLHelper.getSQLParam(entity, names);
 				parameter.addParam(pk);
 				if (whereClause == null)
 					session.addBatch(sql, parameter);
@@ -204,21 +212,25 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 
 	private void addParameter(SQLParameter parameter, SQLParameter addParams) {
-		if (addParams != null)
-			for (int i = 0; i < addParams.getCountParams(); i++) {
+		if (addParams != null){
+			int count = addParams.getCount();
+			for (int i = 0; i < count; i++) {
 				parameter.addParam(addParams.get(i));
 			}
+		}
 	}
 
-
-	public int delete(final List entities) throws JmpDbException {
+	@Override
+	public int delete(final List<? extends Object> entities) throws JmpDbException {
 		return delete(entities.toArray(new Object[] {}));
 	}
 
+	@Override
 	public int delete(final Object entity) throws JmpDbException {
 		return delete(new Object[] { entity });
 	}
 
+	@Override
 	public int delete(final Object entities[]) throws JmpDbException {
 		if (entities.length == 0)
 			return 0;
@@ -238,10 +250,12 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		return session.executeBatch();
 	}
 
+	@Override
 	public int deleteByPK(Class<?> className, String pk) throws JmpDbException {
 		return deleteByPKs(className, new String[] { pk });
 	}
 
+	@Override
 	public int deleteByPKs(Class<?> clazz, String[] pks) throws JmpDbException {
 		String tableName = PersistenceHelper.getTableName(clazz);
 		String pkField = PersistenceHelper.getPkField(clazz);
@@ -255,11 +269,12 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	}
 
 
-
+	@Override
 	public int deleteByClause(Class<?> className, String wherestr) throws JmpDbException {
 		return deleteByClause(className, wherestr, null);
 	}
 
+	@Override
 	public int deleteByClause(Class<?> clazz, String whereStr, SQLParameter params) throws JmpDbException {
 		String tableName = PersistenceHelper.getTableName(clazz);
 		String sql = new StringBuffer().append("DELETE FROM ").append(tableName).toString();
@@ -277,13 +292,13 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	}
 
-
-	public Object retrieveByPK(Class className, String pk) throws JmpDbException {
-		return retrieveByPK(className, pk, null);
+	@Override
+	public Object retrieveByPK(Class<?> clazz, String pk) throws JmpDbException {
+		return retrieveByPK(clazz, pk, null);
 	}
 
-
-	public Object retrieveByPK(Class clazz, String pk, String[] selectedFields) throws JmpDbException {
+	@Override
+	public Object retrieveByPK(Class<?> clazz, String pk, String[] selectedFields) throws JmpDbException {
 		if (pk == null)
 			return null;
 		SQLParameter param = new SQLParameter();
@@ -297,10 +312,18 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	}
 
-	public List<Object> retrieve(Object vo) throws JmpDbException {
-		return (List<Object>) retrieve(vo, new BeanListProcessor(vo.getClass()));
+	@Override
+	public List<? extends Object> retrieve(Object entity) throws JmpDbException {
+		return (List<? extends Object>) retrieve(entity, new BeanListProcessor(entity.getClass()));
 	}
 	
+	@Override
+	public Object retrieve(Object entity, ResultSetProcessor processor)
+			throws JmpDbException {
+		return (List<? extends Object>) retrieve(entity, processor);
+	}
+	
+	@Override
 	public List<? extends Object> retrieveAll(Class<?> clazz) throws JmpDbException {
 		String tableName = PersistenceHelper.getTableName(clazz);
 		String sql = "SELECT * FROM " + tableName;
@@ -308,34 +331,41 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	}
 
-	public List<? extends Object> retrieveByClause(Class className, String condition) throws JmpDbException {
+	@Override
+	public List<? extends Object> retrieveByClause(Class<?> className, String condition) throws JmpDbException {
 		return retrieveByClause(className, condition, null);
 	}
 
-	public List<? extends Object> retrieveByClause(Class className, String condition, String[] fields, SQLParameter parameters) throws JmpDbException {
+	@Override
+	public List<? extends Object> retrieveByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters) throws JmpDbException {
 		BaseProcessor processor = new BeanListProcessor(className);
-		return (List<? extends Object>) session.executeQuery(buildSql(className, condition, fields), parameters, processor);
+		String sql = SQLHelper.buildSql(className, condition, fields);
+		return (List<? extends Object>) session.executeQuery(sql, parameters, processor);
 	}
 
-	public List<? extends Object> retrieveByClause(Class className, String condition, String[] fields) throws JmpDbException {
+	@Override
+	public List<? extends Object> retrieveByClause(Class<?> className, String condition, String[] fields) throws JmpDbException {
 		return retrieveByClause(className, condition, fields, null);
 	}
 
-
+	@Override
 	public int getDBType() {
 		return session.getDbType();
 	}
 
+	@Override
 	public DatabaseMetaData getMetaData() {
 		if (dbmd == null)
 			dbmd = session.getMetaData();
 		return dbmd;
 	}
 
+	@Override
 	public void setSQLTranslator(boolean isTranslator) {
 		session.setSQLTranslator(isTranslator);
 	}
 
+	@Override
 	public String getSchema() throws JmpDbException {
 		String strSche = null;
 		try {
@@ -355,106 +385,28 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		return strSche;
 	}
 
-	private void init() throws JmpDbException {
-		try{
-			Connection conn = DataSourceCenter.getInstance().getConnection(this.dataSource);
-			CrossDBConnection crossDbConn = new CrossDBConnection(conn);
-			session = new DbSession(crossDbConn);
-		}
-		catch(SQLException e){
-			logger.error(e.getMessage(), e);
-			throw new JmpDbException("error while get connection", e);
-		}
-	}
 
+	@Override
 	public void setMaxRows(int maxRows) {
 		session.setMaxRows(maxRows);
 	}
 
-	private SQLParameter getSQLParam(Object entity, String names[], Map<String, Integer> types) {
-		SQLParameter params = new SQLParameter();
-		for (int i = 0; i < names.length; i++) {
-			String name = names[i];
-			int type = types.get(name.toUpperCase());
-			Object value = PersistenceHelper.getEntityValue(entity, name);
-			if (value == null) {
-				params.addNullParam(type);
-				continue;
-			}
-			if (type == Types.BLOB || type == Types.LONGVARBINARY || type == Types.VARBINARY || type == Types.BINARY) {
-				params.addBlobParam(value);
-				continue;
-			}
-			if (type == Types.CLOB || type == Types.LONGVARCHAR) {
-				params.addClobParam(String.valueOf(value));
-				continue;
-			}
-			params.addParam(value);
 
+	@Override
+	public String getCatalog() {
+		String catalog = null;
+		switch (getDBType()) {
+			case DBConsts.MYSQL:
+			case DBConsts.ORACLE:
+				catalog = "";
+				break;
 		}
-		return params;
+		return catalog;
 	}
 
-	public Connection getConnection() {
-		if (session != null)
-			return session.getConnection();
-		return null;
+	@Override
+	public int getMaxRows() {
+		return session.getMaxRows();
 	}
-
-	private Map<String, Integer> getColmnTypes(String tableName) throws JmpDbException {
-		Map<String, Integer> typeMap = (Map<String, Integer>) cache.get(tableName);
-		if (typeMap == null) {
-			typeMap = new HashMap<String, Integer>();
-			ResultSet rsColumns = null;
-			try {
-				rsColumns = getMetaData().getColumns(null, getSchema(), tableName.toUpperCase(), "%");
-				while (rsColumns.next()) {
-					String columnName = rsColumns.getString("COLUMN_NAME").toUpperCase();
-					int columnType = rsColumns.getShort("DATA_TYPE");
-					typeMap.put(columnName, columnType);
-				}
-				cache.put(tableName, typeMap);
-			} 
-			catch (SQLException e) {
-				SqlLogger.error("get table metadata error", e);
-			} 
-			finally {
-				DBUtil.closeRs(rsColumns);
-			}
-		}
-		return typeMap;
-	}
-
-
-	private String buildSql(Class<?> clazz, String condition, String[] fields) {
-		String pkField = PersistenceHelper.getPkField(clazz);
-		String tableName = PersistenceHelper.getTableName(clazz);
-		boolean hasPKField = false;
-		StringBuffer buffer = new StringBuffer();
-		if (fields == null)
-			buffer.append("SELECT * FROM ").append(tableName);
-		else {
-			buffer.append("SELECT ");
-			for (int i = 0; i < fields.length; i++) {
-				buffer.append(fields[i]).append(",");
-				if (fields[i].equalsIgnoreCase(pkField))
-					hasPKField = true;
-			}
-			if (!hasPKField)
-				buffer.append(pkField).append(",");
-			buffer.setLength(buffer.length() - 1);
-			buffer.append(" FROM ").append(tableName);
-		}
-		if (condition != null && condition.length() != 0) {
-			if (condition.toUpperCase().trim().startsWith("ORDER "))
-				buffer.append(" ").append(condition);
-			else
-				buffer.append(" WHERE ").append(condition);
-		}
-
-		return buffer.toString();
-	}
-
-
 
 }

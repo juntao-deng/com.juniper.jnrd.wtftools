@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 import net.juniper.jmp.persist.ResultSetProcessor;
+import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.exp.JmpDbException;
 import net.juniper.jmp.persist.jdbc.CrossDBConnection;
-import net.juniper.jmp.persist.jdbc.SQLParameter;
 import net.juniper.jmp.persist.utils.DBUtil;
 import net.juniper.jmp.persist.utils.DbExceptionHelper;
 import net.juniper.jmp.persist.utils.SqlLogger;
@@ -49,8 +49,8 @@ public final class DbSession {
 
 	private int batchRows = 0;
 
-	public DbSession(Connection conn) throws JmpDbException {
-		dbType = DBUtil.getDbType(conn);
+	public DbSession(Connection conn, int dbType) throws JmpDbException {
+		this.dbType = dbType;
 		this.conn = conn;
 	}
 
@@ -551,8 +551,6 @@ public final class DbSession {
 
 	private void closeConnection(Connection con) {
 		try {
-			if(TransactionThreadLocal.getTrans() != null)
-				return;
 			if (con != null) {
 				con.close();
 				con = null;
@@ -580,13 +578,4 @@ public final class DbSession {
 		} catch (SQLException e) {
 		}
 	}
-	// private boolean isSelectStatement(String sql) {
-	// StringBuffer sb = new StringBuffer(sql.trim());
-	// String s = (sb.substring(0, 6));
-	// return (s.equalsIgnoreCase("SELECT"));
-	// }
-
-	// private boolean isSupportBatch() throws SQLException {
-	// return getMetaData().supportsBatchUpdates();
-	// }
 }

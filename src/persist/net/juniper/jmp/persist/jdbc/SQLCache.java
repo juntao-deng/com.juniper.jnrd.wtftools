@@ -3,30 +3,33 @@ package net.juniper.jmp.persist.jdbc;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Sql Cache
+ * @author juntaod
+ *
+ */
 public class SQLCache {
-	static SQLCache cache = new SQLCache();
-
-	static Map<String, LRUCache> map = new HashMap<String, LRUCache>();
+	private static SQLCache instance = new SQLCache();
+	private static Map<String, SQLLRUCache> map = new HashMap<String, SQLLRUCache>();
 
 	private SQLCache() {
 	}
 
 	static public SQLCache getInstance() {
-		return cache;
+		return instance;
 	}
 
-	public LRUCache getCache(String dataSource) {
-		LRUCache lruCache = map.get(dataSource);
-		if (lruCache == null) {
+	public SQLLRUCache getCache(String dsName) {
+		SQLLRUCache cache = map.get(dsName);
+		if (cache == null) {
 			synchronized (this) {
-				if (lruCache == null) {
-					lruCache = new LRUCache();
-					map.put(dataSource, lruCache);
+				cache = map.get(dsName);
+				if (cache == null) {
+					cache = new SQLLRUCache();
+					map.put(dsName, cache);
 				}
 			}
-
 		}
-		return lruCache;
+		return cache;
 	}
-
 }

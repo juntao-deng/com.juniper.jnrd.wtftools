@@ -10,7 +10,7 @@ import java.sql.Statement;
 import net.juniper.jmp.persist.jdbc.CrossDBPreparedStatement;
 import net.juniper.jmp.persist.jdbc.CrossDBStatement;
 
-public interface Adapter {
+public interface DBAdapter {
 	public void setNativeConn(Connection nativeConn) throws SQLException;
 
 	public void init() throws SQLException;

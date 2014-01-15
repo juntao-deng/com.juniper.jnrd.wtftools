@@ -12,8 +12,8 @@ public abstract class AdapterFactory   {
 	private AdapterFactory() {
 	}
 
-	static public Adapter getAdapter(int dbType, Connection realConnection) throws SQLException {
-		Adapter adapter = null;
+	static public DBAdapter getAdapter(int dbType, Connection realConnection) throws SQLException {
+		DBAdapter adapter = null;
 		switch (dbType) {
 			case DBConsts.ORACLE:
 				adapter = new OracleAdapter();

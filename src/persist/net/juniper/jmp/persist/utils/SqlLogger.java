@@ -7,4 +7,7 @@ public class SqlLogger {
 	public static void error(String msg, Throwable e){
 		logger.error(msg, e);
 	}
+	public static void warn(String msg) {
+		logger.warn(msg);
+	}
 }

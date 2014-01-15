@@ -9,12 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import net.juniper.jmp.persist.exp.CrossDBSQLException;
 import net.juniper.jmp.persist.jdbc.CrossDBPreparedStatement;
 
 
 
-public abstract class BaseAdapter implements Adapter {
+public abstract class BaseAdapter implements DBAdapter {
 	protected Connection nativeConn;
 
 	public void setNativeConn(Connection nativeConn) throws SQLException {
@@ -39,13 +38,13 @@ public abstract class BaseAdapter implements Adapter {
 
 	public SQLException convertThrowable(Throwable e) {
 		if (e instanceof SQLException) {
-			return convertSQLException((SQLException) e);
+			return (SQLException) e;
 		}
-		return new CrossDBSQLException(e.getMessage(), e.getMessage(), e);
+		return new SQLException(e.getMessage(), e);
 	}
 
 	public SQLException convertSQLException(SQLException e) {
-		return new CrossDBSQLException(e.getMessage(), e.getSQLState(), e);
+		return new SQLException(e.getMessage(), e.getSQLState(), e);
 	}
 
 	public void cancel(Statement stat) throws SQLException {

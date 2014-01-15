@@ -1,46 +1,34 @@
 package net.juniper.jmp.persist.jdbc;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
+import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
+
 /**
- * Clob类型
- * User: 贺扬
- * Date: 2005-5-16
- * Time: 16:39:24
- * ClobParamType类的说明
+ * Clob parameter. This db type is not recommended. Use Blob instead
+ * @author juntaod
+ *
  */
-public class ClobParamType  implements  SQLParamType{
-    /**
-     * <code>serialVersionUID</code> 的注释
-     */
-    private static final long serialVersionUID = 2091823985828181145L;
-    String s = null;
-    int length = 0;
-    Reader reader = null;
+public class ClobParamType implements SQLParamType{
+	private static final long serialVersionUID = -1449755460645693124L;
+	private static final String CHARSET = "iso8859-1";
+	private String str = null;
+    private int length = 0;
 
-    public ClobParamType(String s) {
+    public ClobParamType(String str) {
         try {
-            this.s = s;
-            length = s.getBytes("iso8859-1").length;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            this.str = str;
+            length = str.getBytes(CHARSET).length;
+        } 
+        catch (UnsupportedEncodingException e) {
+        	throw new JmpDbRuntimeException(e.getMessage(), e);
         }
     }
 
-    public ClobParamType(Reader read, int length) {
-        this.reader = read;
-        this.length = length;
+    public String getString() {
+    	return str;
     }
-
-    public Reader getReader() {
-        if (reader == null) {
-            reader = new StringReader(s);
-        }
-        return reader;
-    }
-
+    
     public int getLength() {
         return length;
     }

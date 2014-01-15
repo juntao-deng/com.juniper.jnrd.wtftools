@@ -1,5 +1,8 @@
 package net.juniper.jmp.persist.jdbc.trans;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.juniper.jmp.persist.constant.DBConsts;
 import net.juniper.jmp.persist.exp.UnSupportDbException;
 import net.juniper.jmp.persist.jdbc.TranslatorObject;
@@ -7,7 +10,22 @@ import net.juniper.jmp.persist.mysql.TranslateToMysql;
 import net.juniper.jmp.persist.oracle.TranslateToOracle;
 
 public class SqlTranslator {
-    public SqlTranslator(int dbType) {
+	private static Map<Integer, SqlTranslator> instanceMap = new ConcurrentHashMap<Integer, SqlTranslator>(2);
+	public static SqlTranslator getInstance(Integer dbType){
+		SqlTranslator trans = instanceMap.get(dbType);
+		if(trans == null){
+			synchronized(instanceMap){
+				trans = instanceMap.get(dbType);
+				if(trans == null){
+					trans = new SqlTranslator(dbType);
+					instanceMap.put(dbType, trans);
+				}
+			}
+		}
+		return trans;
+	}
+	
+    private SqlTranslator(int dbType) {
         super();
         m_dbType = dbType;
         initTranslator(dbType);
@@ -26,20 +44,6 @@ public class SqlTranslator {
         return getResultSql(srcSql);
     }
 
-
-    synchronized public java.sql.SQLException getSqlException(java.sql.SQLException srcExp) {
-        if (!m_bTranslate)
-            return srcExp;
-        m_trans.setSqlException(srcExp);
-        return m_trans.getSqlException();
-    }
-
-    public java.sql.SQLException getSqlException(java.sql.SQLException srcExp, int destDbType) {
-        if (m_trans.getDestDbType() != destDbType) {
-            initTranslator(destDbType);
-        }
-        return getSqlException(srcExp);
-    }
 
     /**
      * 返回变换时间。

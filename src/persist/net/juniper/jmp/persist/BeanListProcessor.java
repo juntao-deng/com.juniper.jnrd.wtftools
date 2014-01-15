@@ -1,7 +1,10 @@
 package net.juniper.jmp.persist;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import net.juniper.jmp.persist.exp.JmpDbException;
+import net.juniper.jmp.persist.impl.BaseProcessor;
+import net.juniper.jmp.persist.impl.BeanListProcessorHelper;
 
 public class BeanListProcessor extends BaseProcessor {
 	private Class<?> type = null;
@@ -10,7 +13,7 @@ public class BeanListProcessor extends BaseProcessor {
         this.type = type;
     }
 
-    public Object processResultSet(ResultSet rs) throws SQLException {
-        return ProcessorUtils.toBeanList(rs, type);
+    public Object processResultSet(ResultSet rs) throws JmpDbException {
+        return new BeanListProcessorHelper().toBeanList(rs, type);
     }
 }

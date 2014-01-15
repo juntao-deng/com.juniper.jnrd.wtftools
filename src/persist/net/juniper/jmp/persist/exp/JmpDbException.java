@@ -6,7 +6,7 @@ public class JmpDbException extends Exception {
 	private static final long serialVersionUID = 1L;
 	protected int sqlErrorCode = 0;
 
-    protected String sqlstage  = null;
+    protected String sqlstate  = null;
 
     protected SQLException  realException;
 
@@ -14,24 +14,29 @@ public class JmpDbException extends Exception {
         super(msg,e);
         realException = e;
         sqlErrorCode = e.getErrorCode();
-        sqlstage = e.getSQLState();
+        sqlstate = e.getSQLState();
     }
 
 
     public JmpDbException(String msg) {
         super(msg);
         sqlErrorCode = -1;
-        sqlstage  = null;
+        sqlstate  = null;
     }
 
-
+    public JmpDbException(String msg, Throwable pt) {
+        super(msg, pt);
+        sqlErrorCode = -1;
+        sqlstate  = null;
+    }
+    
     public int getSQLErrorCode() {
         return (sqlErrorCode);
     }
 
 
     public String getSQLState() {
-        return (sqlstage );
+        return (sqlstate );
     }
 
     public SQLException getRealException(){
