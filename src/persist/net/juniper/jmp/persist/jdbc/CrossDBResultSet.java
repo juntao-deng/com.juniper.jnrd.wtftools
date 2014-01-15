@@ -46,79 +46,96 @@ public class CrossDBResultSet implements ResultSet {
 		return passthru;
 	}
 
+	@Override
 	public boolean absolute(int row) throws SQLException {
 		return passthru.absolute(row);
 	}
 
+	@Override
 	public void afterLast() throws SQLException {
 		passthru.afterLast();
 	}
 
+	@Override
 	public void beforeFirst() throws SQLException {
 		passthru.beforeFirst();
 	}
 
+	@Override
 	public void cancelRowUpdates() throws SQLException {
 		passthru.cancelRowUpdates();
 	}
 
+	@Override
 	public void clearWarnings() throws SQLException {
 		passthru.clearWarnings();
 	}
 
+	@Override
 	public void close() throws SQLException {
 		if (passthru != null) {
 			passthru.close();
 		}
 	}
 
+	@Override
 	public void deleteRow() throws SQLException {
 		passthru.deleteRow();
 	}
 
-	public int findColumn(String arg0) throws SQLException {
-		return passthru.findColumn(arg0);
+	@Override
+	public int findColumn(String columnName) throws SQLException {
+		return passthru.findColumn(columnName);
 	}
 
+	@Override
 	public boolean first() throws SQLException {
 		return passthru.first();
 	}
 
+	@Override
 	public Array getArray(int index) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
+	@Override
 	public Array getArray(String colName) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
+	@Override
 	public InputStream getAsciiStream(int columnIndex) throws SQLException {
 		return passthru.getAsciiStream(columnIndex);
 	}
 
+	@Override
 	public InputStream getAsciiStream(String columnName) throws SQLException {
 		InputStream result = passthru.getAsciiStream(columnName);
 		return result;
 	}
 
+	@Override
 	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
 		return passthru.getBigDecimal(columnIndex);
 	}
 
+	@Override
 	public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
-	public java.math.BigDecimal getBigDecimal(String columnName) throws SQLException {
+	@Override
+	public BigDecimal getBigDecimal(String columnName) throws SQLException {
 		return passthru.getBigDecimal(columnName);
 	}
 
-	public java.math.BigDecimal getBigDecimal(String columnIndex, int scale) throws SQLException {
+	@Override
+	public BigDecimal getBigDecimal(String columnIndex, int scale) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
-	public java.io.InputStream getBinaryStream(int columnIndex)
-			throws SQLException {
+	@Override
+	public InputStream getBinaryStream(int columnIndex) throws SQLException {
 		InputStream result = passthru.getBinaryStream(columnIndex);
 		return result;
 	}
@@ -146,34 +163,20 @@ public class CrossDBResultSet implements ResultSet {
 		return result;
 	}
 
+	@Override
 	public byte getByte(int columnIndex) throws SQLException {
 		byte result = passthru.getByte(columnIndex);
 		return result;
 	}
 
+	@Override
 	public byte getByte(String columnName) throws SQLException {
-		try {
-
-			byte result = passthru.getByte(columnName);
-			// if (Trace.isDetailed())
-			// resultString = resultString.append("|").append(result);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		return passthru.getByte(columnName);
 	}
 
+	@Override
 	public byte[] getBytes(int columnIndex) throws SQLException {
-		try {
-
-			byte[] result = adapter.getBytes(passthru, columnIndex);
-			// if (Trace.isDetailed())
-			// resultString =
-			// resultString.append("|").append(Trace.quoteObject(result));
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		return passthru.getBytes(columnIndex);
 	}
 
 	public byte[] getBytes(String columnName) throws SQLException {
@@ -752,13 +755,13 @@ public class CrossDBResultSet implements ResultSet {
 
 	}
 
-	public void updateBigDecimal(int columnIndex, java.math.BigDecimal x)
+	public void updateBigDecimal(int columnIndex, BigDecimal x)
 			throws SQLException {
 		passthru.updateBigDecimal(columnIndex, x);
 
 	}
 
-	public void updateBigDecimal(String columnName, java.math.BigDecimal x)
+	public void updateBigDecimal(String columnName, BigDecimal x)
 			throws SQLException {
 		passthru.updateBigDecimal(columnName, x);
 
