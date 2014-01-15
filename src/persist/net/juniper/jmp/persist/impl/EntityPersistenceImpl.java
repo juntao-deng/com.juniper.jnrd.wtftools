@@ -12,6 +12,7 @@ import net.juniper.jmp.persist.IJmpPersistence;
 import net.juniper.jmp.persist.ResultSetProcessor;
 import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.constant.DBConsts;
+import net.juniper.jmp.persist.datasource.DBMetaInfo;
 import net.juniper.jmp.persist.datasource.DataSourceCenter;
 import net.juniper.jmp.persist.datasource.PersistenceCtx;
 import net.juniper.jmp.persist.exp.JmpDbException;
@@ -19,7 +20,6 @@ import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
 import net.juniper.jmp.persist.jdbc.CrossDBConnection;
 import net.juniper.jmp.persist.jdbc.SQLHelper;
 import net.juniper.jmp.persist.ses.DbSession;
-import net.juniper.jmp.persist.utils.DBUtil;
 
 import org.jboss.resteasy.logging.Logger;
 
@@ -44,8 +44,9 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			DataSource ds = DataSourceCenter.getInstance().getDataSource(this.dataSource);
 			if(ds == null)
 				throw new JmpDbRuntimeException("can not find datasource:" + ds);
+			DBMetaInfo dbMeta = DataSourceCenter.getInstance().getDbMeta(this.dataSource);
 			Connection conn = ds.getConnection();
-			int dbType = DBUtil.getDbType(conn);
+			int dbType = dbMeta.getDbType();
 			CrossDBConnection crossDbConn = new CrossDBConnection(conn, this.dataSource, dbType);
 			session = new DbSession(crossDbConn, dbType);
 		}

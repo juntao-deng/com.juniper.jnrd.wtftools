@@ -69,6 +69,10 @@ public class DataSourceCenter {
         return dsRef.get();
     }
 
+    public DBMetaInfo getDbMeta(String name) {
+    	return metaCache.get(name);
+    }
+    
     /**
      * Give a chance to get a connection that may be wrapped by middleware
      * @param ds

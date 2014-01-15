@@ -1,6 +1,7 @@
 package net.juniper.jmp.persist.jdbc;
 import java.io.InputStream;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
@@ -9,28 +10,24 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Map;
 
-import net.juniper.jmp.persist.jdbc.trans.DBAdapter;
 import net.juniper.jmp.persist.jdbc.trans.SqlTranslator;
 import net.juniper.jmp.persist.utils.DbExceptionHelper;
-
-
 public class CrossDBResultSet implements ResultSet {
-
 	private static int MAX_ROW = 300000;
 	private ResultSet passthru;
-
 	private CrossDBStatement stmt;
 
 	private SqlTranslator trans = null;
-
-	private DBAdapter adapter = null;
 
 	private int nRowCount = 0;
 
@@ -39,12 +36,10 @@ public class CrossDBResultSet implements ResultSet {
 		super();
 	}
 
-	public CrossDBResultSet(java.sql.ResultSet dummy, CrossDBStatement stmt) {
+	public CrossDBResultSet(ResultSet passthru, CrossDBStatement stmt) {
 		super();
 		this.stmt = stmt;
-		this.passthru = dummy;
-		trans = stmt.getSqlTranslator();
-		adapter = stmt.getAdapter();
+		this.passthru = passthru;
 	}
 
 	public ResultSet getResultSet() {
@@ -52,88 +47,44 @@ public class CrossDBResultSet implements ResultSet {
 	}
 
 	public boolean absolute(int row) throws SQLException {
-		try {
-			return passthru.absolute(row);
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
-
+		return passthru.absolute(row);
 	}
 
 	public void afterLast() throws SQLException {
-		try {
-			passthru.afterLast();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		passthru.afterLast();
 	}
 
 	public void beforeFirst() throws SQLException {
-		try {
-			passthru.beforeFirst();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		passthru.beforeFirst();
 	}
 
 	public void cancelRowUpdates() throws SQLException {
-		try {
-			passthru.cancelRowUpdates();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		passthru.cancelRowUpdates();
 	}
 
 	public void clearWarnings() throws SQLException {
-		try {
-			passthru.clearWarnings();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		passthru.clearWarnings();
 	}
 
 	public void close() throws SQLException {
-		try {
-
-			if (passthru != null) {
-				passthru.close();
-				passthru = null;
-			}
-			if (stmt != null)
-				stmt.deregisterResultSet(this);
-		} 
-		catch (SQLException e) {
-			throw trans.getSqlException(e);
+		if (passthru != null) {
+			passthru.close();
 		}
 	}
 
 	public void deleteRow() throws SQLException {
-		try {
-			passthru.deleteRow();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		passthru.deleteRow();
 	}
 
 	public int findColumn(String arg0) throws SQLException {
-		try {
-			return passthru.findColumn(arg0);
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
-
+		return passthru.findColumn(arg0);
 	}
 
 	public boolean first() throws SQLException {
-		try {
-			return passthru.first();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
-
+		return passthru.first();
 	}
 
-	public Array getArray(int i) throws SQLException {
+	public Array getArray(int index) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
@@ -141,76 +92,40 @@ public class CrossDBResultSet implements ResultSet {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
-	public java.io.InputStream getAsciiStream(int columnIndex)
-			throws SQLException {
-		try {
-			InputStream result = passthru.getAsciiStream(columnIndex);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public InputStream getAsciiStream(int columnIndex) throws SQLException {
+		return passthru.getAsciiStream(columnIndex);
 	}
 
-	public java.io.InputStream getAsciiStream(String columnName)
-			throws SQLException {
-		try {
-			InputStream result = passthru.getAsciiStream(columnName);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public InputStream getAsciiStream(String columnName) throws SQLException {
+		InputStream result = passthru.getAsciiStream(columnName);
+		return result;
 	}
 
-	public java.math.BigDecimal getBigDecimal(int columnIndex)
-			throws SQLException {
-		try {
-
-			return passthru.getBigDecimal(columnIndex);
-
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
-
+	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
+		return passthru.getBigDecimal(columnIndex);
 	}
 
-	public java.math.BigDecimal getBigDecimal(int columnIndex, int scale)
-			throws SQLException {
+	public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
-	public java.math.BigDecimal getBigDecimal(String columnName)
-			throws SQLException {
-		try {
-			return passthru.getBigDecimal(columnName);
-
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public java.math.BigDecimal getBigDecimal(String columnName) throws SQLException {
+		return passthru.getBigDecimal(columnName);
 	}
 
-	public java.math.BigDecimal getBigDecimal(String columnIndex, int scale)
-			throws SQLException {
+	public java.math.BigDecimal getBigDecimal(String columnIndex, int scale) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
 	public java.io.InputStream getBinaryStream(int columnIndex)
 			throws SQLException {
-		try {
-			InputStream result = passthru.getBinaryStream(columnIndex);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		InputStream result = passthru.getBinaryStream(columnIndex);
+		return result;
 	}
 
-	public java.io.InputStream getBinaryStream(String columnName)
-			throws SQLException {
-		try {
-			InputStream result = passthru.getBinaryStream(columnName);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public java.io.InputStream getBinaryStream(String columnName) throws SQLException {
+		InputStream result = passthru.getBinaryStream(columnName);
+		return result;
 	}
 
 	public Blob getBlob(int i) throws SQLException {
@@ -222,35 +137,18 @@ public class CrossDBResultSet implements ResultSet {
 	}
 
 	public boolean getBoolean(int columnIndex) throws SQLException {
-		try {
-			boolean result = passthru.getBoolean(columnIndex);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		boolean result = passthru.getBoolean(columnIndex);
+		return result;
 	}
 
 	public boolean getBoolean(String columnName) throws SQLException {
-		try {
-
-			boolean result = passthru.getBoolean(columnName);
-			// if (Trace.isDetailed())
-			// resultString = resultString.append("|").append(result);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		boolean result = passthru.getBoolean(columnName);
+		return result;
 	}
 
 	public byte getByte(int columnIndex) throws SQLException {
-		try {
-			byte result = passthru.getByte(columnIndex);
-			// if (Trace.isDetailed())
-			// resultString = resultString.append("|").append(result);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		byte result = passthru.getByte(columnIndex);
+		return result;
 	}
 
 	public byte getByte(String columnName) throws SQLException {
@@ -304,8 +202,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.io.Reader getCharacterStream(String columnName)
-			throws SQLException {
+	public java.io.Reader getCharacterStream(String columnName) throws SQLException {
 		try {
 			return adapter.getCharacterStream(passthru, columnName);
 		} catch (SQLException e) {
@@ -322,33 +219,18 @@ public class CrossDBResultSet implements ResultSet {
 	}
 
 	public int getConcurrency() throws SQLException {
-		try {
-			return passthru.getConcurrency();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		return passthru.getConcurrency();
 	}
 
 	public String getCursorName() throws SQLException {
-		try {
-			return passthru.getCursorName();
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+		return passthru.getCursorName();
 	}
 
-	public java.sql.Date getDate(int arg0) throws SQLException {
-		try {
-			Date result = passthru.getDate(arg0);
-			// if (Trace.isDetailed())
-			// resultString = resultString.append("|").append(result);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public Date getDate(int arg0) throws SQLException {
+		return passthru.getDate(arg0);
 	}
 
-	public java.sql.Date getDate(int columnIndex, java.util.Calendar cal)
+	public Date getDate(int columnIndex, java.util.Calendar cal)
 			throws SQLException {
 		try {
 			Date result = passthru.getDate(columnIndex, cal);
@@ -360,7 +242,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Date getDate(String arg0) throws SQLException {
+	public Date getDate(String arg0) throws SQLException {
 		try {
 			Date result = passthru.getDate(arg0);
 			// if (Trace.isDetailed())
@@ -371,7 +253,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Date getDate(String columnName, java.util.Calendar cal)
+	public Date getDate(String columnName, java.util.Calendar cal)
 			throws SQLException {
 		try {
 			Date result = passthru.getDate(columnName, cal);
@@ -494,9 +376,9 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	private java.sql.ResultSetMetaData metaData = null;
+	private ResultSetMetaData metaData = null;
 	// todo
-	public java.sql.ResultSetMetaData getMetaData() throws SQLException {
+	public ResultSetMetaData getMetaData() throws SQLException {
 		if(metaData==null){
 			try {
 				metaData = new CrossDBResultSetMetaData(passthru.getMetaData());
@@ -569,7 +451,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Statement getStatement() throws SQLException {
+	public Statement getStatement() throws SQLException {
 		return this.stmt;
 	}
 
@@ -607,7 +489,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Time getTime(int columnIndex) throws SQLException {
+	public Time getTime(int columnIndex) throws SQLException {
 		try {
 			Time result = passthru.getTime(columnIndex);
 			return result;
@@ -616,7 +498,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Time getTime(int columnIndex, java.util.Calendar cal)
+	public Time getTime(int columnIndex, java.util.Calendar cal)
 			throws SQLException {
 		try {
 			Time result = passthru.getTime(columnIndex, cal);
@@ -627,18 +509,11 @@ public class CrossDBResultSet implements ResultSet {
 
 	}
 
-	public java.sql.Time getTime(String arg0) throws SQLException {
-		try {
-			Time result = passthru.getTime(arg0);
-			// if (Trace.isDetailed())
-			// resultString = resultString.append("|").append(result);
-			return result;
-		} catch (SQLException e) {
-			throw trans.getSqlException(e);
-		}
+	public Time getTime(String arg0) throws SQLException {
+		return passthru.getTime(arg0);
 	}
 
-	public java.sql.Time getTime(String columnName, java.util.Calendar cal)
+	public Time getTime(String columnName, java.util.Calendar cal)
 			throws SQLException {
 		try {
 			Time result = passthru.getTime(columnName, cal);
@@ -650,7 +525,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Timestamp getTimestamp(int arg0) throws SQLException {
+	public Timestamp getTimestamp(int arg0) throws SQLException {
 		try {
 			Timestamp result = passthru.getTimestamp(arg0);
 			// if (Trace.isDetailed())
@@ -661,7 +536,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Timestamp getTimestamp(int columnIndex,
+	public Timestamp getTimestamp(int columnIndex,
 			java.util.Calendar cal) throws SQLException {
 		try {
 			Timestamp result = passthru.getTimestamp(columnIndex, cal);
@@ -673,7 +548,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Timestamp getTimestamp(String arg0) throws SQLException {
+	public Timestamp getTimestamp(String arg0) throws SQLException {
 		try {
 			Timestamp result = passthru.getTimestamp(arg0);
 			// if (Trace.isDetailed())
@@ -684,7 +559,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	public java.sql.Timestamp getTimestamp(String columnName,
+	public Timestamp getTimestamp(String columnName,
 			java.util.Calendar cal) throws SQLException {
 		try {
 			Timestamp result = passthru.getTimestamp(columnName, cal);
@@ -712,7 +587,7 @@ public class CrossDBResultSet implements ResultSet {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 
-	public java.sql.SQLWarning getWarnings() throws SQLException {
+	public SQLWarning getWarnings() throws SQLException {
 		try {
 			return passthru.getWarnings();
 		} catch (SQLException e) {
@@ -943,13 +818,13 @@ public class CrossDBResultSet implements ResultSet {
 
 	}
 
-	public void updateDate(int columnIndex, java.sql.Date x)
+	public void updateDate(int columnIndex, Date x)
 			throws SQLException {
 		passthru.updateDate(columnIndex, x);
 
 	}
 
-	public void updateDate(String columnName, java.sql.Date x)
+	public void updateDate(String columnName, Date x)
 			throws SQLException {
 		passthru.updateDate(columnName, x);
 	}
@@ -1050,25 +925,25 @@ public class CrossDBResultSet implements ResultSet {
 
 	}
 
-	public void updateTime(int columnIndex, java.sql.Time x)
+	public void updateTime(int columnIndex, Time x)
 			throws SQLException {
 		passthru.updateTime(columnIndex, x);
 
 	}
 
-	public void updateTime(String columnName, java.sql.Time x)
+	public void updateTime(String columnName, Time x)
 			throws SQLException {
 		passthru.updateTime(columnName, x);
 
 	}
 
-	public void updateTimestamp(int columnIndex, java.sql.Timestamp x)
+	public void updateTimestamp(int columnIndex, Timestamp x)
 			throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 
 	}
 
-	public void updateTimestamp(String columnName, java.sql.Timestamp x)
+	public void updateTimestamp(String columnName, Timestamp x)
 			throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 
@@ -1082,7 +957,7 @@ public class CrossDBResultSet implements ResultSet {
 		}
 	}
 
-	private java.sql.ResultSetMetaData aRSMD = null;
+	private ResultSetMetaData aRSMD = null;
 
 	private String[] columnNames = null;
 
@@ -1103,9 +978,9 @@ public class CrossDBResultSet implements ResultSet {
 	/**
 	 * 此处插入方法说明。 创建日期：(2001-8-15 10:44:01)
 	 * 
-	 * @return java.sql.ResultSetMetaData
+	 * @return ResultSetMetaData
 	 */
-	public java.sql.ResultSetMetaData getRSMD() throws SQLException {
+	public ResultSetMetaData getRSMD() throws SQLException {
 		if (aRSMD == null) {
 			try {
 				aRSMD = getMetaData();
@@ -1188,7 +1063,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#getURL(int)
+	 * @see ResultSet#getURL(int)
 	 */
 	public URL getURL(int columnIndex) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1197,7 +1072,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateArray(int, java.sql.Array)
+	 * @see ResultSet#updateArray(int, Array)
 	 */
 	public void updateArray(int columnIndex, Array x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1207,7 +1082,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateBlob(int, java.sql.Blob)
+	 * @see ResultSet#updateBlob(int, Blob)
 	 */
 	public void updateBlob(int columnIndex, Blob x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1217,7 +1092,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateClob(int, java.sql.Clob)
+	 * @see ResultSet#updateClob(int, Clob)
 	 */
 	public void updateClob(int columnIndex, Clob x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1227,7 +1102,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateRef(int, java.sql.Ref)
+	 * @see ResultSet#updateRef(int, Ref)
 	 */
 	public void updateRef(int columnIndex, Ref x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1237,7 +1112,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#getURL(java.lang.String)
+	 * @see ResultSet#getURL(java.lang.String)
 	 */
 	public URL getURL(String columnName) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1247,7 +1122,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateArray(java.lang.String, java.sql.Array)
+	 * @see ResultSet#updateArray(java.lang.String, Array)
 	 */
 	public void updateArray(String columnName, Array x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1257,7 +1132,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateBlob(java.lang.String, java.sql.Blob)
+	 * @see ResultSet#updateBlob(java.lang.String, Blob)
 	 */
 	public void updateBlob(String columnName, Blob x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1267,7 +1142,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateClob(java.lang.String, java.sql.Clob)
+	 * @see ResultSet#updateClob(java.lang.String, Clob)
 	 */
 	public void updateClob(String columnName, Clob x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
@@ -1277,7 +1152,7 @@ public class CrossDBResultSet implements ResultSet {
 	/*
 	 * （非 Javadoc）
 	 * 
-	 * @see java.sql.ResultSet#updateRef(java.lang.String, java.sql.Ref)
+	 * @see ResultSet#updateRef(java.lang.String, Ref)
 	 */
 	public void updateRef(String columnName, Ref x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();

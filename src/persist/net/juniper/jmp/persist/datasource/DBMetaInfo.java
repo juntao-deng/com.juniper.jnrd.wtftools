@@ -5,12 +5,12 @@ import java.io.Serializable;
 public class DBMetaInfo implements Serializable{
 
     private static final long serialVersionUID = 1230267680871744361L;
-    private int type;
+    private int dbType;
     private String userName;
     private String catalog;
     public DBMetaInfo(int type) {
         super();
-        this.type = type;
+        this.dbType = type;
     }
     
     public String getCatalog() {
@@ -25,10 +25,10 @@ public class DBMetaInfo implements Serializable{
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    protected int getType() {
-        return type;
+    public int getDbType() {
+        return dbType;
     }
-    protected void setType(int type) {
-        this.type = type;
+    public void setDbType(int type) {
+        this.dbType = type;
     }
 }

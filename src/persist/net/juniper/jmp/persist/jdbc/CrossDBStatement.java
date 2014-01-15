@@ -221,7 +221,6 @@ public class CrossDBStatement implements Statement{
 		return passthru;
 	}
 
-
 	@Override
 	public boolean isClosed() throws SQLException {
 		return passthru.isClosed();

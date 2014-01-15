@@ -1,7 +1,6 @@
 package net.juniper.jmp.persist.utils;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,17 +9,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import net.juniper.jmp.persist.SQLParameter;
-import net.juniper.jmp.persist.constant.DBConsts;
-import net.juniper.jmp.persist.datasource.PersistenceCtx;
 import net.juniper.jmp.persist.jdbc.BlobParamType;
 import net.juniper.jmp.persist.jdbc.ClobParamType;
-import net.juniper.jmp.persist.jdbc.CrossDBConnection;
 import net.juniper.jmp.persist.jdbc.NullParamType;
 
 
 public class DBUtil {
-	public static void setStatementParameter(PreparedStatement statement,
-			SQLParameter params) throws SQLException {
+	public static void setStatementParameter(PreparedStatement statement, SQLParameter params) throws SQLException {
 		if (statement == null || params == null)
 			throw new IllegalArgumentException("不能传入空的SQLParameter!");
 		for (int i = 0; i < params.getCountParams(); i++) {
@@ -66,44 +61,6 @@ public class DBUtil {
 		}
 	}
 
-	public static int getDbType(Connection con) {
-		try {
-			return getDbType(con.getMetaData());
-		} 
-		catch (SQLException e) {
-			SqlLogger.error("get database meta error", e);
-			return DBConsts.UNKOWNDATABASE;
-		}
-	}
-
-
-	public static int getDbType(DatabaseMetaData dmd) {
-		String dpn = null;
-		try {
-			dpn = dmd.getDatabaseProductName();
-		} catch (SQLException exp) {
-			SqlLogger.error("get database prodcut name error", exp);
-			return DBConsts.UNKOWNDATABASE;
-		}
-		String udpn = dpn.toUpperCase();
-		if (udpn.indexOf("MYSQL") != -1)
-			return DBConsts.MYSQL;
-		if (udpn.indexOf("DB2") != -1)
-			return DBConsts.DB2;
-		if (udpn.indexOf("ORACLE") != -1)
-			return DBConsts.ORACLE;
-		if (udpn.indexOf("SQL") != -1)
-			return DBConsts.SQLSERVER;
-		if (udpn.indexOf("INFORMIX") != -1)
-			return DBConsts.INFORMIX;
-		if (udpn.toUpperCase().indexOf("OSCAR") != -1)
-			return DBConsts.OSCAR;
-		if (udpn.indexOf("HSQL") != -1)
-			return DBConsts.HSQL;
-		if (udpn.indexOf("SYBASE") != -1)
-			return DBConsts.SYBASE;
-		return DBConsts.UNKOWNDATABASE;
-	}
 
 	public static void closeConnection(Connection con) {
 		try {
@@ -111,7 +68,8 @@ public class DBUtil {
 				con.close();
 				con = null;
 			}
-		} catch (SQLException e) {
+		} 
+		catch (SQLException e) {
 		}
 	}
 
@@ -121,7 +79,8 @@ public class DBUtil {
 				stmt.close();
 				stmt = null;
 			}
-		} catch (SQLException e) {
+		} 
+		catch (SQLException e) {
 		}
 	}
 
@@ -131,22 +90,9 @@ public class DBUtil {
 				rs.close();
 				rs = null;
 			}
-		} catch (SQLException e) {
+		} 
+		catch (SQLException e) {
 		}
-	}
-
-	
-	public static String getDataSource(Connection conn) {
-		String dsName = null;
-		if (conn instanceof CrossDBConnection) {
-			dsName = ((CrossDBConnection) conn).getDataSource();
-		}
-
-		if (dsName == null) {
-			dsName = PersistenceCtx.getCurrentDatasource();
-		}
-		return dsName;
-
 	}
 
 }
