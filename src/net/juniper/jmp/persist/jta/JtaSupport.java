@@ -18,4 +18,8 @@ public interface JtaSupport {
 	public void registerSynchronization(Synchronization synchronization);
 
 	public int getCurrentStatus() throws SystemException;
+	
+	public boolean hasTransaction() throws SystemException;
+	
+	public Object getTransactionId() throws SystemException;
 }

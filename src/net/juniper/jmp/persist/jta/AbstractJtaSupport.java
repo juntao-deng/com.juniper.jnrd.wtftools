@@ -2,6 +2,7 @@ package net.juniper.jmp.persist.jta;
 
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
@@ -67,5 +68,25 @@ public abstract class AbstractJtaSupport implements JtaSupport{
 	@Override
 	public int getCurrentStatus() throws SystemException {
 		return retrieveTransactionManager().getStatus();
+	}
+
+	@Override
+	public boolean hasTransaction() throws SystemException {
+		TransactionManager trans = retrieveTransactionManager();
+		if(trans == null)
+			return false;
+		return trans.getTransaction() != null;
+	}
+	
+	private Transaction getTransaction() throws SystemException{
+		TransactionManager trans = retrieveTransactionManager();
+		if(trans == null)
+			return null;
+		return trans.getTransaction();
+	}
+
+	@Override
+	public Object getTransactionId() throws SystemException {
+		return getTransaction();
 	}
 }
