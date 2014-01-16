@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/framework"/>
-	<classpathentry kind="src" path="src/persist"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="D:/devspace/weld/weld-servlet.jar" sourcepath="D:/devspace/weld/weld-servlet-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/springframework-web"/>

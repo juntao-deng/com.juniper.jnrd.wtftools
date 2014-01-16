@@ -63,7 +63,7 @@
     <target name="init">
         <mkdir dir="web/WEB-INF/classes"/>
         <copy includeemptydirs="false" todir="web/WEB-INF/classes">
-            <fileset dir="src/framework">
+            <fileset dir="src">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
@@ -76,10 +76,10 @@
     <target depends="init" name="build">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="web/WEB-INF/classes" includeantruntime="false" source="${source}" target="${target}">
-            <src path="src/framework"/>
+            <src path="src"/>
             <classpath refid="wtfbase.classpath"/>
         </javac>
     	<jar jarfile="bin/wtfbase.jar" basedir="web/WEB-INF/classes"/>  
-    	<jar jarfile="bin/wtfbase-sources.jar" basedir="src/framework"/>  
+    	<jar jarfile="bin/wtfbase-sources.jar" basedir="src"/>  
     </target>
 </project>
