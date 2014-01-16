@@ -312,7 +312,6 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		if (results.size() >= 1)
 			return (Object) results.get(0);
 		return null;
-
 	}
 
 	@Override
@@ -343,23 +342,36 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	@Override
 	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort) throws JmpDbException {
-		BaseProcessor processor = new BeanListProcessor(className);
-		String sql = SQLHelper.buildSql(className, condition, fields);
-		return (List<? extends Object>) session.executeQuery(sql, parameters, processor);
+		return findAllByClause(className, condition, fields, parameters, sort, null);
 	}
 	
 	@Override
 	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) throws JmpDbException {
 		BaseProcessor processor = new BeanListProcessor(className);
-		String sql = SQLHelper.buildSql(className, condition, fields);
+		String sql = SQLHelper.buildSql(className, condition, fields, sort);
 		return (List<? extends Object>) session.executeQuery(sql, parameters, processor);
 	}
 
 	@Override
 	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort) throws JmpDbException {
-		return findAllByClause(className, condition, fields, null);
+		return findAllByClause(className, condition, fields, sort, null);
+	}
+	
+	@Override
+	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort, Pageable pageable) throws JmpDbException {
+		
 	}
 
+	@Override
+	public List<? extends Object> findAll(Class<?> clazz, Sort sort, Pageable pageable) throws JmpDbException {
+		return null;
+	}
+
+	@Override
+	public List<? extends Object> findAllByClause(Class<?> clazz, String condition, Sort sort, Pageable pageable) throws JmpDbException {
+		return null;
+	}
+	
 	@Override
 	public int getDBType() {
 		return session.getDbType();
@@ -420,5 +432,6 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	public int getMaxRows() {
 		return session.getMaxRows();
 	}
+
 
 }
