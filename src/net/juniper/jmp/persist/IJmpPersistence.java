@@ -8,7 +8,7 @@ import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.persist.exp.JmpDbException;
 import net.juniper.jmp.persist.impl.DbSession;
 
-public interface IJmpPersistence {
+public interface IJmpPersistence{
 	/**
 	 * release the persistence
 	 */

@@ -11,7 +11,7 @@ import net.juniper.jmp.persist.impl.EntityPersistenceImpl;
 import net.juniper.jmp.persist.jta.JtaSupportFactory;
 
 
-public abstract class JmpPersistenceManager {
+public final class JmpPersistenceManager{
 	private static ThreadLocal<PersistenceWrapper> threadLocal = new ThreadLocal<PersistenceWrapper>();
 	private static Map<String, IJmpPersistence> persistenceMap = new HashMap<String, IJmpPersistence>();
     public static IJmpPersistence getInstance() {
@@ -69,11 +69,8 @@ public abstract class JmpPersistenceManager {
 }
 class PersistenceWrapper{
 	private Map<String, IJmpPersistence> txPersistenceMap;
-	private IJmpPersistence noTxPersistence;
+	private Map<String, IJmpPersistence> noTxPersistenceMap;
 	private Synchronization synchronization;
-	protected IJmpPersistence getNoTxPersistence() {
-		return noTxPersistence;
-	}
 	public void setSynchronization(Synchronization sync) {
 		this.synchronization = sync;
 	}
