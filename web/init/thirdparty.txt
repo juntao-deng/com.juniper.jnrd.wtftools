@@ -12,6 +12,7 @@ springframework-expression
 3rdParty.aopalliance
 net.juniper.jmp.wtfbase
 modules-org.jboss.resteasy.resteasy-jaxrs
+modules-org.jboss.resteasy.resteasy-cdi
 modules-org.apache.commons.logging
 modules-org.apache.commons.lang
 modules-org.apache.commons.io

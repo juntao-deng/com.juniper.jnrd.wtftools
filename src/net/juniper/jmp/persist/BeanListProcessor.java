@@ -13,7 +13,8 @@ public class BeanListProcessor extends BaseProcessor {
         this.type = type;
     }
 
-    public Object processResultSet(ResultSet rs) throws JmpDbException {
+    @Override
+	public Object processResultSet(ResultSet rs) throws JmpDbException {
         return new BeanListProcessorHelper().toBeanList(rs, type);
     }
 }

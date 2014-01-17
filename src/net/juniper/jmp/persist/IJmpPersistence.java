@@ -16,17 +16,17 @@ public interface IJmpPersistence{
 
     public DbSession getDbSession();
 
-    public String insert(Object entity) throws JmpDbException;
+    public Object insert(Object entity) throws JmpDbException;
     
-    public String[] insert(final List<? extends Object> entities) throws JmpDbException;
+    public Object[] insert(final List<? extends Object> entities) throws JmpDbException;
 
-    public String[] insert(final Object entities[]) throws JmpDbException;
+    public Object[] insert(final Object entities[]) throws JmpDbException;
 
-    public String[] insertWithPK(List<? extends Object> entities) throws JmpDbException;
+    public Object[] insertWithPK(List<? extends Object> entities) throws JmpDbException;
     
-    public String insertWithPK(Object entity) throws JmpDbException;
+    public Object insertWithPK(Object entity) throws JmpDbException;
     
-    public String[] insertWithPK(Object entities[]) throws JmpDbException;
+    public Object[] insertWithPK(Object entities[]) throws JmpDbException;
     
     public int update(final Object entity) throws JmpDbException;
 
@@ -91,4 +91,6 @@ public interface IJmpPersistence{
     public int getMaxRows();
     
     public void setMaxRows(int maxRows);
+
+	public String getDataSourceName();
 }

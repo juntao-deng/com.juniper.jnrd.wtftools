@@ -1,6 +1,8 @@
 package net.juniper.jmp.persist.exp;
 
-public class JmpDbRuntimeException extends RuntimeException {
+import net.juniper.jmp.exception.JMPRuntimeException;
+
+public class JmpDbRuntimeException extends JMPRuntimeException {
 	private static final long serialVersionUID = -5875066590858218583L;
 
 	public JmpDbRuntimeException(String message) {

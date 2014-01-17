@@ -7,10 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import net.juniper.jmp.persist.ResultSetProcessor;
 import net.juniper.jmp.persist.SQLParameter;
@@ -44,6 +42,8 @@ public final class DbSession {
 	private int size = 0;
 
 	private int batchRows = 0;
+	
+	private List<Object> pkList;
 
 	public DbSession(CrossDBConnection conn, int dbType) throws JmpDbException {
 		this.dbType = dbType;
@@ -131,6 +131,86 @@ public final class DbSession {
 		return result;
 	}
 
+	/**
+	 * This method is just like executeUpdate, but return inserted pks
+	 * @param sql
+	 * @param paramter
+	 * @return
+	 * @throws JmpDbException
+	 */
+	public Object[] executeInsert(String sql, SQLParameter parameter) throws JmpDbException{
+		executeUpdate(sql, parameter);
+		List<Object> pkList = new ArrayList<Object>();
+		try {
+			ResultSet rs = prepStatement.getGeneratedKeys();
+			while(rs.next()){
+				pkList.add(rs.getObject(0));
+			}
+			return pkList.toArray(new Object[0]);
+		} 
+		catch (SQLException e) {
+			throw DbExceptionHelper.getException(dbType, e.getMessage(), e);
+		}
+		
+	}
+	
+	public Object[] executeInsert(String sql) throws JmpDbException{
+		executeUpdate(sql);
+		List<Object> pkList = new ArrayList<Object>();
+		try {
+			ResultSet rs = statement.getGeneratedKeys();
+			while(rs.next()){
+				pkList.add(rs.getObject(0));
+			}
+			return pkList.toArray(new Object[0]);
+		} 
+		catch (SQLException e) {
+			throw DbExceptionHelper.getException(dbType, e.getMessage(), e);
+		}
+	}
+	
+	public void addBatchInsert(String sql, SQLParameter parameters) throws JmpDbException {
+		if (batch == null)
+			batch = new InsertBatch(batchSize, conn);
+		else if(!(batch instanceof InsertBatch))
+			throw new JmpDbException("you can only add insert sql this batch time");
+		try {
+			batch.addBatch(sql, parameters);
+			size ++;
+			if (size % batchSize == 0) {
+				if(pkList == null){
+					pkList = new ArrayList<Object>();
+				}
+				Object[] pks = internalExecuteBatchInsert();
+				if(pks != null)
+					pkList.addAll(Arrays.asList(pks));
+				size = 0;
+			}
+		} 
+		catch (SQLException e) {
+			throw DbExceptionHelper.getException(dbType, e.getMessage(), e);
+		}
+	}
+	
+	public Object[] executeBatchInsert() throws JmpDbException {
+		try {
+			Object[] pks = internalExecuteBatchInsert();
+			if(pkList == null)
+				return pks;
+			else{
+				if(pks != null)
+					pkList.addAll(Arrays.asList(pks));
+				return pkList.toArray(new Object[0]);
+			}
+		} 
+		finally {
+			if (batch != null) {
+				batch.cleanupBatch();
+				batch = null;
+			}
+		}
+	}
+	
 	public int executeUpdate(String sql, SQLParameter parameter) throws JmpDbException {
 		try {
 			if ((!sql.equalsIgnoreCase(lastSQL)) || (prepStatement == null)) {
@@ -165,7 +245,7 @@ public final class DbSession {
 
 	public void addBatch(String sql, SQLParameter parameters) throws JmpDbException {
 		if (batch == null)
-			batch = new Batch();
+			batch = new Batch(batchSize, conn);
 		try {
 			batch.addBatch(sql, parameters);
 			size ++;
@@ -182,7 +262,7 @@ public final class DbSession {
 	public void addBatch(String sql, SQLParameter[] parametersArray) throws JmpDbException {
 		try {
 			if (batch == null)
-				batch = new Batch();
+				batch = new Batch(batchSize, conn);
 			size = size + parametersArray.length;
 			batch.addBatch(sql, parametersArray);
 			if (size % batchSize == 0 || size > batchSize) {
@@ -208,6 +288,18 @@ public final class DbSession {
 			batchRows = 0;
 			size = 0;
 			return rows;
+		} 
+		catch (SQLException e) {
+			throw DbExceptionHelper.getException(dbType, e.getMessage(), e);
+		} 
+	}
+	
+	private Object[] internalExecuteBatchInsert() throws JmpDbException {
+		try {
+			if (batch != null) {
+				return ((InsertBatch)batch).executeBatchInsert();
+			}
+			return null;
 		} 
 		catch (SQLException e) {
 			throw DbExceptionHelper.getException(dbType, e.getMessage(), e);
@@ -245,146 +337,7 @@ public final class DbSession {
 		return dbmd;
 	}
 
-	/**
-	 * private batch struct
-	 *
-	 */
-	private class BatchStruct {
-		String sql = null;
-		SQLParameter[] params;
 
-		public BatchStruct(String sql, SQLParameter[] params) {
-			this.sql = sql;
-			this.params = params;
-		}
-
-		public BatchStruct(String sql, SQLParameter param) {
-			this.sql = sql;
-			if (param != null) {
-				this.params = new SQLParameter[] { param };
-			}
-		}
-	}
-
-	/**
-	 * private batch
-	 *
-	 */
-	private class Batch {
-		private List<BatchStruct> batchStructs = new ArrayList<BatchStruct>();
-
-		private Map<String, PreparedStatement> cachedStatement = new HashMap<String, PreparedStatement>();
-
-		private Statement stmt = null;
-
-		public Batch() {
-		}
-
-		public void addBatch(String sql, SQLParameter[] pas) throws SQLException {
-			batchStructs.add(new BatchStruct(sql, pas));
-		}
-
-		public void addBatch(String sql, SQLParameter pa) throws SQLException {
-			batchStructs.add(new BatchStruct(sql, pa));
-		}
-
-		private Statement getStatement(String sql, boolean prepare)
-				throws SQLException {
-			if (prepare) {
-				PreparedStatement stmt = cachedStatement.get(sql);
-				if (stmt == null) {
-					stmt = conn.prepareStatement(sql);
-					cachedStatement.put(sql, stmt);
-				}
-				return stmt;
-			} 
-			else {
-				if (stmt == null) {
-					stmt = conn.createStatement();
-				}
-				return stmt;
-			}
-		}
-
-		public int executeBatch() throws SQLException {
-			int totalRowCount = 0;
-			Iterator<BatchStruct> itr = batchStructs.iterator();
-			int rbSize = 0;
-			Statement lastStmt = null;
-			String lastSql = null;
-			while (itr.hasNext()) {
-				BatchStruct bs = itr.next();
-				itr.remove();
-				Statement now = getStatement(bs.sql, bs.params != null);
-				if (now != lastStmt) {
-					if (lastStmt != null) {
-						totalRowCount += internalExecute(lastStmt);
-						rbSize = 0;
-						if (now != stmt) {
-							closeStmt(lastStmt);
-							cachedStatement.remove(lastSql);
-						}
-					}
-					lastStmt = now;
-					lastSql = bs.sql;
-				}
-				if (bs.params != null) {
-					PreparedStatement ps = (PreparedStatement) now;
-					for (SQLParameter parameter : bs.params) {
-						if (parameter != null) {
-							SQLHelper.setStatementParameter(ps, parameter);
-						}
-						ps.addBatch();
-						rbSize++;
-						if (rbSize % batchSize == 0) {
-							totalRowCount += internalExecute(ps);
-						}
-					}
-				} 
-				else {
-					now.addBatch(bs.sql);
-					rbSize++;
-					if (rbSize % batchSize == 0) {
-						totalRowCount += internalExecute(now);
-					}
-
-				}
-			}
-
-			if (lastStmt != null && rbSize % batchSize != 0) {
-				totalRowCount += internalExecute(lastStmt);
-			}
-
-			return totalRowCount;
-		}
-
-		private int internalExecute(Statement ps) throws SQLException {
-			int tc = 0;
-			int[] rowCounts = ps.executeBatch();
-			for (int j = 0; j < rowCounts.length; j++) {
-				if (rowCounts[j] == Statement.SUCCESS_NO_INFO) {
-				}
-				else if (rowCounts[j] == Statement.EXECUTE_FAILED) {
-				} 
-				else {
-					tc += rowCounts[j];
-				}
-			}
-			return tc;
-
-		}
-
-		public void cleanupBatch() throws JmpDbException {
-			Map<String, PreparedStatement> old = cachedStatement;
-			cachedStatement = new HashMap<String, PreparedStatement>();
-			for (PreparedStatement ps : old.values()) {
-				closeStmt(ps);
-			}
-			batchStructs.clear();
-			closeStmt(stmt);
-			stmt = null;
-		}
-	}
 
 	public CrossDBConnection getConnection() {
 		return conn;

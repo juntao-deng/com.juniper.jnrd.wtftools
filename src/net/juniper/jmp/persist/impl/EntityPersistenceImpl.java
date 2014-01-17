@@ -11,6 +11,7 @@ import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.persist.BeanListProcessor;
 import net.juniper.jmp.persist.IJmpPersistence;
+import net.juniper.jmp.persist.IReleaseCallback;
 import net.juniper.jmp.persist.ResultSetProcessor;
 import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.constant.DBConsts;
@@ -19,12 +20,10 @@ import net.juniper.jmp.persist.datasource.DataSourceCenter;
 import net.juniper.jmp.persist.datasource.PersistenceCtx;
 import net.juniper.jmp.persist.exp.JmpDbException;
 import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
-import net.juniper.jmp.persist.impl.BaseProcessor;
-import net.juniper.jmp.persist.impl.DbSession;
-import net.juniper.jmp.persist.impl.PersistenceHelper;
 import net.juniper.jmp.persist.jdbc.CrossDBConnection;
 import net.juniper.jmp.persist.jdbc.SQLHelper;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.jboss.resteasy.logging.Logger;
 
 public class EntityPersistenceImpl implements IJmpPersistence{
@@ -32,14 +31,12 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	private DbSession session;
 	private String dataSource = null;
 	private DatabaseMetaData dbmd = null;
-
-	public EntityPersistenceImpl() throws JmpDbException {
-		this.dataSource = PersistenceCtx.getCurrentDatasource();
-		init();
-	}
-
-	public EntityPersistenceImpl(String dataSource) throws JmpDbException {
-		this.dataSource = dataSource;
+	private IReleaseCallback releaseCallback;
+	public EntityPersistenceImpl(String dsName, IReleaseCallback callback) throws JmpDbException {
+		if(dsName == null || dsName.equals(""))
+			dsName = PersistenceCtx.getCurrentDatasource();
+		this.dataSource = dsName;
+		this.releaseCallback = callback;
 		init();
 	}
 	
@@ -73,47 +70,60 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			session.closeAll();
 			session = null;
 		}
-
+		
+		releaseCallback.callback(this);
 	}
 
 	@Override
-	public String insertWithPK(final Object entity) throws JmpDbException {
-		String pk[] = insertWithPK(new Object[] {entity});
+	public Object insertWithPK(final Object entity) throws JmpDbException {
+		Object pk[] = insertWithPK(new Object[] {entity});
 		return pk[0];
 	}
 
 	@Override
-	public String[] insertWithPK(final Object[] entities) throws JmpDbException {
+	public Object[] insertWithPK(final Object[] entities) throws JmpDbException {
 		return insert(entities, true);
 
 	}
 	
 	@Override
-	public String insert(final Object entity) throws JmpDbException {
-		String pk[] = insert(new Object[] {entity});
+	public Object insert(final Object entity) throws JmpDbException {
+		Object pk[] = insert(new Object[] {entity});
 		return pk[0];
 	}
 
 	@Override
-	public String[] insertWithPK(final List<? extends Object> entities) throws JmpDbException {
+	public Object[] insertWithPK(final List<? extends Object> entities) throws JmpDbException {
 		return insertWithPK(entities.toArray(new Object[0]));
 	}
 
 	@Override
-	public String[] insert(final List<? extends Object> entities) throws JmpDbException {
+	public Object[] insert(final List<? extends Object> entities) throws JmpDbException {
 		return insert(entities.toArray(new Object[0]));
 	}
 
 	@Override
-	public String[] insert(final Object entities[]) throws JmpDbException {
+	public Object[] insert(final Object[] entities) throws JmpDbException {
 		return insert(entities, false);
 	}
 
-	private String[] getPks(final Object entities[], boolean withPK, DbSession ses) {
-		return null;
+	private Object[] getPks(final Object[] entities) throws JmpDbException {
+		if(entities == null || entities.length == 0)
+			return null;
+		Object[] pks = new Object[entities.length];
+		String pkField = PersistenceHelper.getPkField(entities[0]);
+		for (int i = 0; i < entities.length; i++) {
+			try {
+				pks[i] = PropertyUtils.getProperty(entities[i], pkField);
+			} 
+			catch (Throwable e){
+				throw new JmpDbException("error while fetch pk");
+			}
+		}
+		return pks;
 	}
 
-	protected String[] insert(final Object entities[], boolean withPK) throws JmpDbException {
+	protected Object[] insert(final Object[] entities, boolean withPK) throws JmpDbException {
 		if(entities == null || entities.length == 0)
 			return new String[0];
 		Object entity = entities[0];
@@ -122,9 +132,18 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		String names[] = PersistenceHelper.getInsertValidNames(entity);
 		String sql = SQLHelper.getInsertSQL(tableName, names);
 
+		Object[] pks = null;
+		if(withPK){
+			pks = getPks(entities);
+		}
+		
 		if (entities.length == 1) {
 			SQLParameter parameter = SQLHelper.getSQLParam(entity, names);
-			session.executeUpdate(sql, parameter);
+			Object[] returnPks = session.executeInsert(sql, parameter);
+			if(!withPK){
+				pks = returnPks;
+				fillEntities(entities, pks);
+			}
 		} 
 		else {
 			SQLParameter[] parameters = new SQLParameter[entities.length];
@@ -132,13 +151,30 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 				if (entities[i] == null)
 					continue;
 				parameters[i] = SQLHelper.getSQLParam(entities[i], names);
-
 			}
 			session.addBatch(sql, parameters);
-			session.executeBatch();
+			Object[] returnPks = session.executeBatchInsert();
+			if(!withPK){
+				pks = returnPks;
+				fillEntities(entities, pks);
+			}
 		}
+		return pks;
+	}
 
-		return getPks(entities, withPK, session);
+	private void fillEntities(Object[] entities, Object[] pks) throws JmpDbException {
+		if(entities.length != pks.length)
+			throw new JmpDbException("the count of entities is not equal to pks");
+		//should query by pks again, and fetch version information and merge into the entities.
+		String pkField = PersistenceHelper.getPkField(entities[0]);
+		for(int i = 0; i < entities.length; i ++){
+			try {
+				PropertyUtils.setProperty(entities[i], pkField, pks[i]);
+			} 
+			catch (Exception e) {
+				throw new JmpDbException("error while setting pk to entities");
+			}
+		}
 	}
 
 	@Override
@@ -316,15 +352,17 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	@Override
 	public List<? extends Object> findByEntityAttribute(Object entity, Sort sort) throws JmpDbException {
+		return null;
 	}
 	
 	@Override
 	public List<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable) throws JmpDbException{
-		
+		return null;
 	}
 	
 	@Override
 	public Object findByEntityAttribute(Object entity, ResultSetProcessor processor) throws JmpDbException {
+		return null;
 	}
 	
 	@Override
@@ -359,7 +397,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	
 	@Override
 	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort, Pageable pageable) throws JmpDbException {
-		
+		return null;
 	}
 
 	@Override
@@ -431,6 +469,11 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	@Override
 	public int getMaxRows() {
 		return session.getMaxRows();
+	}
+
+	@Override
+	public String getDataSourceName() {
+		return this.dataSource;
 	}
 
 

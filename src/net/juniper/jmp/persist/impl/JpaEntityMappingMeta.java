@@ -1,6 +1,7 @@
 package net.juniper.jmp.persist.impl;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
 
@@ -20,11 +21,24 @@ public final class JpaEntityMappingMeta extends MappingMeta<Object> {
 		Entity entity = clazz.getAnnotation(Entity.class);
 		if(entity == null)
 			throw new JmpDbRuntimeException("This class is not a jpa entity," + clazz.getName());
-		String tableName = detectTableName(clazz, entity);
+		String tableName = detectTableName(clazz);
 		String pkField = clazz.getFields()[0].getAnnotation(annotationClass);
 	}
 
-	private String detectTableName(Class<Object> clazz, Entity entity) {
-		return null;
+	/**
+	 * try to find db table name
+	 * @param clazz
+	 * @return
+	 */
+	private String detectTableName(Class<Object> clazz) {
+		Table table = clazz.getAnnotation(Table.class);
+		if(table != null){
+			return table.name();
+		}
+		Entity entity = clazz.getAnnotation(Entity.class);
+		String name = entity.name();
+		if(name != null && !name.equals(""))
+			return name;
+		return clazz.getSimpleName();
 	}
 }
