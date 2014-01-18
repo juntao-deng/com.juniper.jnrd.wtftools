@@ -1,13 +1,13 @@
 package net.juniper.jmp.persist;
 
-import java.sql.ResultSet;
-
 import net.juniper.jmp.persist.exp.JmpDbException;
 import net.juniper.jmp.persist.impl.BaseProcessor;
 import net.juniper.jmp.persist.impl.MapProcessorHelper;
+import net.juniper.jmp.persist.jdbc.CrossDBResultSet;
 
 public class MapProcessor extends BaseProcessor  {
-	public Object processResultSet(ResultSet rs) throws JmpDbException {
+	@Override
+	public Object processResultSet(CrossDBResultSet rs) throws JmpDbException {
         return new MapProcessorHelper().toMap(rs);
     }
 }

@@ -4,13 +4,13 @@ import net.juniper.jmp.entity.JmpEntity;
 
 public class JmpEntityMappingMeta extends MappingMeta<JmpEntity> {
 	private static final long serialVersionUID = 4174445832650908959L;
-	public JmpEntityMappingMeta(Class<JmpEntity> clazz) {
-		super(clazz);
+	public JmpEntityMappingMeta(String dataSource, Class<JmpEntity> clazz) {
+		super(dataSource, clazz);
 	}
 
 
 	@Override
-	protected void resolve(Class<JmpEntity> clazz) {
+	protected void resolve(String dataSource, Class<JmpEntity> clazz) {
 
 	}
 

@@ -23,10 +23,10 @@ public abstract class MappingMeta<T> implements IMappingMeta {
 	private String[] validFieldsWithoutPk;
 	private String[] valieFields;
 	private Reference<Class<T>> entityRef;
-	public MappingMeta(Class<T> entity){
+	public MappingMeta(String dataSource, Class<T> entity){
 		if(entity != null){
 			entityRef = new WeakReference<Class<T>>(entity);
-			resolve(entity);
+			resolve(dataSource, entity);
 		}
 	}
 	
@@ -70,7 +70,7 @@ public abstract class MappingMeta<T> implements IMappingMeta {
 		return null;
 	}
 	
-	protected abstract void resolve(Class<T> entity);
+	protected abstract void resolve(String dataSource, Class<T> entity);
 
 	public Map<String, FieldMeta> getColumnFieldMap() {
 		return columnFieldMap;

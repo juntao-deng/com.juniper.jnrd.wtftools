@@ -1,14 +1,14 @@
 package net.juniper.jmp.persist.impl;
 
-import java.sql.ResultSet;
-
 import net.juniper.jmp.persist.ResultSetProcessor;
 import net.juniper.jmp.persist.exp.JmpDbException;
+import net.juniper.jmp.persist.jdbc.CrossDBResultSet;
 import net.juniper.jmp.persist.utils.DBUtil;
 
 public abstract class BaseProcessor implements ResultSetProcessor {
 
-    public Object handleResultSet(ResultSet rs) throws JmpDbException {
+    @Override
+	public Object handleResultSet(CrossDBResultSet rs) throws JmpDbException {
         if (rs == null)
             throw new IllegalArgumentException("resultset can't be null");
         try {
@@ -20,6 +20,6 @@ public abstract class BaseProcessor implements ResultSetProcessor {
 
     }
 
-    public abstract Object processResultSet(ResultSet rs) throws JmpDbException;
+    public abstract Object processResultSet(CrossDBResultSet rs) throws JmpDbException;
 
 }

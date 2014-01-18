@@ -89,7 +89,7 @@ public class CrossDBStatement implements Statement{
 	}
 
 	@Override
-	public ResultSet executeQuery(String sql) throws SQLException {
+	public CrossDBResultSet executeQuery(String sql) throws SQLException {
 		String sqlFixed = SQLHelper.translate(sql, conn);
 		CrossDBResultSet rs = new CrossDBResultSet(passthru.executeQuery(sqlFixed), this);
 		registerResultSet(rs);

@@ -2,7 +2,6 @@ package net.juniper.jmp.persist.impl;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,6 +13,9 @@ import net.juniper.jmp.persist.ResultSetProcessor;
 import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.exp.JmpDbException;
 import net.juniper.jmp.persist.jdbc.CrossDBConnection;
+import net.juniper.jmp.persist.jdbc.CrossDBPreparedStatement;
+import net.juniper.jmp.persist.jdbc.CrossDBResultSet;
+import net.juniper.jmp.persist.jdbc.CrossDBStatement;
 import net.juniper.jmp.persist.jdbc.SQLHelper;
 import net.juniper.jmp.persist.utils.DbExceptionHelper;
 import net.juniper.jmp.persist.utils.SqlLogger;
@@ -27,9 +29,9 @@ public final class DbSession {
 
 	private int dbType = 0;
 
-	private PreparedStatement prepStatement = null;
+	private CrossDBPreparedStatement prepStatement = null;
 
-	private Statement statement = null;
+	private CrossDBStatement statement = null;
 
 	private String lastSQL = null;
 
@@ -81,7 +83,7 @@ public final class DbSession {
 
 	public Object executeQuery(String sql, SQLParameter parameter, ResultSetProcessor processor) throws JmpDbException {
 		Object result = null;
-		ResultSet rs = null;
+		CrossDBResultSet rs = null;
 		try {
 			if ((!sql.equalsIgnoreCase(lastSQL)) || (prepStatement == null)) {
 				if (prepStatement != null) {
@@ -113,7 +115,7 @@ public final class DbSession {
 
 	public Object executeQuery(String sql, ResultSetProcessor processor) throws JmpDbException {
 		Object result = null;
-		ResultSet rs = null;
+		CrossDBResultSet rs = null;
 		try {
 			if (statement == null)
 				statement = conn.createStatement();

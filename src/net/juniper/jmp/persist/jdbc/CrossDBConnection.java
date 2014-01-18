@@ -89,14 +89,14 @@ public class CrossDBConnection implements Connection {
 	}
 
 	@Override
-	public Statement createStatement() throws SQLException {
+	public CrossDBStatement createStatement() throws SQLException {
 		CrossDBStatement st = new CrossDBStatement(passthru.createStatement(), this);
 		statements.add(st);
 		return st;
 	}
 
 	@Override
-	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+	public CrossDBStatement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
 		CrossDBStatement stat = new CrossDBStatement(passthru.createStatement(resultSetType, resultSetConcurrency), this);
 		statements.add(stat);
 		return stat;
@@ -169,7 +169,7 @@ public class CrossDBConnection implements Connection {
 	}
 
 	@Override
-	public PreparedStatement prepareStatement(String sql) throws SQLException {
+	public CrossDBPreparedStatement prepareStatement(String sql) throws SQLException {
 		String sqlFixed = SQLHelper.translate(sql, this);
 		CrossDBPreparedStatement st = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed), this);
 		statements.add(st);
@@ -177,7 +177,7 @@ public class CrossDBConnection implements Connection {
 	}
 
 	@Override
-	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+	public CrossDBPreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
 		String sqlFixed = SQLHelper.translate(sql, this);
 		CrossDBPreparedStatement st = new CrossDBPreparedStatement(passthru.prepareStatement(sqlFixed, resultSetType, resultSetConcurrency), this);
 		statements.add(st);

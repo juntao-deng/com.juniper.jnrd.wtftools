@@ -149,8 +149,8 @@ public class SQLHelper {
 
 	}
 	
-	public static SQLParameter getSQLParam(Object entity, String names[]) {
-		Map<String, Integer> types = PersistenceHelper.getColumnTypes(entity);
+	public static SQLParameter getSQLParam(String dataSource, Object entity, String names[]) {
+		Map<String, Integer> types = PersistenceHelper.getColumnTypes(dataSource, entity);
 		SQLParameter params = new SQLParameter();
 		for (int i = 0; i < names.length; i++) {
 			String name = names[i];
@@ -174,9 +174,9 @@ public class SQLHelper {
 		return params;
 	}
 	
-	public static String buildSql(Class<?> clazz, String condition, String[] fields, Sort sort) {
-		String pkField = PersistenceHelper.getPkField(clazz);
-		String tableName = PersistenceHelper.getTableName(clazz);
+	public static String buildSql(String dataSource, Class<?> clazz, String condition, String[] fields, Sort sort) {
+		String pkField = PersistenceHelper.getPkField(dataSource, clazz);
+		String tableName = PersistenceHelper.getTableName(dataSource, clazz);
 		boolean hasPKField = false;
 		StringBuffer buffer = new StringBuffer();
 		if (fields == null)

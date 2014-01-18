@@ -12,17 +12,17 @@ import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
  */
 public final class JpaEntityMappingMeta extends MappingMeta<Object> {
 	private static final long serialVersionUID = 8015429393959008969L;
-	public JpaEntityMappingMeta(Class<Object> clazz) {
-		super(clazz);
+	public JpaEntityMappingMeta(String dataSource, Class<Object> clazz) {
+		super(dataSource, clazz);
 	}
 
 	@Override
-	public void resolve(Class<Object> clazz) {
+	public void resolve(String dataSource, Class<Object> clazz) {
 		Entity entity = clazz.getAnnotation(Entity.class);
 		if(entity == null)
 			throw new JmpDbRuntimeException("This class is not a jpa entity," + clazz.getName());
 		String tableName = detectTableName(clazz);
-		String pkField = clazz.getFields()[0].getAnnotation(annotationClass);
+//		String pkField = clazz.getFields()[0].getAnnotation(annotationClass);
 	}
 
 	/**

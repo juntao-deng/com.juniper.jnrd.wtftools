@@ -12,31 +12,42 @@ import org.jboss.resteasy.logging.Logger;
 
 public class PersistenceHelper {
 	private static Logger logger = Logger.getLogger(PersistenceHelper.class);
-	private static Map<Class<?>, IMappingMeta> metaMap = new ConcurrentHashMap<Class<?>, IMappingMeta>();
-	public static String getTableName(Object obj) {
-		return getTableName(obj.getClass());
+	private static Map<String, Map<Class<?>, IMappingMeta>> dsMetaMap = new ConcurrentHashMap<String, Map<Class<?>, IMappingMeta>>(2);
+	public static String getTableName(String dataSource, Object obj) {
+		return getTableName(dataSource, obj.getClass());
 	}
 	
-	public static String getTableName(Class<?> c){
-		IMappingMeta mm = getMappingMeta(c);
+	public static String getTableName(String dataSource, Class<?> c){
+		IMappingMeta mm = getMappingMeta(dataSource, c);
 		return mm == null ? null : mm.getTableName();
 	}
 	
-	public static IMappingMeta getMappingMeta(Object obj){
-		IMappingMeta mm = getMappingMeta(obj.getClass());
+	public static IMappingMeta getMappingMeta(String dataSource, Object obj){
+		IMappingMeta mm = getMappingMeta(dataSource, obj.getClass());
 		if(mm == NullMappingMeta.INSTANCE)
 			return null;
 		return mm;
 	}
 	
-	public static IMappingMeta getMappingMeta(Class<?> c){
+	public static IMappingMeta getMappingMeta(String dataSource, Class<?> c){
+		Map<Class<?>, IMappingMeta> metaMap = dsMetaMap.get(dataSource);
+		if(metaMap == null){
+			synchronized(dsMetaMap){
+				metaMap = dsMetaMap.get(dataSource);
+				if(metaMap == null){
+					metaMap = new ConcurrentHashMap<Class<?>, IMappingMeta>();
+					dsMetaMap.put(dataSource, metaMap);
+				}
+			}
+		}
+		
 		IMappingMeta meta = metaMap.get(c);
 		if(meta == null){
 			synchronized(metaMap){
 				meta = metaMap.get(c);
 				if(meta == null){
 					try{
-						meta = buildMappingMeta(c);
+						meta = buildMappingMeta(dataSource, c);
 						metaMap.put(c, meta);
 					}
 					catch(Throwable e){
@@ -50,30 +61,30 @@ public class PersistenceHelper {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static IMappingMeta buildMappingMeta(Class<?> clazz){
+	private static IMappingMeta buildMappingMeta(String dataSource, Class<?> clazz){
 		if(JmpEntity.class == clazz){
-			return new JmpEntityMappingMeta((Class<JmpEntity>) clazz);
+			return new JmpEntityMappingMeta(dataSource, (Class<JmpEntity>) clazz);
 		}
 		else
-			return new JpaEntityMappingMeta((Class<Object>) clazz);
+			return new JpaEntityMappingMeta(dataSource, (Class<Object>) clazz);
 	}
 
-	public static String getPkField(Object entity) {
-		return getPkField(entity.getClass());
+	public static String getPkField(String dataSource, Object entity) {
+		return getPkField(dataSource, entity.getClass());
 	}
 	
-	public static String getPkField(Class<?> entity) {
-		return getMappingMeta(entity).getPrimaryKey();
+	public static String getPkField(String dataSource, Class<?> entity) {
+		return getMappingMeta(dataSource, entity).getPrimaryKey();
 	}
 
-	public static String[] getInsertValidNames(Object entity) {
-		IMappingMeta mapping = getMappingMeta(entity);
+	public static String[] getInsertValidNames(String dataSource, Object entity) {
+		IMappingMeta mapping = getMappingMeta(dataSource, entity);
 		String[] fields = mapping.getValidFields();
 		return fields;
 	}
 	
-	public static String[] getUpdateValidNames(Object entity) {
-		IMappingMeta mapping = getMappingMeta(entity);
+	public static String[] getUpdateValidNames(String dataSource, Object entity) {
+		IMappingMeta mapping = getMappingMeta(dataSource, entity);
 		String[] fields = mapping.getValidFieldsWithoutPk();
 		return fields;
 	}
@@ -88,19 +99,19 @@ public class PersistenceHelper {
 		return null;
 	}
 
-	public static Object getPrimaryKey(Object entity) {
-		return getEntityValue(entity, getPkField(entity));
+	public static Object getPrimaryKey(String dataSource, Object entity) {
+		return getEntityValue(entity, getPkField(dataSource, entity));
 	}
 
-	public static String[] getValidNames(Object entity) {
-		return getMappingMeta(entity).getValidFields();
+	public static String[] getValidNames(String dataSource, Object entity) {
+		return getMappingMeta(dataSource, entity).getValidFields();
 	}
 
-	public static Map<String, Integer> getColumnTypes(Object entity) {
-		return getColumnTypes(entity.getClass());
+	public static Map<String, Integer> getColumnTypes(String dataSource, Object entity) {
+		return getColumnTypes(dataSource, entity.getClass());
 	}
 
-	public static Map<String, Integer> getColumnTypes(Class<?> entity){
-		return getMappingMeta(entity).getColumnMap();
+	public static Map<String, Integer> getColumnTypes(String dataSource, Class<?> entity){
+		return getMappingMeta(dataSource, entity).getColumnMap();
 	}
 }

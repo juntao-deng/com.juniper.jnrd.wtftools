@@ -10,6 +10,7 @@ import java.util.List;
 import net.juniper.jmp.core.util.JmpClassUtil;
 import net.juniper.jmp.persist.exp.JmpDbException;
 import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
+import net.juniper.jmp.persist.jdbc.CrossDBResultSet;
 import net.juniper.jmp.persist.jdbc.FieldMeta;
 import net.juniper.jmp.persist.jdbc.IMappingMeta;
 import net.juniper.jmp.persist.utils.SqlLogger;
@@ -17,14 +18,15 @@ import net.juniper.jmp.persist.utils.SqlLogger;
 import org.apache.commons.beanutils.Converter;
 
 public class BeanListProcessorHelper extends BeanProcessorHelper {
-	public <T>List<T> toBeanList(ResultSet resultSet, Class<T> type) throws JmpDbException {
+	public <T>List<T> toBeanList(CrossDBResultSet resultSet, Class<T> type) throws JmpDbException {
 		if (resultSet == null)
 			throw new JmpDbException("result set is null");
 		return toBeanListInner(resultSet, type);
 	}
 	
-	private <T>List<T> toBeanListInner(ResultSet resultSet, Class<T> type) throws JmpDbException {
-		IMappingMeta mm = PersistenceHelper.getMappingMeta(type);
+	private <T>List<T> toBeanListInner(CrossDBResultSet resultSet, Class<T> type) throws JmpDbException {
+		String dataSource = resultSet.getDataSourceName();
+		IMappingMeta mm = PersistenceHelper.getMappingMeta(dataSource, type);
 		if(mm == null)
 			throw new JmpDbRuntimeException("can not find mapping meta for type:" + type.getName() + ", please check type is a valid entity type");
 		List<T> result = new ArrayList<T>();

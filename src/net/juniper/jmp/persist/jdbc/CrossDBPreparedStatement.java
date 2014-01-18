@@ -27,33 +27,39 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 		super(passthru, conn);
 	}
 
+	@Override
 	public void addBatch() throws SQLException {
 		((PreparedStatement)passthru).addBatch();
 	}
 
+	@Override
 	public void clearParameters() throws SQLException {
 		((PreparedStatement) passthru).clearParameters();
 	}
 
+	@Override
 	public boolean execute() throws SQLException {
 		return ((PreparedStatement) passthru).execute();
 	}
 
-	public ResultSet executeQuery() throws SQLException {
+	@Override
+	public CrossDBResultSet executeQuery() throws SQLException {
 		CrossDBResultSet rs = new CrossDBResultSet(((PreparedStatement) passthru).executeQuery(), this);
 		registerResultSet(rs);
 		return rs;
 	}
 
+	@Override
 	public int executeUpdate() throws SQLException {
-		int ret = ((PreparedStatement) passthru).executeUpdate();
-		return ret;
+		return ((PreparedStatement) passthru).executeUpdate();
 	}
 
+	@Override
 	public ResultSetMetaData getMetaData() throws SQLException {
 		return ((PreparedStatement) passthru).getMetaData();
 	}
 
+	@Override
 	public void setArray(int i, Array x) throws SQLException {
 		((PreparedStatement) passthru).setArray(i, x);
 	}
@@ -63,15 +69,18 @@ public class CrossDBPreparedStatement extends CrossDBStatement implements Prepar
 		((PreparedStatement) passthru).setAsciiStream(parameterIndex, x, length);
 	}
 
+	@Override
 	public void setBigDecimal(int parameterIndex, java.math.BigDecimal x) throws SQLException {
 		((PreparedStatement) passthru).setBigDecimal(parameterIndex, x);
 	}
 
+	@Override
 	public void setBinaryStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
 		((PreparedStatement) passthru).setBinaryStream(parameterIndex, x, length);
 	}
 
-	public void setBlob(int i, Blob x) throws SQLException {
+	@Override
+	public void setBlob(int parameterIndex, Blob x) throws SQLException {
 		throw DbExceptionHelper.getUnsupportedException();
 	}
 

@@ -111,7 +111,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		if(entities == null || entities.length == 0)
 			return null;
 		Object[] pks = new Object[entities.length];
-		String pkField = PersistenceHelper.getPkField(entities[0]);
+		String pkField = PersistenceHelper.getPkField(this.dataSource, entities[0]);
 		for (int i = 0; i < entities.length; i++) {
 			try {
 				pks[i] = PropertyUtils.getProperty(entities[i], pkField);
@@ -128,8 +128,8 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			return new String[0];
 		Object entity = entities[0];
 		
-		String tableName = PersistenceHelper.getTableName(entity);
-		String names[] = PersistenceHelper.getInsertValidNames(entity);
+		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
+		String names[] = PersistenceHelper.getInsertValidNames(this.dataSource, entity);
 		String sql = SQLHelper.getInsertSQL(tableName, names);
 
 		Object[] pks = null;
@@ -138,7 +138,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		}
 		
 		if (entities.length == 1) {
-			SQLParameter parameter = SQLHelper.getSQLParam(entity, names);
+			SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
 			Object[] returnPks = session.executeInsert(sql, parameter);
 			if(!withPK){
 				pks = returnPks;
@@ -150,7 +150,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			for (int i = 0; i < entities.length; i++) {
 				if (entities[i] == null)
 					continue;
-				parameters[i] = SQLHelper.getSQLParam(entities[i], names);
+				parameters[i] = SQLHelper.getSQLParam(this.dataSource, entities[i], names);
 			}
 			session.addBatch(sql, parameters);
 			Object[] returnPks = session.executeBatchInsert();
@@ -166,7 +166,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		if(entities.length != pks.length)
 			throw new JmpDbException("the count of entities is not equal to pks");
 		//should query by pks again, and fetch version information and merge into the entities.
-		String pkField = PersistenceHelper.getPkField(entities[0]);
+		String pkField = PersistenceHelper.getPkField(this.dataSource, entities[0]);
 		for(int i = 0; i < entities.length; i ++){
 			try {
 				PropertyUtils.setProperty(entities[i], pkField, pks[i]);
@@ -209,20 +209,20 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			return 0;
 		Object entity = entities[0];
 		int row = 0;
-		String tableName = PersistenceHelper.getTableName(entity);
-		String pkName = PersistenceHelper.getPkField(entity);
+		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
+		String pkName = PersistenceHelper.getPkField(this.dataSource, entity);
 		String[] names;
 		if (fieldNames != null) {
 			names = fieldNames;
 		} 
 		else {
-			names = PersistenceHelper.getUpdateValidNames(entity);
+			names = PersistenceHelper.getUpdateValidNames(this.dataSource, entity);
 		}
 		
-		Object pk = PersistenceHelper.getPrimaryKey(entity);
+		Object pk = PersistenceHelper.getPrimaryKey(this.dataSource, entity);
 		String sql = SQLHelper.getUpdateSQL(tableName, names, pkName);
 		if (entities.length == 1) {
-			SQLParameter parameter = SQLHelper.getSQLParam(entity, names);
+			SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
 			parameter.addParam(pk);
 			if (whereClause == null)
 				row = session.executeUpdate(sql, parameter);
@@ -235,7 +235,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			for (int i = 0; i < entities.length; i++) {
 				if (entities[i] == null)
 					continue;
-				SQLParameter parameter = SQLHelper.getSQLParam(entity, names);
+				SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
 				parameter.addParam(pk);
 				if (whereClause == null)
 					session.addBatch(sql, parameter);
@@ -274,15 +274,15 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		if (entities.length == 0)
 			return 0;
 		Object entity = entities[0];
-		String tableName = PersistenceHelper.getTableName(entity);
-		String pkField = PersistenceHelper.getPkField(entity);
+		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
+		String pkField = PersistenceHelper.getPkField(this.dataSource, entity);
 		String sql = SQLHelper.getDeleteByPKSQL(tableName, pkField);
 
 		for (int i = 0; i < entities.length; i++) {
 			if (entities[i] == null)
 				continue;
 			SQLParameter parameter = new SQLParameter();
-			Object pk = PersistenceHelper.getPrimaryKey(entities[i]);
+			Object pk = PersistenceHelper.getPrimaryKey(this.dataSource, entities[i]);
 			parameter.addParam(pk);
 			session.addBatch(sql, parameter);
 		}
@@ -296,8 +296,8 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	@Override
 	public int deleteByPKs(Class<?> clazz, String[] pks) throws JmpDbException {
-		String tableName = PersistenceHelper.getTableName(clazz);
-		String pkField = PersistenceHelper.getPkField(clazz);
+		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
+		String pkField = PersistenceHelper.getPkField(this.dataSource, clazz);
 		String sql = "DELETE FROM " + tableName + " WHERE " + pkField + "=?";
 		for (int i = 0; i < pks.length; i++) {
 			SQLParameter parameter = new SQLParameter();
@@ -315,7 +315,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	@Override
 	public int deleteByClause(Class<?> clazz, String whereStr, SQLParameter params) throws JmpDbException {
-		String tableName = PersistenceHelper.getTableName(clazz);
+		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
 		String sql = new StringBuffer().append("DELETE FROM ").append(tableName).toString();
 		if (whereStr != null) {
 			whereStr = whereStr.trim();
@@ -343,7 +343,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		SQLParameter param = new SQLParameter();
 		param.addParam(pk);
 		
-		String pkField = PersistenceHelper.getPkField(clazz);
+		String pkField = PersistenceHelper.getPkField(this.dataSource, clazz);
 		List results = (List) findAllByClause(clazz, pkField + "=?", selectedFields, param, null);
 		if (results.size() >= 1)
 			return (Object) results.get(0);
@@ -367,7 +367,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	
 	@Override
 	public List<? extends Object> findAll(Class<?> clazz, Sort sort) throws JmpDbException {
-		String tableName = PersistenceHelper.getTableName(clazz);
+		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
 		String sql = "SELECT * FROM " + tableName;
 		return (List<? extends Object>) session.executeQuery(sql, new BeanListProcessor(clazz));
 
@@ -386,7 +386,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	@Override
 	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) throws JmpDbException {
 		BaseProcessor processor = new BeanListProcessor(className);
-		String sql = SQLHelper.buildSql(className, condition, fields, sort);
+		String sql = SQLHelper.buildSql(this.dataSource, className, condition, fields, sort);
 		return (List<? extends Object>) session.executeQuery(sql, parameters, processor);
 	}
 
