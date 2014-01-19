@@ -1,9 +1,7 @@
-package net.juniper.jmp.core.repository;
+package net.juniper.jmp.core.ctx;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.juniper.jmp.core.ctx.Page;
 
 public class PageResult<T> {
 	private Integer pageSize;

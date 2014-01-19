@@ -1,14 +1,3 @@
-springframework-core
-springframework-web
-springframework-data
-springframework-beans
-springframework-context
-springframework-asm
-springframework-orm
-springframework-jdbc
-springframework-tx
-springframework-aop
-springframework-expression
 3rdParty.aopalliance
 net.juniper.jmp.wtfbase
 modules-org.jboss.resteasy.resteasy-jaxrs

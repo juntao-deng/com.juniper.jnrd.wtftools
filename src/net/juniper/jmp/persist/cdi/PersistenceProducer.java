@@ -2,8 +2,8 @@ package net.juniper.jmp.persist.cdi;
 
 import javax.enterprise.inject.Produces;
 
-import net.juniper.jmp.persist.IJmpPersistence;
-import net.juniper.jmp.persist.JmpPersistenceManager;
+import net.juniper.jmp.persist.IJmpPersistenceManager;
+import net.juniper.jmp.persist.JmpPersistenceContext;
 
 /**
  * A cdi bean producer for persistence api
@@ -12,12 +12,12 @@ import net.juniper.jmp.persist.JmpPersistenceManager;
  */
 public class PersistenceProducer {
 	@Produces
-	public IJmpPersistence getJmpPersistence() {
-		return JmpPersistenceManager.getInstance();
+	public IJmpPersistenceManager getJmpPersistence() {
+		return JmpPersistenceContext.getInstance();
 	}
 	
 	@Produces @JdmPersistence
-	public IJmpPersistence getJdmPersistence(){
-		return JmpPersistenceManager.getInstance("jdm");
+	public IJmpPersistenceManager getJdmPersistence(){
+		return JmpPersistenceContext.getInstance("jdm");
 	}
 }

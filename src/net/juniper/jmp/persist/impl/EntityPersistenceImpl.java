@@ -9,8 +9,9 @@ import javax.sql.DataSource;
 
 import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.core.ctx.Sort;
+import net.juniper.jmp.exception.JMPRuntimeException;
 import net.juniper.jmp.persist.BeanListProcessor;
-import net.juniper.jmp.persist.IJmpPersistence;
+import net.juniper.jmp.persist.IJmpPersistenceManager;
 import net.juniper.jmp.persist.IReleaseCallback;
 import net.juniper.jmp.persist.ResultSetProcessor;
 import net.juniper.jmp.persist.SQLParameter;
@@ -26,13 +27,14 @@ import net.juniper.jmp.persist.jdbc.SQLHelper;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jboss.resteasy.logging.Logger;
 
-public class EntityPersistenceImpl implements IJmpPersistence{
+public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	private Logger logger = Logger.getLogger(EntityPersistenceImpl.class);
 	private DbSession session;
 	private String dataSource = null;
 	private DatabaseMetaData dbmd = null;
 	private IReleaseCallback releaseCallback;
-	public EntityPersistenceImpl(String dsName, IReleaseCallback callback) throws JmpDbException {
+	private boolean released = false;
+	public EntityPersistenceImpl(String dsName, IReleaseCallback callback) {
 		if(dsName == null || dsName.equals(""))
 			dsName = PersistenceCtx.getCurrentDatasource();
 		this.dataSource = dsName;
@@ -40,7 +42,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		init();
 	}
 	
-	private void init() throws JmpDbException {
+	private void init() {
 		try{
 			DataSource ds = DataSourceCenter.getInstance().getDataSource(this.dataSource);
 			if(ds == null)
@@ -51,9 +53,9 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 			CrossDBConnection crossDbConn = new CrossDBConnection(conn, this.dataSource, dbType);
 			session = new DbSession(crossDbConn, dbType);
 		}
-		catch(SQLException e){
+		catch(Exception e){
 			logger.error(e.getMessage(), e);
-			throw new JmpDbException("error while get connection", e);
+			throw new JmpDbRuntimeException("error while get connection", e);
 		}
 	}
 	
@@ -64,6 +66,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 
 	@Override
 	public void release() {
+		this.released = true;
 		if (dbmd != null)
 			dbmd = null;
 		if (session != null) {
@@ -75,39 +78,38 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	}
 
 	@Override
-	public Object insertWithPK(final Object entity) throws JmpDbException {
+	public Object insertWithPK(final Object entity) {
 		Object pk[] = insertWithPK(new Object[] {entity});
 		return pk[0];
 	}
 
 	@Override
-	public Object[] insertWithPK(final Object[] entities) throws JmpDbException {
+	public Object[] insertWithPK(final Object[] entities) {
 		return insert(entities, true);
-
 	}
 	
 	@Override
-	public Object insert(final Object entity) throws JmpDbException {
+	public Object insert(final Object entity) {
 		Object pk[] = insert(new Object[] {entity});
 		return pk[0];
 	}
 
 	@Override
-	public Object[] insertWithPK(final List<? extends Object> entities) throws JmpDbException {
+	public Object[] insertWithPK(final List<? extends Object> entities) {
 		return insertWithPK(entities.toArray(new Object[0]));
 	}
 
 	@Override
-	public Object[] insert(final List<? extends Object> entities) throws JmpDbException {
+	public Object[] insert(final List<? extends Object> entities) {
 		return insert(entities.toArray(new Object[0]));
 	}
 
 	@Override
-	public Object[] insert(final Object[] entities) throws JmpDbException {
+	public Object[] insert(final Object[] entities) {
 		return insert(entities, false);
 	}
 
-	private Object[] getPks(final Object[] entities) throws JmpDbException {
+	private Object[] getPks(final Object[] entities) {
 		if(entities == null || entities.length == 0)
 			return null;
 		Object[] pks = new Object[entities.length];
@@ -117,54 +119,68 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 				pks[i] = PropertyUtils.getProperty(entities[i], pkField);
 			} 
 			catch (Throwable e){
-				throw new JmpDbException("error while fetch pk");
+				throw new JmpDbRuntimeException("error while fetch pk");
 			}
 		}
 		return pks;
 	}
 
-	protected Object[] insert(final Object[] entities, boolean withPK) throws JmpDbException {
+	protected Object[] insert(final Object[] entities, boolean withPK) {
+		checkSessionState();
 		if(entities == null || entities.length == 0)
 			return new String[0];
-		Object entity = entities[0];
 		
-		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
-		String names[] = PersistenceHelper.getInsertValidNames(this.dataSource, entity);
-		String sql = SQLHelper.getInsertSQL(tableName, names);
-
-		Object[] pks = null;
-		if(withPK){
-			pks = getPks(entities);
+		try{
+			Object entity = entities[0];
+			
+			String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
+			String names[] = PersistenceHelper.getInsertValidNames(this.dataSource, entity);
+			String sql = SQLHelper.getInsertSQL(tableName, names);
+	
+			Object[] pks = null;
+			if(withPK){
+				pks = getPks(entities);
+			}
+			
+			if (entities.length == 1) {
+				SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
+				Object[] returnPks = session.executeInsert(sql, parameter);
+				if(!withPK){
+					pks = returnPks;
+					fillEntities(entities, pks);
+				}
+			} 
+			else {
+				SQLParameter[] parameters = new SQLParameter[entities.length];
+				for (int i = 0; i < entities.length; i++) {
+					if (entities[i] == null)
+						continue;
+					parameters[i] = SQLHelper.getSQLParam(this.dataSource, entities[i], names);
+				}
+				session.addBatch(sql, parameters);
+				Object[] returnPks = session.executeBatchInsert();
+				if(!withPK){
+					pks = returnPks;
+					fillEntities(entities, pks);
+				}
+			}
+			return pks;
 		}
-		
-		if (entities.length == 1) {
-			SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
-			Object[] returnPks = session.executeInsert(sql, parameter);
-			if(!withPK){
-				pks = returnPks;
-				fillEntities(entities, pks);
-			}
-		} 
-		else {
-			SQLParameter[] parameters = new SQLParameter[entities.length];
-			for (int i = 0; i < entities.length; i++) {
-				if (entities[i] == null)
-					continue;
-				parameters[i] = SQLHelper.getSQLParam(this.dataSource, entities[i], names);
-			}
-			session.addBatch(sql, parameters);
-			Object[] returnPks = session.executeBatchInsert();
-			if(!withPK){
-				pks = returnPks;
-				fillEntities(entities, pks);
-			}
+		catch(JmpDbException e){
+			throw new JMPRuntimeException("error while inserting entities", e);
 		}
-		return pks;
 	}
 
-	private void fillEntities(Object[] entities, Object[] pks) throws JmpDbException {
+	private void checkSessionState() {
+		if(released)
+			throw new JmpDbRuntimeException("The instance of PersistenceManager has already been released");
+		if(session == null)
+			init();
+	}
+
+	private void fillEntities(Object[] entities, Object[] pks) {
 		if(entities.length != pks.length)
-			throw new JmpDbException("the count of entities is not equal to pks");
+			throw new JmpDbRuntimeException("the count of entities is not equal to pks");
 		//should query by pks again, and fetch version information and merge into the entities.
 		String pkField = PersistenceHelper.getPkField(this.dataSource, entities[0]);
 		for(int i = 0; i < entities.length; i ++){
@@ -172,13 +188,13 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 				PropertyUtils.setProperty(entities[i], pkField, pks[i]);
 			} 
 			catch (Exception e) {
-				throw new JmpDbException("error while setting pk to entities");
+				throw new JmpDbRuntimeException("error while setting pk to entities");
 			}
 		}
 	}
 
 	@Override
-	public int update(final Object entity) throws JmpDbException {
+	public int update(final Object entity) {
 		if (entity == null) {
 			throw new IllegalArgumentException("entity can not be null");
 		}
@@ -186,67 +202,72 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	}
 
 	@Override
-	public int update(final List<? extends Object> entities) throws JmpDbException {
+	public int update(final List<? extends Object> entities) {
 		return update(entities.toArray(new Object[0]), null);
 
 	}
 
 	@Override
-	public int update(final Object[] vo) throws JmpDbException {
+	public int update(final Object[] vo) {
 		return update(vo, null);
 
 	}
 
 	@Override
-	public int update(final Object[] vo, String[] fieldNames)
-			throws JmpDbException {
+	public int update(final Object[] vo, String[] fieldNames) {
 		return update(vo, fieldNames, null, null);
 	}
 
 	@Override
-	public int update(final Object[] entities, String[] fieldNames, String whereClause, SQLParameter param) throws JmpDbException {
+	public int update(final Object[] entities, String[] fieldNames, String whereClause, SQLParameter param) {
 		if (entities == null || entities.length == 0)
 			return 0;
-		Object entity = entities[0];
-		int row = 0;
-		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
-		String pkName = PersistenceHelper.getPkField(this.dataSource, entity);
-		String[] names;
-		if (fieldNames != null) {
-			names = fieldNames;
-		} 
-		else {
-			names = PersistenceHelper.getUpdateValidNames(this.dataSource, entity);
-		}
 		
-		Object pk = PersistenceHelper.getPrimaryKey(this.dataSource, entity);
-		String sql = SQLHelper.getUpdateSQL(tableName, names, pkName);
-		if (entities.length == 1) {
-			SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
-			parameter.addParam(pk);
-			if (whereClause == null)
-				row = session.executeUpdate(sql, parameter);
+		try{
+			Object entity = entities[0];
+			int row = 0;
+			String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
+			String pkName = PersistenceHelper.getPkField(this.dataSource, entity);
+			String[] names;
+			if (fieldNames != null) {
+				names = fieldNames;
+			} 
 			else {
-				addParameter(parameter, param);
-				row = session.executeUpdate(sql + " and " + whereClause, parameter);
+				names = PersistenceHelper.getUpdateValidNames(this.dataSource, entity);
 			}
-		} 
-		else {
-			for (int i = 0; i < entities.length; i++) {
-				if (entities[i] == null)
-					continue;
+			
+			Object pk = PersistenceHelper.getPrimaryKey(this.dataSource, entity);
+			String sql = SQLHelper.getUpdateSQL(tableName, names, pkName);
+			if (entities.length == 1) {
 				SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
 				parameter.addParam(pk);
 				if (whereClause == null)
-					session.addBatch(sql, parameter);
+					row = session.executeUpdate(sql, parameter);
 				else {
 					addParameter(parameter, param);
-					session.addBatch(sql + " and " + whereClause, parameter);
+					row = session.executeUpdate(sql + " and " + whereClause, parameter);
 				}
+			} 
+			else {
+				for (int i = 0; i < entities.length; i++) {
+					if (entities[i] == null)
+						continue;
+					SQLParameter parameter = SQLHelper.getSQLParam(this.dataSource, entity, names);
+					parameter.addParam(pk);
+					if (whereClause == null)
+						session.addBatch(sql, parameter);
+					else {
+						addParameter(parameter, param);
+						session.addBatch(sql + " and " + whereClause, parameter);
+					}
+				}
+				row = session.executeBatch();
 			}
-			row = session.executeBatch();
+			return row;
 		}
-		return row;
+		catch(JmpDbException e){
+			throw new JmpDbRuntimeException("error while updating entities", e);
+		}
 	}
 
 
@@ -260,153 +281,182 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	}
 
 	@Override
-	public int delete(final List<? extends Object> entities) throws JmpDbException {
+	public int delete(final List<? extends Object> entities) {
 		return delete(entities.toArray(new Object[] {}));
 	}
 
 	@Override
-	public int delete(final Object entity) throws JmpDbException {
+	public int delete(final Object entity) {
 		return delete(new Object[] { entity });
 	}
 
 	@Override
-	public int delete(final Object entities[]) throws JmpDbException {
+	public int delete(final Object entities[]) {
 		if (entities.length == 0)
 			return 0;
-		Object entity = entities[0];
-		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
-		String pkField = PersistenceHelper.getPkField(this.dataSource, entity);
-		String sql = SQLHelper.getDeleteByPKSQL(tableName, pkField);
-
-		for (int i = 0; i < entities.length; i++) {
-			if (entities[i] == null)
-				continue;
-			SQLParameter parameter = new SQLParameter();
-			Object pk = PersistenceHelper.getPrimaryKey(this.dataSource, entities[i]);
-			parameter.addParam(pk);
-			session.addBatch(sql, parameter);
+		try{
+			Object entity = entities[0];
+			String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
+			String pkField = PersistenceHelper.getPkField(this.dataSource, entity);
+			String sql = SQLHelper.getDeleteByPKSQL(tableName, pkField);
+	
+			for (int i = 0; i < entities.length; i++) {
+				if (entities[i] == null)
+					continue;
+				SQLParameter parameter = new SQLParameter();
+				Object pk = PersistenceHelper.getPrimaryKey(this.dataSource, entities[i]);
+				parameter.addParam(pk);
+				session.addBatch(sql, parameter);
+			}
+			return session.executeBatch();
 		}
-		return session.executeBatch();
+		catch(JmpDbException e){
+			throw new JmpDbRuntimeException("error while deleting entities", e);
+		}
 	}
 
 	@Override
-	public int deleteByPK(Class<?> className, String pk) throws JmpDbException {
+	public int deleteByPK(Class<?> className, String pk) {
 		return deleteByPKs(className, new String[] { pk });
 	}
 
 	@Override
-	public int deleteByPKs(Class<?> clazz, String[] pks) throws JmpDbException {
-		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
-		String pkField = PersistenceHelper.getPkField(this.dataSource, clazz);
-		String sql = "DELETE FROM " + tableName + " WHERE " + pkField + "=?";
-		for (int i = 0; i < pks.length; i++) {
-			SQLParameter parameter = new SQLParameter();
-			parameter.addParam(pks[i]);
-			session.addBatch(sql, parameter);
+	public int deleteByPKs(Class<?> clazz, String[] pks) {
+		try{
+			String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
+			String pkField = PersistenceHelper.getPkField(this.dataSource, clazz);
+			String sql = "DELETE FROM " + tableName + " WHERE " + pkField + "=?";
+			for (int i = 0; i < pks.length; i++) {
+				SQLParameter parameter = new SQLParameter();
+				parameter.addParam(pks[i]);
+				session.addBatch(sql, parameter);
+			}
+			return session.executeBatch();
 		}
-		return session.executeBatch();
+		catch(JmpDbException e){
+			throw new JmpDbRuntimeException("error while deleting entities by pk", e);
+		}
 	}
 
 
 	@Override
-	public int deleteByClause(Class<?> className, String wherestr) throws JmpDbException {
+	public int deleteByClause(Class<?> className, String wherestr) {
 		return deleteByClause(className, wherestr, null);
 	}
 
 	@Override
-	public int deleteByClause(Class<?> clazz, String whereStr, SQLParameter params) throws JmpDbException {
-		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
-		String sql = new StringBuffer().append("DELETE FROM ").append(tableName).toString();
-		if (whereStr != null) {
-			whereStr = whereStr.trim();
-			if (whereStr.length() > 0) {
-				if (whereStr.toLowerCase().startsWith("WHERE"))
-					sql += " " + whereStr;
+	public int deleteByClause(Class<?> clazz, String whereStr, SQLParameter params) {
+		try{
+			String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
+			String sql = new StringBuffer().append("DELETE FROM ").append(tableName).toString();
+			if (whereStr != null) {
+				whereStr = whereStr.trim();
+				if (whereStr.length() > 0) {
+					if (whereStr.toLowerCase().startsWith("WHERE"))
+						sql += " " + whereStr;
+				}
 			}
+			if (params == null)
+				return session.executeUpdate(sql);
+			else
+				return session.executeUpdate(sql, params);
 		}
-		if (params == null)
-			return session.executeUpdate(sql);
-		else
-			return session.executeUpdate(sql, params);
-
+		catch(JmpDbException e){
+			throw new JmpDbRuntimeException("error while deleting by clause", e);
+		}
 	}
 
 	@Override
-	public Object findByPK(Class<?> clazz, String pk) throws JmpDbException {
+	public Object findByPK(Class<?> clazz, String pk) {
 		return findByPK(clazz, pk, null);
 	}
 
 	@Override
-	public Object findByPK(Class<?> clazz, String pk, String[] selectedFields) throws JmpDbException {
+	public Object findByPK(Class<?> clazz, String pk, String[] selectedFields) {
 		if (pk == null)
 			return null;
+		
 		SQLParameter param = new SQLParameter();
 		param.addParam(pk);
 		
 		String pkField = PersistenceHelper.getPkField(this.dataSource, clazz);
-		List results = (List) findAllByClause(clazz, pkField + "=?", selectedFields, param, null);
+		List<? extends Object> results = findAllByClause(clazz, pkField + "=?", selectedFields, param, null);
 		if (results.size() >= 1)
 			return (Object) results.get(0);
 		return null;
 	}
 
 	@Override
-	public List<? extends Object> findByEntityAttribute(Object entity, Sort sort) throws JmpDbException {
+	public List<? extends Object> findByEntityAttribute(Object entity, Sort sort) {
 		return null;
 	}
 	
 	@Override
-	public List<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable) throws JmpDbException{
+	public List<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable){
+//		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
+//		Map types = getColmnTypes(tableName);
+//		// 得到合法的字段列表
+//		String names[] = getNotNullValidNames(vo, types);
+//		// 得到插入的SQL语句
+//		String sql = SQLHelper.getSelectSQL(tableName, names, true, null);
+//		SQLParameter param = getSQLParam(entity, names);
+//		// session.setReadOnly(true);
+//		return session.executeQuery(sql, param, processor);
 		return null;
 	}
 	
 	@Override
-	public Object findByEntityAttribute(Object entity, ResultSetProcessor processor) throws JmpDbException {
+	public Object findByEntityAttribute(Object entity, ResultSetProcessor processor) {
 		return null;
 	}
 	
 	@Override
-	public List<? extends Object> findAll(Class<?> clazz, Sort sort) throws JmpDbException {
-		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
-		String sql = "SELECT * FROM " + tableName;
-		return (List<? extends Object>) session.executeQuery(sql, new BeanListProcessor(clazz));
+	public List<? extends Object> findAll(Class<?> clazz, Sort sort) {
+//		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
+//		String sql = "SELECT * FROM " + tableName;
+//		return (List<? extends Object>) session.executeQuery(sql, new BeanListProcessor(clazz));
+		return null;
+	}
 
-	}
-
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, Sort sort) throws JmpDbException {
+	public List<? extends Object> findAllByClause(Class<?> className, String condition, Sort sort) {
 		return findAllByClause(className, condition, null, sort);
 	}
 
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort) throws JmpDbException {
+	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort) {
 		return findAllByClause(className, condition, fields, parameters, sort, null);
 	}
 	
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) throws JmpDbException {
-		BaseProcessor processor = new BeanListProcessor(className);
-		String sql = SQLHelper.buildSql(this.dataSource, className, condition, fields, sort);
-		return (List<? extends Object>) session.executeQuery(sql, parameters, processor);
+	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) {
+		try {
+			ResultSetProcessor processor = new BeanListProcessor(className);
+			String sql = SQLHelper.buildSql(this.dataSource, className, condition, fields, sort);
+			return (List<? extends Object>) session.executeQuery(sql, parameters, processor);
+		} 
+		catch (JmpDbException e) {
+			throw new JmpDbRuntimeException("error while query", e);
+		}
 	}
 
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort) throws JmpDbException {
+	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort) {
 		return findAllByClause(className, condition, fields, sort, null);
 	}
 	
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort, Pageable pageable) throws JmpDbException {
+	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort, Pageable pageable) {
 		return null;
 	}
 
 	@Override
-	public List<? extends Object> findAll(Class<?> clazz, Sort sort, Pageable pageable) throws JmpDbException {
+	public List<? extends Object> findAll(Class<?> clazz, Sort sort, Pageable pageable) {
 		return null;
 	}
 
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> clazz, String condition, Sort sort, Pageable pageable) throws JmpDbException {
+	public List<? extends Object> findAllByClause(Class<?> clazz, String condition, Sort sort, Pageable pageable) {
 		return null;
 	}
 	
@@ -428,7 +478,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	}
 
 	@Override
-	public String getSchema() throws JmpDbException {
+	public String getSchema() {
 		String strSche = null;
 		try {
 			String schema = getMetaData().getUserName();
@@ -442,7 +492,7 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 		} 
 		catch (SQLException e) {
 			logger.error(e.getMessage(), e);
-			throw new JmpDbException("error while getting schema", e);
+			throw new JmpDbRuntimeException("error while getting schema", e);
 		}
 		return strSche;
 	}
@@ -475,6 +525,4 @@ public class EntityPersistenceImpl implements IJmpPersistence{
 	public String getDataSourceName() {
 		return this.dataSource;
 	}
-
-
 }

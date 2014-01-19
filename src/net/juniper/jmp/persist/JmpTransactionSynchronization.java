@@ -11,6 +11,6 @@ public class JmpTransactionSynchronization implements Synchronization {
 
 	@Override
 	public void beforeCompletion() {
-		JmpPersistenceManager.releaseTxPersistence();
+		JmpPersistenceContext.releaseTxPersistence();
 	}
 }
