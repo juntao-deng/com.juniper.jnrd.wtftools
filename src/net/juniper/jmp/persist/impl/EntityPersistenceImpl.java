@@ -208,34 +208,38 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 
 	@Override
-	public int update(final Object entity) {
+	public <T>T update(final T entity) {
 		if (entity == null) {
 			throw new IllegalArgumentException("entity can not be null");
 		}
-		return update(new Object[] {entity}, null);
+		T[] arr = (T[]) Array.newInstance(entity.getClass(), 1);
+		arr[0] = entity;
+		return update(arr, null);
 	}
 
 	@Override
-	public int update(final List<? extends Object> entities) {
-		return update(entities.toArray(new Object[0]), null);
+	public <T>T update(final List<T> entities) {
+		if (entities == null || entities.size() == 0)
+			return null;
+		T[] arr = (T[]) Array.newInstance(entities.get(0).getClass(), 0);
+		return update(entities.toArray(arr), null);
+	}
+
+	@Override
+	public <T>T update(final T[] entities) {
+		return update(entities, null);
 
 	}
 
 	@Override
-	public int update(final Object[] vo) {
-		return update(vo, null);
-
+	public <T>T update(final T[] entities, String[] fieldNames) {
+		return update(entities, fieldNames, null, null);
 	}
 
 	@Override
-	public int update(final Object[] vo, String[] fieldNames) {
-		return update(vo, fieldNames, null, null);
-	}
-
-	@Override
-	public int update(final Object[] entities, String[] fieldNames, String whereClause, SQLParameter param) {
+	public <T>T update(final T[] entities, String[] fieldNames, String whereClause, SQLParameter param) {
 		if (entities == null || entities.length == 0)
-			return 0;
+			return null;
 		
 		try{
 			Object entity = entities[0];
@@ -277,7 +281,7 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 				}
 				row = session.executeBatch();
 			}
-			return row;
+			return null;
 		}
 		catch(JmpDbException e){
 			throw new JmpDbRuntimeException("error while updating entities", e);

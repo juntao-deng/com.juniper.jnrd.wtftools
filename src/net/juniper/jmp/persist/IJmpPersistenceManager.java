@@ -28,15 +28,15 @@ public interface IJmpPersistenceManager{
     
     public <T>T[] insertWithPK(T[] entities);
     
-    public int update(final Object entity);
+    public <T>T update(final T entity);
 
-    public int update(final List<? extends Object> entities);
+    public <T>T update(final List<T> entities);
 
-    public int update(final Object entity[]);
+    public <T>T update(final T entity[]);
 
-    public int update(final Object[] entity, String[] fieldNames);
+    public <T>T update(final T[] entity, String[] fieldNames);
 
-    public int update(final Object[] entity, String[] fieldNames, String whereClause, SQLParameter param);
+    public <T>T update(final T[] entity, String[] fieldNames, String whereClause, SQLParameter param);
 
     public int delete(Object entity);
 

@@ -21,3 +21,12 @@ modules-org.hibernate
 modules-org.slf4j
 modules-org.antlr
 3rdParty.net.sf.json
+modules-javax.inject.api
+modules-com.google.guava
+modules-javax.interceptor.api
+modules-org.jboss.classfilewriter
+modules-org.jboss.weld.api
+modules-org.jboss.weld.core
+modules-org.jboss.weld.spi
+modules-ch.qos.cal10n
+modules-org.slf4j.ext
