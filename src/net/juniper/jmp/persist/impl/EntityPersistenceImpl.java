@@ -4,15 +4,18 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
+import net.juniper.jmp.core.ctx.PageResult;
 import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.exception.JMPRuntimeException;
 import net.juniper.jmp.persist.BeanListProcessor;
 import net.juniper.jmp.persist.IJmpPersistenceManager;
 import net.juniper.jmp.persist.IReleaseCallback;
+import net.juniper.jmp.persist.MapProcessor;
 import net.juniper.jmp.persist.ResultSetProcessor;
 import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.constant.DBConsts;
@@ -367,12 +370,12 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 
 	@Override
-	public Object findByPK(Class<?> clazz, String pk) {
+	public <T>T findByPK(Class<T> clazz, String pk) {
 		return findByPK(clazz, pk, null);
 	}
 
 	@Override
-	public Object findByPK(Class<?> clazz, String pk, String[] selectedFields) {
+	public <T>T findByPK(Class<T> clazz, String pk, String[] selectedFields) {
 		if (pk == null)
 			return null;
 		
@@ -380,9 +383,9 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 		param.addParam(pk);
 		
 		String pkField = PersistenceHelper.getPkField(this.dataSource, clazz);
-		List<? extends Object> results = findAllByClause(clazz, pkField + "=?", selectedFields, param, null);
+		List<T> results = findAllByClause(clazz, pkField + "=?", selectedFields, param, null);
 		if (results.size() >= 1)
-			return (Object) results.get(0);
+			return results.get(0);
 		return null;
 	}
 
@@ -392,7 +395,7 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 	
 	@Override
-	public List<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable){
+	public PageResult<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable){
 //		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
 //		Map types = getColmnTypes(tableName);
 //		// 得到合法的字段列表
@@ -411,29 +414,20 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 	
 	@Override
-	public List<? extends Object> findAll(Class<?> clazz, Sort sort) {
-//		String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
-//		String sql = "SELECT * FROM " + tableName;
-//		return (List<? extends Object>) session.executeQuery(sql, new BeanListProcessor(clazz));
-		return null;
+	public <T>List<T> findAll(Class<T> clazz, Sort sort) {
+		return findAllByClause(clazz, null, sort);
 	}
 
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, Sort sort) {
-		return findAllByClause(className, condition, null, sort);
+	public <T>List<T> findAllByClause(Class<T> clazz, String condition, Sort sort) {
+		return findAllByClause(clazz, condition, null, sort);
 	}
 
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort) {
-		return findAllByClause(className, condition, fields, parameters, sort, null);
-	}
-	
-	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) {
+	public <T>List<T> findAllByClause(Class<T> clazz, String condition, String[] fields, SQLParameter parameters, Sort sort) {
 		try {
-			ResultSetProcessor processor = new BeanListProcessor(className);
-			String sql = SQLHelper.buildSql(this.dataSource, className, condition, fields, sort);
-			return (List<? extends Object>) session.executeQuery(sql, parameters, processor);
+			String sql = SQLHelper.buildSql(this.dataSource, clazz, condition, fields, sort);
+			return (List<T>) session.executeQuery(sql, parameters, new BeanListProcessor(clazz));
 		} 
 		catch (JmpDbException e) {
 			throw new JmpDbRuntimeException("error while query", e);
@@ -441,23 +435,46 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort) {
-		return findAllByClause(className, condition, fields, sort, null);
+	public <T>List<T> findAllByClause(Class<T> clazz, String condition, String[] fields, Sort sort) {
+		return findAllByClause(clazz, condition, fields, null, sort);
 	}
 	
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, Sort sort, Pageable pageable) {
-		return null;
+	public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) {
+		if(pageable == null)
+			throw new JmpDbRuntimeException("Pagination information can not be null");
+		try {
+			String sql = SQLHelper.buildSql(this.dataSource, clazz, condition, fields, null);
+			String countSql = "select count(1) as c from (" + sql + ") as a";
+			Map obj = (Map) session.executeQuery(countSql, parameters, new MapProcessor());
+			int recordsCount = (Integer)obj.get("c");
+			
+			PageableSQLBuilder builder = PageableSQLBuilderFactory.getInstance().createLimitSQLBuilder(this.getDBType());
+			
+			sql = SQLHelper.buildSql(this.dataSource, clazz, condition, fields, sort);
+			sql = builder.build(sql, pageable);
+			List<T> result = (List<T>) session.executeQuery(sql, parameters, new BeanListProcessor(clazz));
+			PageResult<T> pr = new PageResult<T>(result, pageable.getPageIndex(), pageable.getPageSize(), recordsCount);
+			return pr;
+		} 
+		catch (JmpDbException e) {
+			throw new JmpDbRuntimeException("error while query", e);
+		}
+	}
+	
+	@Override
+	public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, String[] fields, Sort sort, Pageable pageable) {
+		return findAllByClause(clazz, condition, fields, null, sort, pageable);
 	}
 
 	@Override
-	public List<? extends Object> findAll(Class<?> clazz, Sort sort, Pageable pageable) {
-		return null;
+	public <T>PageResult<T> findAll(Class<T> clazz, Sort sort, Pageable pageable) {
+		return findAllByClause(clazz, null, sort, pageable);
 	}
 
 	@Override
-	public List<? extends Object> findAllByClause(Class<?> clazz, String condition, Sort sort, Pageable pageable) {
-		return null;
+	public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, Sort sort, Pageable pageable) {
+		return findAllByClause(clazz, condition, null, sort, pageable);
 	}
 	
 	@Override

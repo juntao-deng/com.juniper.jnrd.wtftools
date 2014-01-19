@@ -12,6 +12,8 @@ public interface IMappingMeta extends Serializable {
     public String getPrimaryKey();
 
     public String getTableName();
+    
+    public String getVersionName();
 
     public FieldMeta[] getEntityFields();
     

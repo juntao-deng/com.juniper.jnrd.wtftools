@@ -47,7 +47,7 @@ public class ParamHelper {
 			
 		}
 		
-		PageRequest page = new PageRequest(index, size, sort);
+		PageRequest page = new PageRequest(index, size);
 		return page;
 	}
 	

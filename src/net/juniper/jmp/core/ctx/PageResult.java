@@ -1,6 +1,5 @@
 package net.juniper.jmp.core.ctx;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PageResult<T> {
@@ -8,19 +7,19 @@ public class PageResult<T> {
 	private Integer totalRecords;
 	private Integer pageIndex;
 	private List<T> records;
-	public PageResult(Page<T> page){
-		this.records = new ArrayList<T>();
-		this.records.addAll(page.getContent());
-		this.pageSize = page.getSize();
-		this.totalRecords = (int) page.getTotalElements();
-		this.pageIndex = page.getNumber();
-	}
 	
 	public PageResult(List<T> records){
 		this.records = records;
 		this.pageSize = -1;
 		this.totalRecords = records == null ? 0 : this.records.size();
 		this.pageIndex = 0;
+	}
+	
+	public PageResult(List<T> records, int pageIndex, int pageSize, int totalRecords){
+		this.records = records;
+		this.pageSize = pageSize;
+		this.totalRecords = totalRecords;
+		this.pageIndex = pageIndex;
 	}
 
 	public List<T> getRecords() {

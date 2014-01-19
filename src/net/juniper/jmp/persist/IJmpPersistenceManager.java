@@ -3,6 +3,7 @@ package net.juniper.jmp.persist;
 import java.sql.DatabaseMetaData;
 import java.util.List;
 
+import net.juniper.jmp.core.ctx.PageResult;
 import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.persist.impl.DbSession;
@@ -51,31 +52,31 @@ public interface IJmpPersistenceManager{
 
     public int deleteByClause(Class<?> clazz, String wherestr, SQLParameter params);
 
-    public Object findByPK(Class<?> clazz, String pk);
+    public <T>T findByPK(Class<T> clazz, String pk);
 
-    public Object findByPK(Class<?> clazz, String pk, String[] selectedFields);
+    public <T>T findByPK(Class<T> clazz, String pk, String[] selectedFields);
 
-    public List<? extends Object> findByEntityAttribute(Object entity, Sort sort);
+    public <T>List<T> findByEntityAttribute(T entity, Sort sort);
     
-    public List<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable);
-
     public Object findByEntityAttribute(Object entity, ResultSetProcessor processor);
 
-    public List<? extends Object> findAll(Class<?> clazz, Sort sort);
+    public <T>List<T> findAll(Class<T> clazz, Sort sort);
     
-    public List<? extends Object> findAll(Class<?> clazz, Sort sort, Pageable pageable);
-
-    public List<? extends Object> findAllByClause(Class<?> clazz, String condition, String[] fields, Sort sort);
+    public <T>List<T> findAllByClause(Class<T> clazz, String condition, Sort sort);
     
-    public List<? extends Object> findAllByClause(Class<?> clazz, String condition, String[] fields, Sort sort, Pageable pageable);
-
-    public List<? extends Object> findAllByClause(Class<?> clazz, String condition, Sort sort);
+    public <T>List<T> findAllByClause(Class<T> clazz, String condition, String[] fields, Sort sort);
     
-    public List<? extends Object> findAllByClause(Class<?> clazz, String condition, Sort sort, Pageable pageable);
+    public <T>List<T> findAllByClause(Class<T> clazz, String condition, String[] fields, SQLParameter parameters, Sort sort);
     
-    public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort);
+    public <T>PageResult<T> findByEntityAttribute(Object entity, Sort sort, Pageable pageable);
     
-    public List<? extends Object> findAllByClause(Class<?> className, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable);
+    public <T>PageResult<T> findAll(Class<T> clazz, Sort sort, Pageable pageable);
+    
+    public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, String[] fields, Sort sort, Pageable pageable);
+    
+    public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, Sort sort, Pageable pageable);
+    
+    public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable);
     
     public int getDBType();
 

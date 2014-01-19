@@ -17,6 +17,7 @@ public abstract class MappingMeta<T> implements IMappingMeta {
 	private static final long serialVersionUID = -3192362496510980507L;
 	private String primaryKey;
 	private String tableName;
+	private String versionName;
 	private Map<String, FieldMeta> columnFieldMap;
 	private Map<String, FieldMeta> fieldFieldMap;
 	private List<FieldMeta> entityFields;
@@ -106,5 +107,14 @@ public abstract class MappingMeta<T> implements IMappingMeta {
 
 	public void setValidFieldsWithoutPk(String[] validFieldsWithoutPk) {
 		this.validFieldsWithoutPk = validFieldsWithoutPk;
+	}
+
+	@Override
+	public String getVersionName() {
+		return versionName;
+	}
+
+	public void setVersionName(String versionName) {
+		this.versionName = versionName;
 	}
 }
