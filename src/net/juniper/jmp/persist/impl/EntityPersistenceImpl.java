@@ -1,5 +1,6 @@
 package net.juniper.jmp.persist.impl;
 
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -8,7 +9,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import net.juniper.jmp.core.ctx.PageResult;
+import net.juniper.jmp.core.ctx.Page;
 import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.exception.JMPRuntimeException;
@@ -81,34 +82,44 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 
 	@Override
-	public Object insertWithPK(final Object entity) {
-		Object pk[] = insertWithPK(new Object[] {entity});
-		return pk[0];
+	public <T>T insertWithPK(final T entity) {
+		T[] arr = (T[]) Array.newInstance(entity.getClass(), 1);
+		arr[0] = entity;
+		T[] results = insertWithPK(arr);
+		return results[0];
 	}
 
 	@Override
-	public Object[] insertWithPK(final Object[] entities) {
+	public <T>T[] insertWithPK(final T[] entities) {
 		return insert(entities, true);
 	}
 	
 	@Override
-	public Object insert(final Object entity) {
-		Object pk[] = insert(new Object[] {entity});
-		return pk[0];
+	public <T>T insert(final T entity) {
+		T[] arr = (T[]) Array.newInstance(entity.getClass(), 1);
+		arr[0] = entity;
+		T[] results = insert(arr);
+		return results[0];
 	}
 
 	@Override
-	public Object[] insertWithPK(final List<? extends Object> entities) {
-		return insertWithPK(entities.toArray(new Object[0]));
+	public <T>T[] insertWithPK(final List<T> entities) {
+		if(entities == null || entities.size() == 0)
+			return null;
+		T[] arr = (T[]) Array.newInstance(entities.get(0).getClass(), 0);
+		return insertWithPK(entities.toArray(arr));
 	}
 
 	@Override
-	public Object[] insert(final List<? extends Object> entities) {
-		return insert(entities.toArray(new Object[0]));
+	public <T>T[] insert(final List<T> entities) {
+		if(entities == null || entities.size() == 0)
+			return null;
+		T[] arr = (T[]) Array.newInstance(entities.get(0).getClass(), 0);
+		return insert(entities.toArray(arr));
 	}
 
 	@Override
-	public Object[] insert(final Object[] entities) {
+	public <T>T[] insert(final T[] entities) {
 		return insert(entities, false);
 	}
 
@@ -128,10 +139,10 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 		return pks;
 	}
 
-	protected Object[] insert(final Object[] entities, boolean withPK) {
+	protected <T>T[] insert(final T[] entities, boolean withPK) {
 		checkSessionState();
 		if(entities == null || entities.length == 0)
-			return new String[0];
+			return null;
 		
 		try{
 			Object entity = entities[0];
@@ -167,7 +178,7 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 					fillEntities(entities, pks);
 				}
 			}
-			return pks;
+			return entities;
 		}
 		catch(JmpDbException e){
 			throw new JMPRuntimeException("error while inserting entities", e);
@@ -319,12 +330,12 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 
 	@Override
-	public int deleteByPK(Class<?> className, String pk) {
-		return deleteByPKs(className, new String[] { pk });
+	public int deleteByPK(Class<?> className, Object pk) {
+		return deleteByPKs(className, new Object[] { pk });
 	}
 
 	@Override
-	public int deleteByPKs(Class<?> clazz, String[] pks) {
+	public int deleteByPKs(Class<?> clazz, Object[] pks) {
 		try{
 			String tableName = PersistenceHelper.getTableName(this.dataSource, clazz);
 			String pkField = PersistenceHelper.getPkField(this.dataSource, clazz);
@@ -370,12 +381,12 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 
 	@Override
-	public <T>T findByPK(Class<T> clazz, String pk) {
+	public <T>T findByPK(Class<T> clazz, Object pk) {
 		return findByPK(clazz, pk, null);
 	}
 
 	@Override
-	public <T>T findByPK(Class<T> clazz, String pk, String[] selectedFields) {
+	public <T>T findByPK(Class<T> clazz, Object pk, String[] selectedFields) {
 		if (pk == null)
 			return null;
 		
@@ -395,7 +406,7 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 	
 	@Override
-	public PageResult<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable){
+	public Page<? extends Object> findByEntityAttribute(Object entity, Sort sort, Pageable pageable){
 //		String tableName = PersistenceHelper.getTableName(this.dataSource, entity);
 //		Map types = getColmnTypes(tableName);
 //		// 得到合法的字段列表
@@ -440,7 +451,7 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 	
 	@Override
-	public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) {
+	public <T>Page<T> findAllByClause(Class<T> clazz, String condition, String[] fields, SQLParameter parameters, Sort sort, Pageable pageable) {
 		if(pageable == null)
 			throw new JmpDbRuntimeException("Pagination information can not be null");
 		try {
@@ -454,7 +465,7 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 			sql = SQLHelper.buildSql(this.dataSource, clazz, condition, fields, sort);
 			sql = builder.build(sql, pageable);
 			List<T> result = (List<T>) session.executeQuery(sql, parameters, new BeanListProcessor(clazz));
-			PageResult<T> pr = new PageResult<T>(result, pageable.getPageIndex(), pageable.getPageSize(), recordsCount);
+			Page<T> pr = new Page<T>(result, pageable.getPageIndex(), pageable.getPageSize(), recordsCount);
 			return pr;
 		} 
 		catch (JmpDbException e) {
@@ -463,17 +474,17 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 	}
 	
 	@Override
-	public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, String[] fields, Sort sort, Pageable pageable) {
+	public <T>Page<T> findAllByClause(Class<T> clazz, String condition, String[] fields, Sort sort, Pageable pageable) {
 		return findAllByClause(clazz, condition, fields, null, sort, pageable);
 	}
 
 	@Override
-	public <T>PageResult<T> findAll(Class<T> clazz, Sort sort, Pageable pageable) {
+	public <T>Page<T> findAll(Class<T> clazz, Sort sort, Pageable pageable) {
 		return findAllByClause(clazz, null, sort, pageable);
 	}
 
 	@Override
-	public <T>PageResult<T> findAllByClause(Class<T> clazz, String condition, Sort sort, Pageable pageable) {
+	public <T>Page<T> findAllByClause(Class<T> clazz, String condition, Sort sort, Pageable pageable) {
 		return findAllByClause(clazz, condition, null, sort, pageable);
 	}
 	

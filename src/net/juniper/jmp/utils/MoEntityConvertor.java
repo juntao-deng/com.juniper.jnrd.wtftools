@@ -7,7 +7,6 @@ import java.util.List;
 
 import net.juniper.jmp.core.ctx.Page;
 import net.juniper.jmp.core.ctx.Pageable;
-import net.juniper.jmp.core.ctx.impl.PageImpl;
 import net.juniper.jmp.core.util.BeanUtils;
 
 import org.slf4j.Logger;
@@ -60,12 +59,12 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 		if(entityPage == null)
 			return null;
 		try {
-			List<T> content = convertFromEntity2Mo(entityPage.getContent(), clazz);
+			List<T> content = convertFromEntity2Mo(entityPage.getRecords(), clazz);
 			//had to find it using reflect
 			Field f = entityPage.getClass().getDeclaredField("pageable");
 			f.setAccessible(true);
 			Pageable pageable = (Pageable) f.get(entityPage);
-			Page<T> result = new PageImpl<T>(content, pageable, entityPage.getTotalElements());
+			Page<T> result = new Page<T>(content, pageable, entityPage.getTotalRecords());
 			return result;
 		}
 		catch(Exception e){
