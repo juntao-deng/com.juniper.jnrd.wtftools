@@ -6,8 +6,6 @@ import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import org.hibernate.service.jndi.JndiException;
-
 /**
  * Jta support for jboss, from hibernate's implementations
  * @author Jta
@@ -40,7 +38,7 @@ public class JBossAppServerJtaSupport extends AbstractJtaSupport {
 				return (TransactionManager) getJndiContext().lookup(AS4_TM_NAME);
 			}
 			catch (NamingException jndiExceptionInner) {
-				throw new JndiException( "unable to find transaction manager", jndiException );
+				return null;
 			}
 		} 
 	}
@@ -55,7 +53,7 @@ public class JBossAppServerJtaSupport extends AbstractJtaSupport {
 				return (UserTransaction) getJndiContext().lookup(UT_NAME);
 			}
 			catch (NamingException jndiExceptionInner) {
-				throw new JndiException( "unable to find UserTransaction", jndiException );
+				return null;
 			}
 		}
 	}

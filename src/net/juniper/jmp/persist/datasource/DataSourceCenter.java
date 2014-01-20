@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 
 import net.juniper.jmp.core.util.JmpClassUtil;
 import net.juniper.jmp.persist.constant.DBConsts;
+import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
 import net.juniper.jmp.persist.exp.UnSupportDbException;
 import net.juniper.jmp.persist.utils.SqlLogger;
 
@@ -51,15 +52,17 @@ public class DataSourceCenter {
         	Connection conn = null;
         	try {
         	   DataSource ds = (DataSource) provider.getDataSource(name);
-        	   dataSourceCache.put(name, new WeakReference<DataSource>(ds));
                conn = getDiffConnection(ds);
                DatabaseMetaData DBMeta = conn.getMetaData();
                int dbType = getDbType(DBMeta);
                DBMetaInfo meta = new DBMetaInfo(dbType);
+               dsRef = new WeakReference<DataSource>(ds);
+               dataSourceCache.put(name, dsRef);
                metaCache.put(name, meta);
            } 
            catch (Throwable e) {
         	   SqlLogger.error("get data source " + name + " error,can't connect to database", e);
+        	   throw new JmpDbRuntimeException(e.getMessage(), e);
            }
            finally{
         	   if(conn != null)
@@ -103,8 +106,10 @@ public class DataSourceCenter {
             return DBConsts.SQLSERVER;
         if (typeStr.indexOf(DBConsts.SYBASE_NAME) != -1)
             return DBConsts.SYBASE;
+        if (typeStr.indexOf(DBConsts.DERBY_NAME) != -1)
+            return DBConsts.DERBY;
         if (typeStr.indexOf(DBConsts.INFORMIX_NAME) != -1)
-            return DBConsts.INFORMIX;
+        	return DBConsts.INFORMIX;
         throw new UnSupportDbException("un support db," + typeStr);
     }
 

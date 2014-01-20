@@ -7,8 +7,12 @@ package net.juniper.jmp.persist.datasource;
  */
 public final class PersistenceCtx {
 	private static InheritableThreadLocal<String> threadLocal = new InheritableThreadLocal<String>();
+	private static final String DEFAULT_DS = "MysqlDS";
 	public static String getCurrentDatasource() {
-		return threadLocal.get();
+		String ds = threadLocal.get();
+		if(ds == null || ds.equals(""))
+			ds = DEFAULT_DS;
+		return ds;
 	}
 	
 	public static void setCurrentDatasource(String dsName) {

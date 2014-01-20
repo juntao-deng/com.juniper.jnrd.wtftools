@@ -13,6 +13,7 @@ modules-javax.ws.rs.api
 modules-org.jboss.logging
 modules-org.dom4j
 modules-javax.transaction.api
+modules-javax.enterprise.api
 modules-org.scannotation.scannotation
 modules-org.hibernate.commons-annotations
 modules-org.hibernate.validator

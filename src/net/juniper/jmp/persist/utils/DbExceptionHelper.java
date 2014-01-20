@@ -3,6 +3,7 @@ package net.juniper.jmp.persist.utils;
 import java.sql.SQLException;
 
 import net.juniper.jmp.persist.constant.DBConsts;
+import net.juniper.jmp.persist.derby.JmpDerbyException;
 import net.juniper.jmp.persist.exp.JmpDbException;
 import net.juniper.jmp.persist.exp.UnSupportDbException;
 import net.juniper.jmp.persist.mysql.JmpMySQLException;
@@ -16,6 +17,8 @@ public class DbExceptionHelper {
 				return new JmpOracleException(msg, e);
 			case DBConsts.MYSQL:
 				return new JmpMySQLException(msg, e);
+			case DBConsts.DERBY:
+				return new JmpDerbyException(msg, e);
 			default:
 				throw new UnSupportDbException("unsupported db:" + dbType);
 		}
