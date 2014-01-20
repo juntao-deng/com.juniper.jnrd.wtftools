@@ -25,7 +25,7 @@ public class BeanListProcessorHelper extends BeanProcessorHelper {
 	}
 	
 	private <T>List<T> toBeanListInner(CrossDBResultSet resultSet, Class<T> type) throws JmpDbException {
-		String dataSource = resultSet.getDataSourceName();
+		String dataSource = resultSet.getDsName();
 		IMappingMeta mm = PersistenceHelper.getMappingMeta(dataSource, type);
 		if(mm == null)
 			throw new JmpDbRuntimeException("can not find mapping meta for type:" + type.getName() + ", please check type is a valid entity type");

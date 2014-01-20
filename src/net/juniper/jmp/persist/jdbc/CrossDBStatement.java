@@ -1,6 +1,5 @@
 package net.juniper.jmp.persist.jdbc;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -104,7 +103,7 @@ public class CrossDBStatement implements Statement{
 	}
 
 	@Override
-	public Connection getConnection() throws SQLException {
+	public CrossDBConnection getConnection() {
 		return conn;
 	}
 

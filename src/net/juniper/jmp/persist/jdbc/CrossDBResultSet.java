@@ -995,9 +995,8 @@ public class CrossDBResultSet implements ResultSet {
 		return passthru.unwrap(iface);
 	}
 
-	public String getDataSourceName() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getDsName() {
+		return stmt.getConnection().getDsName();
 	}
 
 }

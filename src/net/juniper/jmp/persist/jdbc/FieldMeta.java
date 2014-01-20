@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.Converter;
  */
 public class FieldMeta {
 	private String field;
+	private Class<?> fieldType;
 	private String column;
 	private boolean nullable;
 	private Integer columnType;
@@ -58,5 +59,11 @@ public class FieldMeta {
 	}
 	public void setConverter(Converter converter) {
 		this.converter = converter;
+	}
+	public Class<?> getFieldType() {
+		return fieldType;
+	}
+	public void setFieldType(Class<?> fieldType) {
+		this.fieldType = fieldType;
 	}
 }
