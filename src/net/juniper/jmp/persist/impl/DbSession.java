@@ -146,7 +146,7 @@ public final class DbSession {
 		try {
 			ResultSet rs = prepStatement.getGeneratedKeys();
 			while(rs.next()){
-				pkList.add(rs.getObject(0));
+				pkList.add(rs.getObject(1));
 			}
 			return pkList.toArray(new Object[0]);
 		} 
@@ -162,7 +162,7 @@ public final class DbSession {
 		try {
 			ResultSet rs = statement.getGeneratedKeys();
 			while(rs.next()){
-				pkList.add(rs.getObject(0));
+				pkList.add(rs.getObject(1));
 			}
 			return pkList.toArray(new Object[0]);
 		} 
@@ -219,7 +219,7 @@ public final class DbSession {
 				if (prepStatement != null) {
 					closeStmt(prepStatement);
 				}
-				prepStatement = conn.prepareStatement(sql);
+				prepStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				lastSQL = sql;
 			}
 			else
@@ -238,7 +238,7 @@ public final class DbSession {
 		try {
 			if (statement == null)
 				statement = conn.createStatement();
-			return statement.executeUpdate(sql);
+			return statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 		} 
 		catch (SQLException e) {
 			throw DbExceptionHelper.getException(dbType, e.getMessage(), e);

@@ -15,8 +15,8 @@ public class FieldMeta {
 	private String column;
 	private boolean nullable;
 	private Integer columnType;
-	private Reference<Method> readRef;
-	private Reference<Method> writeRef;
+	private Method readRef;
+	private Method writeRef;
 	private Converter converter;
 	public String getField() {
 		return field;
@@ -36,16 +36,16 @@ public class FieldMeta {
 	public void setNullable(boolean nullable) {
 		this.nullable = nullable;
 	}
-	public Reference<Method> getReadRef() {
+	public Method getReadRef() {
 		return readRef;
 	}
-	public void setReadRef(Reference<Method> readRef) {
+	public void setReadRef(Method readRef) {
 		this.readRef = readRef;
 	}
-	public Reference<Method> getWriteRef() {
+	public Method getWriteRef() {
 		return writeRef;
 	}
-	public void setWriteRef(Reference<Method> writeRef) {
+	public void setWriteRef(Method writeRef) {
 		this.writeRef = writeRef;
 	}
 	public Integer getColumnType() {

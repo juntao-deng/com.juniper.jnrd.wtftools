@@ -19,7 +19,7 @@ public class MapProcessorHelper extends BeanProcessorHelper {
 				Map<String, Object> rsValues = new HashMap<String, Object>();
 				for (int i = 1; i <= cols; i++) {
 					Object value = getColumnValue(metaData.getColumnType(i), rs, i);
-					rsValues.put(metaData.getColumnName(i), value);
+					rsValues.put(metaData.getColumnName(i).toLowerCase(), value);
 				}
 				return rsValues;
 			}

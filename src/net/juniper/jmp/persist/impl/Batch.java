@@ -45,7 +45,7 @@ public class Batch {
 		if (prepare) {
 			PreparedStatement stmt = cachedStatement.get(sql);
 			if (stmt == null) {
-				stmt = conn.prepareStatement(sql);
+				stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				cachedStatement.put(sql, stmt);
 			}
 			return stmt;

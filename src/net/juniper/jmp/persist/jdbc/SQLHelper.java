@@ -16,15 +16,11 @@ public class SQLHelper {
 	public static String getInsertSQL(String table, String names[]) {
 		StringBuffer buffer = new StringBuffer("INSERT INTO " + table + " (");
 		for (int i = 0; i < names.length; i++) {
-			if (names[i].equalsIgnoreCase("ts"))
-				continue;
 			buffer.append(names[i] + ",");
 		}
 		buffer.setLength(buffer.length() - 1);
 		buffer.append(") VALUES (");
 		for (int i = 0; i < names.length; i++) {
-			if (names[i].equalsIgnoreCase("ts"))
-				continue;
 			buffer.append("?,");
 		}
 		buffer.setLength(buffer.length() - 1);
@@ -36,8 +32,6 @@ public class SQLHelper {
 			String pkName) {
 		StringBuffer sql = new StringBuffer("UPDATE " + tableName + " SET  ");
 		for (int i = 0; i < names.length; i++) {
-			if (names[i].equalsIgnoreCase("ts"))
-				continue;
 			sql.append(names[i] + "=?,");
 		}
 		sql.setLength(sql.length() - 1);
@@ -48,8 +42,6 @@ public class SQLHelper {
 	public static String getUpdateSQL(String tableName, String[] names) {
 		StringBuffer sql = new StringBuffer("UPDATE " + tableName + " SET  ");
 		for (int i = 0; i < names.length; i++) {
-			if (names[i].equalsIgnoreCase("ts"))
-				continue;
 			sql.append(names[i] + "=?,");
 		}
 		sql.setLength(sql.length() - 1);
@@ -154,7 +146,7 @@ public class SQLHelper {
 		SQLParameter params = new SQLParameter();
 		for (int i = 0; i < names.length; i++) {
 			String name = names[i];
-			int type = types.get(name.toUpperCase());
+			int type = types.get(name.toLowerCase());
 			Object value = PersistenceHelper.getEntityValue(entity, name);
 			if (value == null) {
 				params.addNullParam(type);

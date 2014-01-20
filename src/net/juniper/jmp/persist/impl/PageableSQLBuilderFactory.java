@@ -1,6 +1,7 @@
 package net.juniper.jmp.persist.impl;
 
 import net.juniper.jmp.persist.constant.DBConsts;
+import net.juniper.jmp.persist.derby.DerbyPageableSQLBuilder;
 import net.juniper.jmp.persist.exp.UnSupportDbException;
 import net.juniper.jmp.persist.mysql.MySqlPageableSQLBuilder;
 import net.juniper.jmp.persist.oracle.OraclePageableSQLBuilder;
@@ -20,7 +21,9 @@ public class PageableSQLBuilderFactory {
         	case DBConsts.MYSQL:
         		return new MySqlPageableSQLBuilder();
             case DBConsts.ORACLE:
-                return (new OraclePageableSQLBuilder());
+                return new OraclePageableSQLBuilder();
+            case DBConsts.DERBY:
+            	return new DerbyPageableSQLBuilder();
             default:
                 throw new UnSupportDbException("unsupported database:" + dbType);
         }

@@ -462,7 +462,7 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 			String sql = SQLHelper.buildSql(this.dataSource, clazz, condition, fields, null);
 			String countSql = "select count(1) as c from (" + sql + ") as a";
 			Map obj = (Map) session.executeQuery(countSql, parameters, new MapProcessor());
-			int recordsCount = (Integer)obj.get("c");
+			Integer recordsCount = (Integer)obj.get("c");
 			
 			PageableSQLBuilder builder = PageableSQLBuilderFactory.getInstance().createLimitSQLBuilder(this.getDBType());
 			

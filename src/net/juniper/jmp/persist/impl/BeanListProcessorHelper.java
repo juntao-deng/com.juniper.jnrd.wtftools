@@ -42,7 +42,7 @@ public class BeanListProcessorHelper extends BeanProcessorHelper {
 					Object value = getColumnValue(fm.getColumnType(), resultSet, i + 1);
 					if (value == null)
 						continue;
-					Method invoke = fm.getWriteRef().get();
+					Method invoke = fm.getWriteRef();
 					if (invoke == null) {
 						throw new JmpDbRuntimeException("can not find mapping method for field:" + fm.getField());
 					}

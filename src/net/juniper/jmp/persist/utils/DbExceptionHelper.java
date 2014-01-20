@@ -30,6 +30,8 @@ public class DbExceptionHelper {
 				return new JmpOracleException(msg);
 			case DBConsts.MYSQL:
 				return new JmpMySQLException(msg);
+			case DBConsts.DERBY:
+				return new JmpDerbyException(msg);
 			default:
 				throw new UnSupportDbException("unsupported db:" + dbType);
 		}

@@ -1,19 +1,19 @@
 package net.juniper.jmp.utils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import net.juniper.jmp.core.ctx.Page;
-import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.core.util.BeanUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
-	private Logger log = LoggerFactory.getLogger(MoEntityConvertor.class);
+	private Logger logger = LoggerFactory.getLogger(MoEntityConvertor.class);
+	
+	@Override
 	public List<K> convertFromMo2Entity(List<T> moList, Class<K> clazz){
 		if(moList == null)
 			return null;
@@ -29,11 +29,12 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return result;
 		}
 		catch(Exception e){
-			log.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
 	
+	@Override
 	public List<T> convertFromEntity2Mo(List<K> entityList, Class<T> clazz){
 		if(entityList == null)
 			return null;
@@ -49,7 +50,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return result;
 		}
 		catch(Exception e){
-			log.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -60,15 +61,11 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return null;
 		try {
 			List<T> content = convertFromEntity2Mo(entityPage.getRecords(), clazz);
-			//had to find it using reflect
-			Field f = entityPage.getClass().getDeclaredField("pageable");
-			f.setAccessible(true);
-			Pageable pageable = (Pageable) f.get(entityPage);
-			Page<T> result = new Page<T>(content, pageable, entityPage.getTotalRecords());
+			Page<T> result = new Page<T>(content, entityPage.getPageIndex(), entityPage.getPageSize(), entityPage.getTotalRecords());
 			return result;
 		}
 		catch(Exception e){
-			log.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -83,7 +80,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return entity;
 		} 
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -98,7 +95,7 @@ public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
 			return mo;
 		} 
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
