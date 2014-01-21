@@ -7,11 +7,10 @@ import java.util.List;
 import net.juniper.jmp.core.ctx.Page;
 import net.juniper.jmp.core.util.BeanUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 public class MoEntityConvertor<T, K> implements IMoEntityConvertor<T, K>{
-	private Logger logger = LoggerFactory.getLogger(MoEntityConvertor.class);
+	private Logger logger = Logger.getLogger(MoEntityConvertor.class);
 	
 	@Override
 	public List<K> convertFromMo2Entity(List<T> moList, Class<K> clazz){

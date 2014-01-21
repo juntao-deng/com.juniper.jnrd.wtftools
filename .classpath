@@ -23,7 +23,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.hibernate.validator"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.javassist"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.hibernate"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.slf4j"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.antlr"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/3rdParty.net.sf.json"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.inject.api"/>
@@ -34,6 +33,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.weld.core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.weld.spi"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-ch.qos.cal10n"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.slf4j.ext"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.log4j"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

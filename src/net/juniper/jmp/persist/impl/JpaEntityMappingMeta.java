@@ -6,6 +6,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ import net.juniper.jmp.persist.datasource.DataSourceCenter;
 import net.juniper.jmp.persist.exp.JmpDbRuntimeException;
 import net.juniper.jmp.persist.jdbc.FieldMeta;
 
+import org.apache.log4j.Logger;
+
 import com.sun.xml.internal.ws.util.StringUtils;
 
 /**
@@ -30,6 +33,7 @@ import com.sun.xml.internal.ws.util.StringUtils;
  */
 public final class JpaEntityMappingMeta extends MappingMeta<Object> {
 	private static final long serialVersionUID = 8015429393959008969L;
+	private static Logger logger = Logger.getLogger(JpaEntityMappingMeta.class);
 	public JpaEntityMappingMeta(String dataSource, Class<Object> clazz) {
 		super(dataSource, clazz);
 	}
@@ -40,6 +44,7 @@ public final class JpaEntityMappingMeta extends MappingMeta<Object> {
 		if(entity == null)
 			throw new JmpDbRuntimeException("This class is not a jpa entity," + clazz.getName());
 		
+		logger.debug("resoving class:" + clazz.getName());
 		String tableName = detectTableName(clazz);
 		Map<String, Integer> typeMap = getTypeParam(dataSource, tableName);
 		
@@ -109,6 +114,9 @@ public final class JpaEntityMappingMeta extends MappingMeta<Object> {
 		setPrimaryKey(pkField);
 		setEntityFields(fms);
 		setColumnTypeMap(typeMap);
+		
+		if(logger.isDebugEnabled())
+			logger.debug("finished resoving class:" + clazz.getName() + ", fields:" + Arrays.toString(this.getValidFields()));
 	}
 
 	private Map<String, Integer> getTypeParam(String dsName, String table) {

@@ -19,7 +19,6 @@ modules-org.hibernate.commons-annotations
 modules-org.hibernate.validator
 modules-org.javassist
 modules-org.hibernate
-modules-org.slf4j
 modules-org.antlr
 3rdParty.net.sf.json
 modules-javax.inject.api
@@ -30,4 +29,4 @@ modules-org.jboss.weld.api
 modules-org.jboss.weld.core
 modules-org.jboss.weld.spi
 modules-ch.qos.cal10n
-modules-org.slf4j.ext
+modules-org.apache.log4j

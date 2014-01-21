@@ -10,11 +10,10 @@ import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.core.ctx.impl.PageRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 public class ParamHelper {
-	private static Logger log = LoggerFactory.getLogger(ParamHelper.class);
+	private static Logger log = Logger.getLogger(ParamHelper.class);
 	private static final String S_SORT = "s_sort";
 	private static final String S_FILTER = "s_filter";
 	private static final String S_PAGE = "s_page";
