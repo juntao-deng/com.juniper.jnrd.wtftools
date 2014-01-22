@@ -1,6 +1,7 @@
 package net.juniper.jmp.persist.impl;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -199,7 +200,10 @@ public class EntityPersistenceImpl implements IJmpPersistenceManager{
 		String pkField = PersistenceHelper.getPkField(this.dataSource, entities[0]);
 		for(int i = 0; i < entities.length; i ++){
 			try {
-				PropertyUtils.setProperty(entities[i], pkField, pks[i]);
+				Object pkValue = pks[i];
+				if(pkValue instanceof BigDecimal)
+					pkValue = ((BigDecimal)pkValue).intValue();
+				PropertyUtils.setProperty(entities[i], pkField, pkValue);
 			} 
 			catch (Exception e) {
 				throw new JmpDbRuntimeException("error while setting pk to entities");

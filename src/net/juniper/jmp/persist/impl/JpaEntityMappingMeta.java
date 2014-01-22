@@ -122,7 +122,7 @@ public final class JpaEntityMappingMeta extends MappingMeta<Object> {
 	private Map<String, Integer> getTypeParam(String dsName, String table) {
 		try {
 			Map<String, Integer> typeMap = new HashMap<String, Integer>();
-			DataSource ds = DataSourceCenter.getInstance().getDataSource("");
+			DataSource ds = DataSourceCenter.getInstance().getDataSource(dsName);
 			DatabaseMetaData md = ds.getConnection().getMetaData();
 			ResultSet rsColumns = md.getColumns(null, getSchema(md), table.toUpperCase(), "%");
 			while (rsColumns.next()) {
