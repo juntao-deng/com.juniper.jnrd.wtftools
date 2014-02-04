@@ -1,5 +1,5 @@
 wdefine(function(){
-	$app.model('listmodel', {});
+	$app.model('listmodel', {lazyInit:true});
 	$app.metadata('listgrid', {columns: [
 	                    			        {text: 'Method Name', name:'methodname', width:120},
 	                    			        {text: 'Params', name:'params', width:180},

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.juniper.jmp.core.ctx.Page;
 import net.juniper.jmp.core.util.BeanUtils;
+import net.juniper.jmp.wtf.ctx.Page;
 
 import org.apache.log4j.Logger;
 

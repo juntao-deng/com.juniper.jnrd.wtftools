@@ -4,11 +4,11 @@ import java.util.List;
 
 import javax.ws.rs.core.PathSegment;
 
-import net.juniper.jmp.core.ctx.Filterable;
-import net.juniper.jmp.core.ctx.IRequest;
-import net.juniper.jmp.core.ctx.Pageable;
-import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.core.ctx.impl.PageRequest;
+import net.juniper.jmp.wtf.ctx.Filterable;
+import net.juniper.jmp.wtf.ctx.IRequest;
+import net.juniper.jmp.wtf.ctx.Pageable;
+import net.juniper.jmp.wtf.ctx.Sort;
 
 import org.apache.log4j.Logger;
 

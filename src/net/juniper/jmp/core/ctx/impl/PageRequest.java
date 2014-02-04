@@ -2,7 +2,7 @@ package net.juniper.jmp.core.ctx.impl;
 
 import java.io.Serializable;
 
-import net.juniper.jmp.core.ctx.Pageable;
+import net.juniper.jmp.wtf.ctx.Pageable;
 
 public class PageRequest implements Pageable, Serializable {
 	private static final long serialVersionUID = -4153345207626971352L;

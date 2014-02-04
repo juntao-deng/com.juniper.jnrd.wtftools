@@ -111,7 +111,7 @@ define(["base/listener"], function(){
 		destroy : function() {
 			this.off();
 			this.data = null;
-			this.el.remove();
+			this.el.html("");
 		},
 		updateState : function(trigger) {
 			if(this.statemgr)

@@ -30,8 +30,11 @@ wdefine(function(){
 		var colsinput = $app.component('colsinput');
 		var rowsinput = $app.component('rowsinput');
 		var slider = $app.component('colslider');
+		var cols = colsinput.value();
+		var rows = rowsinput.value();
+		var sliders = slider.values();
 		$app.close();
-		insertLayout(rowsinput.value(), colsinput.value(), slider.values());
+		insertLayout(rows, cols, sliders);
 		FwBase.Wtf.Design.DesignSupport.designable();
 		FwBase.Wtf.Design.DesignSupport.syncHtml();
 	});

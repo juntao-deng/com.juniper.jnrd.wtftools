@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.juniper.jmp.core.ctx.IRequest;
+import net.juniper.jmp.wtf.ctx.IRequest;
 
 public class RequestImpl implements IRequest {
 	private HttpServletRequest request;

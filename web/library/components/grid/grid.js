@@ -103,7 +103,7 @@ define(["base/base", "./jqgrid", "css!./jqgrid", "css!./jqgrid-override"], funct
 			},
 			mockMetadata : function() {
 				var modelId = this.id + "MockModel";
-				var model = new FwBase.Wtf.Model(modelId, {});
+				var model = new FwBase.Wtf.Model(modelId, {lazyInit: true});
 				model.mock = true;
 				this.ctx.model(model);
 				this.setDefault({multiselect : true, columns: columns, model : modelId});

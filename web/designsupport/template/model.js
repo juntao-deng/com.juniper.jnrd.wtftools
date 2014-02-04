@@ -3,9 +3,9 @@ wdefine(function(){
 		options : [
 		     {text : "landingpage", value : "landingpage"},
 		     {text : "okcanceldialog", value : "okcanceldialog"},
-		     {text : "wizard", value : "wizard"},
+		     {text : "okdialog", value : "okdialog"},
 		     {text : "wizarddialog", value : "wizarddialog"},
-		     {text : "landingpagetree", value : "landingpagetree"}
+		     {text : "detailspage", value : "detailspage"}
 		]
 	};
 	

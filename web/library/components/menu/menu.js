@@ -37,9 +37,9 @@ define(["base/base"], function(base){
 			},
 			mockMetadata : function() {
 				var groups = [
-								{menus : [{id:'add',name:'Add', icon:'dd'}, {id:'edit',name:'Edit'}, {id:'save',name:'Save'}, {id:'del',name:'Delete'}]},
+								{menus : [{id:'add', tip:'Add', icon:'icon-plus'}, {id:'edit', tip:'Edit', icon:'icon-edit'}, {id:'del', tip:'Delete', icon:'icon-minus'}]},
 								{menus : [{id:'actions',name:'Actions', menus:[{id:'action1', name:'Action1'}, {id:'action2', name:'Action2'}, {id:'action3', name:'Action3'}]}]},
-								{menus : [{id:'export',name:'Export', menus: [{id:'print', name:'Print'}, {id:'printall', name:'Print All Pages'}, {divider:true},
+								{menus : [{id:'export',name:'Export', menus: [
 								                                               {id:'export2csv', name:'Export to CSV'}, {id:'exportallcsv', name:'Export all pages to CSV'}, {divider:true},
 								                                               {id:'export2pdf', name:'Export to PDF'}, {id:'exportallpdf', name:'Export all pages to PDF'}
 								                                              ]

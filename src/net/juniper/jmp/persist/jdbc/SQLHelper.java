@@ -7,10 +7,10 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Map;
 
-import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.persist.SQLParameter;
 import net.juniper.jmp.persist.impl.PersistenceHelper;
 import net.juniper.jmp.persist.jdbc.trans.SqlTranslator;
+import net.juniper.jmp.wtf.ctx.Sort;
 
 public class SQLHelper {
 	public static String getInsertSQL(String table, String names[]) {

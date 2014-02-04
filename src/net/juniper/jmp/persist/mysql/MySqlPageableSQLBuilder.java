@@ -1,7 +1,7 @@
 package net.juniper.jmp.persist.mysql;
 
-import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.persist.impl.PageableSQLBuilder;
+import net.juniper.jmp.wtf.ctx.Pageable;
 
 public class MySqlPageableSQLBuilder implements PageableSQLBuilder {
 

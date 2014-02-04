@@ -1,7 +1,7 @@
 package net.juniper.jmp.persist.oracle;
 
-import net.juniper.jmp.core.ctx.Pageable;
 import net.juniper.jmp.persist.impl.PageableSQLBuilder;
+import net.juniper.jmp.wtf.ctx.Pageable;
 
 public class OraclePageableSQLBuilder implements PageableSQLBuilder {
     @Override

@@ -3,10 +3,10 @@ package net.juniper.jmp.persist;
 import java.sql.DatabaseMetaData;
 import java.util.List;
 
-import net.juniper.jmp.core.ctx.Page;
-import net.juniper.jmp.core.ctx.Pageable;
-import net.juniper.jmp.core.ctx.Sort;
 import net.juniper.jmp.persist.impl.DbSession;
+import net.juniper.jmp.wtf.ctx.Page;
+import net.juniper.jmp.wtf.ctx.Pageable;
+import net.juniper.jmp.wtf.ctx.Sort;
 
 public interface IJmpPersistenceManager{
 	/**

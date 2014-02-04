@@ -44,8 +44,9 @@ wdefine(function(){
 									    {text : "form", value : "form"},
 									    {text : "thumbnails", value : "thumbnails"},
 									    {text : "chart_bar", value : "chart_bar"},
-									    {text : "chart_linear", value : "chart_linear"},
-									    {text : "chart_pie", value : "chart_pie"}
+									    {text : "chart_line", value : "chart_line"},
+									    {text : "chart_pie", value : "chart_pie"},
+									    {text : "chart_area", value : "chart_area"}
 									    ]},
 		]
 	};

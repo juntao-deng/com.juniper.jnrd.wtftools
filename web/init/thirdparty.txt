@@ -1,5 +1,4 @@
 3rdParty.aopalliance
-net.juniper.jmp.wtfbase
 modules-org.jboss.resteasy.resteasy-jaxrs
 modules-org.jboss.resteasy.resteasy-cdi
 modules-org.apache.commons.logging
@@ -30,3 +29,4 @@ modules-org.jboss.weld.core
 modules-org.jboss.weld.spi
 modules-ch.qos.cal10n
 modules-org.apache.log4j
+$project_wtfbase

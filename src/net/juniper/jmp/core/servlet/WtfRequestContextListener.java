@@ -4,10 +4,10 @@ import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServletRequest;
 
-import net.juniper.jmp.core.ctx.ApiContext;
-import net.juniper.jmp.core.ctx.ApiContextInfo;
-import net.juniper.jmp.core.ctx.IRequest;
 import net.juniper.jmp.core.ctx.impl.RequestImpl;
+import net.juniper.jmp.wtf.ctx.ApiContext;
+import net.juniper.jmp.wtf.ctx.ApiContextInfo;
+import net.juniper.jmp.wtf.ctx.IRequest;
 
 public class WtfRequestContextListener implements ServletRequestListener {
 

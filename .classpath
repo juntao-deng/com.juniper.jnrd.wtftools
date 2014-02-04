@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/3rdParty.aopalliance"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/net.juniper.jmp.wtfbase"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.resteasy.resteasy-jaxrs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.resteasy.resteasy-cdi"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.commons.logging"/>
@@ -25,8 +24,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.hibernate"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.antlr"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/3rdParty.net.sf.json"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.inject.api"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-com.google.guava"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.inject.api"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-javax.interceptor.api"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.classfilewriter"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.weld.api"/>

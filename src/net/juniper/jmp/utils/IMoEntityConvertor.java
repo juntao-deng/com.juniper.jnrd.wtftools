@@ -2,7 +2,7 @@ package net.juniper.jmp.utils;
 
 import java.util.List;
 
-import net.juniper.jmp.core.ctx.Page;
+import net.juniper.jmp.wtf.ctx.Page;
 
 public interface IMoEntityConvertor<T, K> {
 	public List<K> convertFromMo2Entity(List<T> moList, Class<K> clazz);
