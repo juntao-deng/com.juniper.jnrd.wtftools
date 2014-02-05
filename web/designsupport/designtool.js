@@ -56,7 +56,10 @@ define(function(){
 				FwBase.Wtf.Design.DesignSupport.currParent = designItem;
 				designItem.removeClass('designele_sign');
 				designItem.addClass('designele');
-				var div = "<div class='designmenu'></div>";
+				var div = $("<div class='designmenu'></div>");
+				var width = designItem.innerWidth();
+				if(width <= 100)
+					div.css("right", "10px");
 				designItem.append(div);
 				FwBase.Wtf.Design.DesignSupport.createMenu(type);
 			},
@@ -198,6 +201,9 @@ define(function(){
 			},
 			
 			modelControllerWrapper: function() {
+				var dd = $app.component('modeldropdown');
+				if(!dd)
+					return;
 				$app.on('loaded', function(){
 					var topApp = DesignSupport.getDesignApp();
 					var bindingEle = DesignSupport.getDesignEle();

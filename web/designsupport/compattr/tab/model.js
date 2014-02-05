@@ -1,5 +1,5 @@
 wdefine(function(){
-	$app.model('columnsModel', {});
+	$app.model('columnsModel', {lazyInit: true});
 	$app.metadata('columnsgrid', {columns: [
 			        {text: 'Item Id', name:'id', width:80},
 			        {text: 'Item Text', name:'text', width: 80}

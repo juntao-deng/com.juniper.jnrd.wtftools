@@ -1,10 +1,5 @@
-wdefine(function(){
-	/** Global scope begin*/
-	
-	DesignSupport.eventControllerWrapper();
-	DesignSupport.modelControllerWrapper();
-	/** Global scope end*/
-	
+wdefine(["../attrcontroller"], function(commonController){
+	commonController();
 	/** Events scope begin*/
 	/**
 	 * @Event

@@ -244,14 +244,17 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
 				requireUtil(modelJsArr, function(){
 					var modelFunc = arguments[0];
 					function appModelCallback() {
-						if(modelFunc != null)
-							modelFunc.exec();
+						if(modelFunc != null){
+							modelFunc.exec.apply(this, modelFunc.args);
+						}
 					}
 					function appCallback(){
 	 					var controllerJs = rqhtml + "controller";
 	 					requireUtil(controllerArr, function() {
-	 						if(arguments[0] != null)
-	 							arguments[0].exec();
+	 						if(arguments[0] != null){
+	 							var executor = arguments[0];
+	 							executor.exec.apply(this, executor.args);
+	 						}
 	 						var models = $app.models();
 					 		for(var i = 0; i < models.length; i ++)
 					 			models[i].toInit();
@@ -393,7 +396,7 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
 						if(arguments[j] != null){
 							var id = group[j].id;
 							window.$widget = $app.widget(id);
-							arguments[j].exec();
+							arguments[j].exec.apply(this, arguments[j].args);
 						}
 					}
 					var widgetCallback = function(){
@@ -402,7 +405,7 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
 								if(arguments[j] != null){
 									var id = group[j].id;
 									window.$widget = $app.widget(id);
-									arguments[j].exec();
+									arguments[j].exec.apply(this, arguments[j].args);
 									
 									var models = window.$widget.models();
 							 		for(var m = 0; m < models.length; m ++)
@@ -487,7 +490,7 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
 				requirejs(requireModelList, function(){
 					for(var i = 0; i < arguments.length; i ++){
 						if(arguments[i] != null)
-							arguments[i].exec();
+							arguments[i].exec.apply(this, arguments[i].args);
 					}
 					if(callbacks.appModelCallback)
 						callbacks.appModelCallback();
@@ -504,7 +507,7 @@ define(['backbone', "../uipattern/statemanager", "../uipattern/crudaction"], fun
 						requirejs(requireControllerList, function() {
 							for(var i = 0; i < arguments.length; i ++){
 								if(arguments[i] != null)
-									arguments[i].exec();
+									arguments[i].exec.apply(this, arguments[i].args);
 							}
 						});
 					};

@@ -1,4 +1,5 @@
-wdefine(function(){
+wdefine(["../attrmodel"], function(commonModel){
+	commonModel();
 	$app.model('columnsModel', {lazyInit:true});
 	$app.metadata('columnsgrid', {columns: [
 			        {text: 'Name', name:'name', width:50},
@@ -19,6 +20,4 @@ wdefine(function(){
 			}
 	);
 	$app.metadata('rowsattr', {defaultValue: 2});
-	DesignSupport.eventModelWrapper();
-	DesignSupport.modelModelWrapper();
 });

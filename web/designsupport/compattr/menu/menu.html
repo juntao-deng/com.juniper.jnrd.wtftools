@@ -1,23 +1,46 @@
 <div wtftype="template" wtfmetadata="okcanceldialog">
-	<div class="row-fluid">
-		<div class="span6">
-			<div id="idattr" wtftype="input" wtfmetadata="{label : 'Id:', labelWidth: 60, editable : false}"></div>
-			<div id="menutree" wtftype="tree"></div>
-		</div>
-		<div class="span6">
-			<div id="itemidattr" wtftype="input" wtfmetadata="{label : 'Item Id:', labelWidth: 60}"></div>
-			<div id="textattr" wtftype="input" wtfmetadata="{label : 'Text:', labelWidth: 60}"></div>
-			<div id="enableattr" wtftype="input_toggle" wtfmetadata="{label: 'Enable:', labelWidth: 60}"></div>
-			<div id="styleattr" wtftype="input_dropdown" wtfmetadata="{value: '', label: 'Style:', labelWidth: 60, filter: false, options:[{value: '', name: 'normal'},{value: 'primary', name: 'primary'},
-				{value: 'info', name: 'info'},
-				{value: 'success', name: 'success'},
-				{value: 'warning', name: 'warning'},
-				{value: 'danger', name: 'danger'},
-				{value: 'inverse', name: 'inverse'},
-				{value: 'link', name: 'link'},
-				]}">
+	<div id="attrtab" wtftype="tab" wtfmetadata="{items:[{id:'basicitem', text :'Menu'}, {id:'advanceditem', text :'Items'}]}">
+		<div id="basicitem">
+			<div class="row-fluid">
+				<div class="span6">
+					<div id="midattr" wtftype="input" wtfmetadata="{label : 'Id:', labelWidth: 60, editable : false}"></div>
+					<div id="mtextattr" wtftype="input" wtfmetadata="{label : 'Text:', labelWidth: 60}"></div>
+					<div id="menableattr" wtftype="input_toggle" wtfmetadata="{label: 'Enable:', labelWidth: 60}"></div>
+				</div>
+				<div class="span6">
+					<div id="mstyleattr" wtftype="input_dropdown">
+					</div>
+				</div>
 			</div>
-			<div id="actionslink" wtftype="button" wtfmetadata="{text: 'Actions', style: 'link'}"></div>
+			<div id="mactionsfs" wtftype="fieldset" wtfmetadata="{legend: 'Actions'}">
+				<div id="mactionsdropdown" wtftype="input_dropdown"></div>
+			</div>
+		</div>
+		<div id="advanceditem">
+			<div class="row-fluid">
+				<div class="span6">
+					<div id="menutree" wtftype="tree"></div>
+				</div>
+				<div class="span6">
+					<div id="itemidattr" wtftype="input" wtfmetadata="{label : 'Item Id:', labelWidth: 60}"></div>
+					<div id="textattr" wtftype="input" wtfmetadata="{label : 'Text:', labelWidth: 60}"></div>
+					<div id="tipattr" wtftype="input" wtfmetadata="{label : 'Tip:', labelWidth: 60}"></div>
+					<div id="iconattr" wtftype="input" wtfmetadata="{label : 'Icon:', labelWidth: 60}"></div>
+					<div id="enableattr" wtftype="input_toggle" wtfmetadata="{label: 'Enable:', labelWidth: 60}"></div>
+					<div id="styleattr" wtftype="input_dropdown" wtfmetadata="{value: '', label: 'Style:', labelWidth: 60, filter: false, options:[{value: '', name: 'normal'},{value: 'primary', name: 'primary'},
+						{value: 'info', name: 'info'},
+						{value: 'success', name: 'success'},
+						{value: 'warning', name: 'warning'},
+						{value: 'danger', name: 'danger'},
+						{value: 'inverse', name: 'inverse'},
+						{value: 'link', name: 'link'},
+						]}">
+					</div>
+				</div>
+			</div>
+			<div id="actionsfs" wtftype="fieldset" wtfmetadata="{legend: 'Actions'}">
+				<div id="actionsdropdown" wtftype="input_dropdown"></div>
+			</div>
 		</div>
 	</div>
 </div>

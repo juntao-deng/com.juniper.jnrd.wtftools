@@ -1,0 +1,3 @@
+wdefine(["../attrmodel"], function(){
+	
+});

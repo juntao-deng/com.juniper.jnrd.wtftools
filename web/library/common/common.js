@@ -113,14 +113,16 @@ function wdefine(req, func){
 	if(typeof req == "function"){
 		return define(function(){
 			return {
-				exec : req
+				exec : req,
+				args: arguments
 			};
 		});
 	}
 	else{
 		return define(req, function(){
 			return {
-				exec : func
+				exec : func,
+				args: arguments
 			};
 		});
 

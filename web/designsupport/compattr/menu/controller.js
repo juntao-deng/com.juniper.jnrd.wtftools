@@ -1,4 +1,4 @@
-wdefine(function(){
+wdefine(["../attrcontroller"], function(){
 	$app.on('loaded', function(){
 //		var compId = FwBase.Wtf.Design.DesignSupport.currParent.attr('id');
 //		var comp = $app.parent.component(compId);

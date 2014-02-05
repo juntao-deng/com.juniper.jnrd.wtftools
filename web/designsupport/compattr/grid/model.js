@@ -1,5 +1,5 @@
-wdefine(function(){
-	$app.model('columnsModel', {});
+wdefine(["../attrmodel"], function(){
+	$app.model('columnsModel', {lazyInit: true});
 	$app.metadata('columnsgrid', {columns: [
 			        {text: 'Name', name:'name', width:80},
 			        {text: 'Text', name:'text', width: 80},
@@ -21,6 +21,6 @@ wdefine(function(){
 				model : 'columnsModel'
 			}
 	);
-	DesignSupport.eventModelWrapper();
-	DesignSupport.modelModelWrapper();
+	//DesignSupport.eventModelWrapper();
+	//DesignSupport.modelModelWrapper();
 });
