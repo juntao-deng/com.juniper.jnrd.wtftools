@@ -9,6 +9,12 @@ define(function(){
 	 FwBase.Wtf.Client.restServices = {};
 	 FwBase.Wtf.Client.mockAjax = function(options){
 	 	var url = options.url;
+	 	var paramIndex = url.indexOf("?");
+	 	var paramStr = null;
+	 	if(paramIndex != -1){
+	 		paramStr = url.substring(paramIndex + 1);
+	 		url = url.substring(0, paramIndex);
+	 	}
 	 	var segs = url.substring(1).split("/");
 	 	var requireUtil = requirejs;
 		if(window.requirelibs){
@@ -24,7 +30,7 @@ define(function(){
 	 		}
 	 		var method = null;
 	 		var params = [];
-	 		if(segs[3] == 'ctx'){
+	 		if(segs[3] == null){
 	 			method = "root";
 	 		}
 	 		else if(segs[3] == 'action'){
