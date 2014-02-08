@@ -156,7 +156,7 @@ define(["base/base"], function(base){
 		/*Listeners end*/
 		mockMetadata : function() {
 			var modelId = this.id + "MockModel";
-			var model = new FwBase.Wtf.Model(modelId, {});
+			var model = new FwBase.Wtf.Model(modelId, {lazyInit: true});
 			model.mock = true;
 			this.ctx.model(model);
 			this.setDefault({model: modelId, rows : 2, labelWidth : 120, elements : [

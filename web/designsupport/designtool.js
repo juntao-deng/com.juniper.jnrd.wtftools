@@ -256,6 +256,21 @@ define(function(){
 					var value = this.ctx.component('modeldropdown').value();
 					FwBase.Wtf.Design.DesignSupport.popDialog(url, {navid: value}, {width:800, height: 500, title : 'Edit Model'});
 				});
+				
+				$app.component('deletemodelbt').on('click', function(options){
+					var dd = this.ctx.component('modeldropdown');
+					var value = dd.value();
+					if(value != null && value != "")
+						dd.remove(value);
+				});
+				
+				$app.component('columnmenu').on('click', function(options){
+					var id = options.trigger.id;
+					if(id == "add"){
+						var url = window.frameCtx + "/../designsupport/columnedit";
+						AppUtil.navigateToDialog(url, null, {title: 'Column Attributes'});
+					}
+				});
 			},
 			
 			/**

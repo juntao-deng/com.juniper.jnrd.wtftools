@@ -1,54 +1,72 @@
-define(["base/base", "highcharts"], function(plot){	
+define(["chart_base/chart_base"], function(){	
 	FwBase.Wtf.View.Controls.Chart_bar = function(){
-		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
+		FwBase.Wtf.View.Controls.Chart_base.apply(this, arguments);
 	};
-	$.extend(FwBase.Wtf.View.Controls.Chart_bar.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, 
-		{
-			template: _.template($('#sys_atom_controls_chart_bar').html()),
-			mockMetadata : function(){
-				this.setDefault({mock : true});
-			},
-			makeDefault : function() {
-				
-			},
-			postInit : function() {
-//				this.grided = false;
-//				
-//				this.plot = $.plot(this.el.children("#chart_bar"), [[]], {
-//					series: {
-//						bars: {
-//							show: true,
-//							barWidth: 0.6,
-//							horizontal: true
-//						}
-//					},
-//					yaxis: {
-//						ticks: 4,
-//						min: 0
-//					},
-//					xaxis: {
-//						ticks: 4
-//					}
-//				});
-//				if(this.metadata.mock){
-//					var d1 = [[3, 0], [8, 4], [5, 8], [2, 12]];
-//					var d2 = [[3, 1], [8, 5], [5, 9], [3, 13]];
-//					//var data = [[["January", 10], ["February", 8], ["March", 4], ["April", 13], ["May", 17], ["June", 9]]];
-//					
-//					var data = [d1, d2];
-//					this.data(data);
-//				}
-			},
-			data : function(data) {
-				this.plot.setData(data);
-				if(!this.grided){
-					this.grided = true;
-					this.plot.setupGrid();
-				}
-				this.plot.draw();
-			}
-		}
-	);
-
+	$.extend(FwBase.Wtf.View.Controls.Chart_bar.prototype, FwBase.Wtf.View.Controls.Chart_base.prototype, {
+		getChartConfig : function() {
+			return {
+				chart: {
+	                type: 'column'
+	            },
+	            title: {
+	                text: this.metadata.title,
+	                x: -20 //center
+	            },
+	            subtitle: {
+	                text: this.metadata.subtitle,
+	                x: -20
+	            },
+	            xAxis: {
+	                categories: this.metadata.categories,
+	            },
+	            yAxis: {
+	                title: {
+	                    text: this.metadata.ytitle
+	                },
+	                plotLines: [{
+	                    value: 0,
+	                    width: 1,
+	                    color: '#808080'
+	                }]
+	            },
+	            tooltip: {
+	                valueSuffix: this.metadata.valueSuffix
+	            },
+	            plotOptions: {
+	                bar: {
+	                    dataLabels: {
+	                        enabled: true
+	                    }
+	                }
+	            },
+	            credits: {
+	                enabled: false
+	            },
+	            series : this.metadata.series
+	        };
+		},
+		mockMetadata : function(){
+			this.setDefault({width: '100%', height: '300', title: 'Monthly Average Rainfall', subtitle: 'Source: WorldClimate.com',
+				categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul'], ytitle: 'Rainfall (mm)', valueSuffix: ' mm',
+				series: [{
+	                name: 'Tokyo',
+	                data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6]
+	    
+	            }, {
+	                name: 'New York',
+	                data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0]
+	    
+	            }, {
+	                name: 'London',
+	                data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0]
+	    
+	            }, {
+	                name: 'Berlin',
+	                data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4]
+	    
+	            }]
+			});
+		}	
+	});
 	return FwBase.Wtf.View.Controls.Chart_bar;
 });

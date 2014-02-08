@@ -1,4 +1,3 @@
-3rdParty.aopalliance
 modules-org.jboss.resteasy.resteasy-jaxrs
 modules-org.jboss.resteasy.resteasy-cdi
 modules-org.apache.commons.logging

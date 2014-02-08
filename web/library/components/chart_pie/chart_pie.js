@@ -1,65 +1,60 @@
-define(["base/base", "highcharts"], function(){	
+define(["chart_base/chart_base"], function(){	
 	FwBase.Wtf.View.Controls.Chart_pie = function(){
-		FwBase.Wtf.View.Controls.BaseControl.apply(this, arguments);
+		FwBase.Wtf.View.Controls.Chart_base.apply(this, arguments);
 	};
-	$.extend(FwBase.Wtf.View.Controls.Chart_pie.prototype, FwBase.Wtf.View.Controls.BaseControl.prototype, 
-		{
-			template: _.template($('#sys_atom_controls_chart_pie').html()),
-			mockMetadata : function(){
-				this.setDefault({mock : true});
-			},
-			makeDefault : function() {
-				
-			},
-			postInit : function() {
-				this.grided = false;
-				
-//				this.plot = $.plot(this.el.children("#chart_pie"), [[]], {
-//					series: {
-//				        pie: {
-//				            show: true,
-//				            radius: 1,
-//				            label: {
-//				                show: true,
-//				                radius: 3/4,
-//				                formatter: labelFormatter,
-//				                background: {
-//				                    opacity: 0.5
-//				                }
-//				            }
-//				        }
-//				    },
-//				    legend: {
-//				        show: false
-//				    }
-//				});
-//				if(this.metadata.mock){
-//					var data = [];
-//					var series = Math.floor(Math.random() * 6) + 3;
-//
-//					for (var i = 0; i < series; i++) {
-//						data[i] = {
-//							label: "Series" + (i + 1),
-//							data: Math.floor(Math.random() * 100) + 1
-//						}
-//					}
-//					this.data(data);
-//				}
-			},
-			data : function(data) {
-				this.plot.setData(data);
-				if(!this.grided){
-					this.grided = true;
-					this.plot.setupGrid();
-				}
-				this.plot.draw();
-			}
-		}
-	);
-	
-	function labelFormatter(label, series) {
-		return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
-	}
-
+	$.extend(FwBase.Wtf.View.Controls.Chart_pie.prototype, FwBase.Wtf.View.Controls.Chart_base.prototype, {
+		getChartConfig : function() {
+			return {
+				chart: {
+	                plotBackgroundColor: null,
+	                plotBorderWidth: null,
+	                plotShadow: false
+	            },
+	            title: {
+	                text: this.metadata.title,
+	                x: -20 //center
+	            },
+	            subtitle: {
+	                text: this.metadata.subtitle,
+	                x: -20
+	            },
+	            tooltip: {
+	                valueSuffix: this.metadata.valueSuffix //pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+	            },
+	            plotOptions: {
+	            	pie: {
+	                    allowPointSelect: true,
+	                    cursor: 'pointer',
+	                    dataLabels: {
+	                        enabled: false
+	                    },
+	                    showInLegend: true
+	                }
+	            },
+	            series : this.metadata.series
+	        };
+		},
+		mockMetadata : function(){
+			this.setDefault({width: '100%', height: '300', title: 'Browser market shares at a specific website, 2010', subtitle: '',valueSuffix:'%',
+				series: [{
+	                type: 'pie',
+	                name: 'Browser share',
+	                data: [
+	                    ['Firefox',   45.0],
+	                    ['IE',       26.8],
+	                    {
+	                        name: 'Chrome',
+	                        y: 12.8,
+	                        sliced: true,
+	                        selected: true
+	                    },
+	                    ['Safari',    8.5],
+	                    ['Opera',     6.2],
+	                    ['Others',   0.7]
+	                ]
+	            }]
+			});
+		},
+	});
 	return FwBase.Wtf.View.Controls.Chart_pie;
 });

@@ -31,6 +31,10 @@
 	height : 99%;
 }
 
+.wtf_container{
+	padding-bottom:10px;	
+}
+
 .design_minheight{
 	min-height:250px;
 }

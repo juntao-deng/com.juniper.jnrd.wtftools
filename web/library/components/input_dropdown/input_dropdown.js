@@ -57,6 +57,9 @@ define(["input_base/input_base", "./chosen", "css!./chosen"], function(inputbase
 				var options = {source: this, value: value, oldValue: oldValue, eventCtx: {}};
 				return this.trigger("valuechange", options);
 			},
+			remove: function(value){
+				alert("not implemented");
+			},
 			datas: function(datas) {
 				var oldValue = this.value();
 				if(datas == null){

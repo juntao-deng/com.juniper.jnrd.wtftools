@@ -1,27 +1,5 @@
-wdefine(function(){
-	/** Global scope begin*/
-	
-	DesignSupport.eventControllerWrapper();
-	DesignSupport.modelControllerWrapper();
-//	function callbackForEntity(infos) {
-//		if(infos.errormsg){
-//			alert(infos.errormsg);
-//			return;
-//		}
-//		var model = $app.model('columnsModel');
-//		var columnInfos = infos.columnInfos;
-//		if(columnInfos && columnInfos.length > 0){
-//			model.page().reset();
-//			model.page().add(columnInfos);
-//		}
-//		$app.attr("restservice", infos.restservice);
-//		if(infos.generateClass != null){
-//			$app.attr('generateClass', infos.generateClass);
-//			alert("The restful service for class '" + infos.generateClass + "' doesn't exist, it will be created after you click the 'Save Changes' Button");
-//		}
-//	}
-	/** Global scope end*/
-	
+wdefine(["../attrcontroller"], function(attrcontroller){
+	attrcontroller();
 	/** Events scope begin*/
 	/**
 	 * @Event
@@ -31,22 +9,11 @@ wdefine(function(){
 		var comp = $app.parent.component(compId);
 		var metadata = comp.metadata;
 		$app.component('idattr').value(compId);
-		$app.component('editableattr').checked(metadata.editable);
-		$app.component('multiattr').checked(metadata.multiselect);
+		$app.component('editableattr').value(metadata.editable);
+		$app.component('multiattr').value(metadata.multiselect);
 		$app.component('heightattr').value(metadata.height);
 		$app.component('minheightattr').value(metadata.minHeight);
 		$app.component('pageattr').value(metadata.pagination != null);
-	});
-	
-	/**
-	 * @Event('click') 
-	 */
-	$app.component('columnmenu').on("click", function(options){
-		var id = options.trigger.id;
-		if(id == "add"){
-			var url = window.frameCtx + "/../designsupport/compattr/grid/columnedit";
-			AppUtil.navigateToDialog(url, null, {title: 'Column Attributes'});
-		}
 	});
 	
 //	var modelBt = $app.component("modelbt");
@@ -65,7 +32,7 @@ wdefine(function(){
 	$comp("okbt").on('click', function(){
 		var app = this.ctx;
 		var idattr = app.component('idattr').value();
-		var editableattr = app.component('editableattr').checked();
+		var editableattr = app.component('editableattr').value();
 		var model = app.model('columnsModel');
 		var rows = model.page().rows();
 		if(rows == null || rows.length == 0){
