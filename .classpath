@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.resteasy.resteasy-jaxrs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.resteasy.resteasy-cdi"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.commons.logging"/>
@@ -29,13 +30,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.weld.api"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.weld.core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.weld.spi"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.log4j"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-ch.qos.cal10n"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_45">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.log4j"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
