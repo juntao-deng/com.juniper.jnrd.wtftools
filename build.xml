@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="wtfbase">
+    <property environment="env"/>
+    <property name="pmcstub.location" value="../pmc/pmcstub"/>
+    <property name="wtfdocui.location" value="../wtfprojs/wtfdocui"/>
+    <property name="wtfdocuiEJB.location" value="../wtfprojs/wtfdocuiEJB"/>
+    <property name="ECLIPSE_HOME" value="../../eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="modules-org.jboss.resteasy.resteasy-jaxrs.userclasspath">
+        <pathelement location="../../../3rdParty/resteasy/lib/async-http-servlet-3.0-2.3.7.Final.jar"/>
+        <pathelement location="../../../3rdParty/resteasy/lib/resteasy-jaxrs-2.3.7.Final.jar"/>
+    </path>
+    <path id="modules-org.jboss.resteasy.resteasy-cdi.userclasspath">
+        <pathelement location="../../../3rdParty/resteasy/lib/resteasy-cdi-2.3.7.Final.jar"/>
+    </path>
+    <path id="modules-org.apache.commons.logging.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/slf4j/jcl-over-slf4j/main/jcl-over-slf4j-1.7.2.jar"/>
+    </path>
+    <path id="modules-org.apache.commons.lang.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/apache/commons/lang/main/commons-lang-2.6.jar"/>
+    </path>
+    <path id="modules-org.apache.commons.io.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/apache/commons/io/main/commons-io-2.1.jar"/>
+    </path>
+    <path id="modules-javax.servlet.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/servlet/api/main/jboss-servlet-api_3.0_spec-1.0.2.Final.jar"/>
+    </path>
+    <path id="modules-javax.validation.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/validation/api/main/validation-api-1.0.0.GA.jar"/>
+    </path>
+    <path id="modules-org.apache.commons.beanutils.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/apache/commons/beanutils/main/commons-beanutils-1.8.3.jar"/>
+    </path>
+    <path id="modules-javax.persistence.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/persistence/api/main/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+    </path>
+    <path id="modules-javax.ws.rs.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/ws/rs/api/main/jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar"/>
+    </path>
+    <path id="modules-org.jboss.logging.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/jboss/logging/main/jboss-logging-3.1.2.GA.jar"/>
+    </path>
+    <path id="modules-org.dom4j.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/dom4j/main/dom4j-1.6.1.jar"/>
+    </path>
+    <path id="modules-javax.transaction.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/transaction/api/main/jboss-transaction-api_1.1_spec-1.0.1.Final.jar"/>
+    </path>
+    <path id="modules-javax.enterprise.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/enterprise/api/main/cdi-api-1.0-SP4.jar"/>
+    </path>
+    <path id="modules-org.scannotation.scannotation.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/scannotation/scannotation/main/scannotation-1.0.2.jar"/>
+    </path>
+    <path id="modules-org.hibernate.commons-annotations.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/hibernate/commons-annotations/main/hibernate-commons-annotations-4.0.1.Final.jar"/>
+    </path>
+    <path id="modules-org.hibernate.validator.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/hibernate/validator/main/hibernate-validator-4.3.1.Final.jar"/>
+    </path>
+    <path id="modules-org.javassist.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/javassist/main/javassist-3.15.0-GA.jar"/>
+    </path>
+    <path id="modules-org.hibernate.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/hibernate/main/hibernate-core-4.2.0.CR1.jar"/>
+        <pathelement location="../../../3rdParty/jboss/modules/org/hibernate/main/hibernate-entitymanager-4.2.0.CR1.jar"/>
+        <pathelement location="../../../3rdParty/jboss/modules/org/hibernate/main/hibernate-infinispan-4.2.0.CR1.jar"/>
+    </path>
+    <path id="modules-org.antlr.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/antlr/main/antlr-2.7.7.jar"/>
+    </path>
+    <path id="3rdParty.net.sf.json.userclasspath">
+        <pathelement location="../../../3rdParty/net/sf/main/json-lib-2.4.jar"/>
+    </path>
+    <path id="modules-javax.inject.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/inject/api/main/javax.inject-1.jar"/>
+    </path>
+    <path id="modules-com.google.guava.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/com/google/guava/main/guava-13.0.1.jar"/>
+    </path>
+    <path id="modules-javax.interceptor.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/javax/interceptor/api/main/jboss-interceptors-api_1.1_spec-1.0.1.Final.jar"/>
+    </path>
+    <path id="modules-org.jboss.classfilewriter.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/jboss/classfilewriter/main/jboss-classfilewriter-1.0.3.Final.jar"/>
+    </path>
+    <path id="modules-org.jboss.weld.api.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/jboss/weld/api/main/weld-api-1.1.Final.jar"/>
+    </path>
+    <path id="modules-org.jboss.weld.core.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/jboss/weld/core/main/weld-core-1.1.10.Final.jar"/>
+    </path>
+    <path id="modules-org.jboss.weld.spi.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/jboss/weld/spi/main/weld-spi-1.1.Final.jar"/>
+    </path>
+    <path id="modules-ch.qos.cal10n.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/ch/qos/cal10n/main/cal10n-api-0.7.3.jar"/>
+    </path>
+    <path id="modules-org.apache.log4j.userclasspath">
+        <pathelement location="../../../3rdParty/jboss/modules/org/apache/log4j/main/log4j-1.2.16.jar"/>
+    </path>
+    <path id="wtfbase.classpath">
+        <pathelement location="web/WEB-INF/classes"/>
+        <path refid="modules-org.jboss.resteasy.resteasy-jaxrs.userclasspath"/>
+        <path refid="modules-org.jboss.resteasy.resteasy-cdi.userclasspath"/>
+        <path refid="modules-org.apache.commons.logging.userclasspath"/>
+        <path refid="modules-org.apache.commons.lang.userclasspath"/>
+        <path refid="modules-org.apache.commons.io.userclasspath"/>
+        <path refid="modules-javax.servlet.api.userclasspath"/>
+        <path refid="modules-javax.validation.api.userclasspath"/>
+        <path refid="modules-org.apache.commons.beanutils.userclasspath"/>
+        <path refid="modules-javax.persistence.api.userclasspath"/>
+        <path refid="modules-javax.ws.rs.api.userclasspath"/>
+        <path refid="modules-org.jboss.logging.userclasspath"/>
+        <path refid="modules-org.dom4j.userclasspath"/>
+        <path refid="modules-javax.transaction.api.userclasspath"/>
+        <path refid="modules-javax.enterprise.api.userclasspath"/>
+        <path refid="modules-org.scannotation.scannotation.userclasspath"/>
+        <path refid="modules-org.hibernate.commons-annotations.userclasspath"/>
+        <path refid="modules-org.hibernate.validator.userclasspath"/>
+        <path refid="modules-org.javassist.userclasspath"/>
+        <path refid="modules-org.hibernate.userclasspath"/>
+        <path refid="modules-org.antlr.userclasspath"/>
+        <path refid="3rdParty.net.sf.json.userclasspath"/>
+        <path refid="modules-javax.inject.api.userclasspath"/>
+        <path refid="modules-com.google.guava.userclasspath"/>
+        <path refid="modules-javax.interceptor.api.userclasspath"/>
+        <path refid="modules-org.jboss.classfilewriter.userclasspath"/>
+        <path refid="modules-org.jboss.weld.api.userclasspath"/>
+        <path refid="modules-org.jboss.weld.core.userclasspath"/>
+        <path refid="modules-org.jboss.weld.spi.userclasspath"/>
+        <path refid="modules-ch.qos.cal10n.userclasspath"/>
+        <path refid="modules-org.apache.log4j.userclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="web/WEB-INF/classes"/>
+        <copy includeemptydirs="false" todir="web/WEB-INF/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="web/WEB-INF/classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="web/WEB-INF/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="wtfbase.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${pmcstub.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${pmcstub.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${wtfdocui.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${wtfdocui.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${wtfdocuiEJB.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${wtfdocuiEJB.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+</project>

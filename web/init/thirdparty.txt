@@ -28,4 +28,4 @@ modules-org.jboss.weld.core
 modules-org.jboss.weld.spi
 modules-ch.qos.cal10n
 modules-org.apache.log4j
-$project_wtfbase
+$project_subsystem

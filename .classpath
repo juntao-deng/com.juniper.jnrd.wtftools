@@ -32,5 +32,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.jboss.weld.spi"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-ch.qos.cal10n"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/modules-org.apache.log4j"/>
+	<classpathentry kind="src" path="/subsystem"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
